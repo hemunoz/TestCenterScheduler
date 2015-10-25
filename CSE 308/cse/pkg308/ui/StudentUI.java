@@ -5,33 +5,37 @@
  */
 package cse.pkg308.ui;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
+import cse.pkg308.DBConnection;
+import static cse.pkg308.ui.Login.sessionframe;
+import cse.pkg308.ui.PrintTime;
+import cse.pkg308.ui.UserUI;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JPasswordField;
-import com.toedter.calendar.JCalendar;
-import com.toedter.calendar.JDateChooser;
 
-import cse.pkg308.DBConnection;
-import static cse.pkg308.ui.Login.sessionframe;
-import cse.pkg308.ui.UserUI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 public class StudentUI {
 
     public static JFrame sessionframe;
     public static JFrame frmStudentInterface;
     public UserUI user = new UserUI();
+    
 
     private JTextField textFieldUserID;
     private JPasswordField passwordFieldPassword;
@@ -52,18 +56,21 @@ public class StudentUI {
     public static JButton btnCancelAnExam = new JButton("Cancel an Exam");
     public static JButton btnSetAReminder = new JButton("Set a Reminder");
     public static JButton btnLogOut = new JButton("Log Out");
-    
+    public static JLabel time;
+
     public static JComboBox coursecomboBox;
     public static JComboBox examcomboBox;
+    public static JComboBox datecomboBox;
     public static JComboBox timecomboBox;
     public static JComboBox ampmcomboBox;
     public static JDateChooser dateChooser;
+    
 
     public JFrame frmTakeAnExam;
     public JTextField txtPm;
-    
-    public static Course [] courses = new Course[5];
-    public static Exam [] examlist = new Exam[5];
+
+    public static Course[] courses = new Course[5];
+    public static Exam[] examlist = new Exam[5];
 
     /*
 
@@ -156,6 +163,11 @@ public class StudentUI {
         frmStudentInterface.setBounds(100, 100, 477, 344);
         frmStudentInterface.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frmStudentInterface.getContentPane().setLayout(null);
+        
+        time = user.time;
+        time.setFont(new Font("Tahoma", Font.BOLD, 11));
+        time.setBounds(21, 238, 146, 21);
+        frmStudentInterface.getContentPane().add(time);
 
         lblName = new JLabel("Name:");
         lblName.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -236,10 +248,10 @@ public class StudentUI {
                 frmStudentInterface.remove(btnSetAReminder);
                 frmStudentInterface.remove(btnLogOut);
 
-                        //user.getSession().remove(lblName);
+                //user.getSession().remove(lblName);
                 //User.setLogin(sessionframe);
                 //user.switchToLogin();
-                System.out.println(2);
+                //System.out.println(2);
                 User u = new User();
                 //switchToLogin();
 
@@ -281,7 +293,7 @@ public class StudentUI {
                 btnSetAReminder.setVisible(false);
                 btnLogOut.setVisible(false);
 
-                switchToCancelExamPage();
+                switchToCancelExamPage(s);
 
             }
         });
@@ -311,15 +323,42 @@ public class StudentUI {
         btnExit.setVisible(true);
     }
 
-    public void switchToAppointmentConfirmationPage() {
+    public void switchToAppointmentConfirmationPage(Student s, Exam exam) {
         JLabel confirmation = new JLabel("Your Appointment Has Been Confirmed");
         confirmation.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        confirmation.setBounds(35, 11, 77, 21);
+        confirmation.setBounds(35, 11, 177, 21);
         frmStudentInterface.getContentPane().add(confirmation);
 
         JButton btnbacktohome = new JButton("Back to Home");
         btnbacktohome.setBounds(10, 150, 121, 23);
         frmStudentInterface.getContentPane().add(btnbacktohome);
+
+        /*String query = "Select (Max(appointmentID)+1) from appointment";
+        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+        String id = "";
+
+        try {
+            while (rs.next()) {
+                id = rs.getString(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        query = "INSERT INTO appointment VALUES ("
+                + "' " + id + "', 'pending')";
+        DBConnection.ExecUpdateQuery(query);
+
+        query = "INSERT INTO has VALUES ('" + s.getID() + "', '" + id + "')";
+        DBConnection.ExecUpdateQuery(query);
+
+        query = "INSERT INTO forexam VALUES ('" + id + "', '" + exam.getExamID() + "')";
+        DBConnection.ExecUpdateQuery(query);*/
+        
+        Appointment app = new Appointment();
+        app.addappointment(exam.getExamID(), s.getID() + "", exam.getStartDate());
+        System.out.println(s.getID());
 
         btnbacktohome.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -386,12 +425,8 @@ public class StudentUI {
 
     }
 
-    public void switchToCancelExamPage() {
-        /*frmCancelAnExam = new JFrame();
-         frmCancelAnExam.setTitle("Cancel an Exam");
-         frmCancelAnExam.setBounds(100, 100, 240, 185);
-         frmCancelAnExam.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-         frmCancelAnExam.getContentPane().setLayout(null);*/
+    public void switchToCancelExamPage(Student s) {
+        
 
         JLabel lblCancelAnExam = new JLabel("Cancel an Exam");
         lblCancelAnExam.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -402,18 +437,35 @@ public class StudentUI {
         lblCourse.setBounds(33, 47, 46, 14);
         frmStudentInterface.getContentPane().add(lblCourse);
 
-        coursecomboBox = new JComboBox();
-        coursecomboBox.setModel(new DefaultComboBoxModel(new String[]{"CSE 308"}));
-        coursecomboBox.setBounds(104, 44, 81, 20);
-        frmStudentInterface.getContentPane().add(coursecomboBox);
 
+        /*coursecomboBox = new JComboBox();
+         coursecomboBox.setModel(new DefaultComboBoxModel(new String[]{"CSE 308"}));
+         coursecomboBox.setBounds(104, 44, 81, 20);
+         frmStudentInterface.getContentPane().add(coursecomboBox);*/
         JLabel lblExam = new JLabel("Exam:");
         lblExam.setBounds(33, 77, 46, 14);
         frmStudentInterface.getContentPane().add(lblExam);
 
+        String exams[] = new String[5];
+
+        String query = "Select e.examname from exam e, forexam f, appointment a, has h where "
+                + "e.examID = f.examID AND f.appointmentID = a.appointmentID AND a.appointmentID"
+                + " = h.appointmentID AND h.studentID = '" + s.getID() + "'";
+
+        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+        int i = 0;
+        try {
+            while (rs.next()) {
+                exams[i] = rs.getString(1);
+                i++;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         examcomboBox = new JComboBox();
-        examcomboBox.setModel(new DefaultComboBoxModel(new String[]{"Midterm 1"}));
-        examcomboBox.setBounds(104, 74, 81, 20);
+        examcomboBox.setModel(new DefaultComboBoxModel(exams));
+        examcomboBox.setBounds(104, 74, 181, 20);
         frmStudentInterface.getContentPane().add(examcomboBox);
 
         JButton btnCancel = new JButton("Cancel");
@@ -429,7 +481,7 @@ public class StudentUI {
 
                 lblCancelAnExam.setVisible(false);
                 lblCourse.setVisible(false);
-                coursecomboBox.setVisible(false);
+                //coursecomboBox.setVisible(false);
                 examcomboBox.setVisible(false);
                 lblExam.setVisible(false);
                 btnCancel.setVisible(false);
@@ -446,13 +498,76 @@ public class StudentUI {
 
                 lblCancelAnExam.setVisible(false);
                 lblCourse.setVisible(false);
-                coursecomboBox.setVisible(false);
+                //coursecomboBox.setVisible(false);
                 examcomboBox.setVisible(false);
                 lblExam.setVisible(false);
                 btnCancel.setVisible(false);
                 btnConfirm.setVisible(false);
 
+                String query = "Select a.appointmentID from appointment a, forexam f, exam e, has h where"
+                        + " e.examname = '" + examcomboBox.getSelectedItem().toString() + "' AND "
+                        + "e.examID = f.examID AND f.appointmentID = a.appointmentID AND a.appointmentID = "
+                        + "h.appointmentID AND h.studentID = '" + s.getID() + "'";
+                
+                java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+                String id = "";
+                try {
+                    while (rs.next()) {
+                         id = rs.getString(1);
+                         System.out.println(id);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                System.out.println(examcomboBox.getSelectedItem().toString());
+                System.out.println(s.getID());
+                
+                if(PrintTime.morethanaday(examcomboBox.getSelectedItem().toString()))
+                {
+                query = "Delete from has where appointmentID = '" + id + "'";
+                DBConnection.ExecUpdateQuery(query);
+                
+                query = "Delete from forexam where appointmentID = '" + id + "'";
+                DBConnection.ExecUpdateQuery(query);
+                
+                query = "Delete from appointment where appointmentID = '" + id + "'";
+                DBConnection.ExecUpdateQuery(query);
+                
+                
+
                 switchToCancellationConfirmationPage();
+                
+               
+                }
+                else
+                    switchToCannotCancelPage();
+               
+                
+
+            }
+
+        });
+    }
+    
+    public void switchToCannotCancelPage() {
+        JLabel notapproved = new JLabel("Your exam is less than 24 hours away. Cannot cancel");
+        notapproved.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        notapproved.setBounds(35, 11, 277, 21);
+        frmStudentInterface.getContentPane().add(notapproved);
+
+        JButton btnbacktohome = new JButton("Back to Home");
+        btnbacktohome.setBounds(10, 150, 121, 23);
+        frmStudentInterface.getContentPane().add(btnbacktohome);
+
+        btnbacktohome.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                notapproved.setVisible(false);
+                btnbacktohome.setVisible(false);
+
+                switchToStudentSplashScreen();
 
             }
 
@@ -483,7 +598,7 @@ public class StudentUI {
             while (rs.next()) {
 
                 courselist[i] = rs.getString(3);
-                
+
                 courses[i] = new Course();
                 courses[i].setCourseID(rs.getString(1));
                 courses[i].setDepartment(rs.getString(2));
@@ -505,7 +620,7 @@ public class StudentUI {
         coursecomboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                System.out.println(coursecomboBox.getSelectedItem().toString());
+                //System.out.println(coursecomboBox.getSelectedItem().toString());
                 String[] exams = new String[5];
                 String query = "Select examname from exam e, courseexam c where e.examID = c.examID"
                         //+ " AND c.course = CSE 308";
@@ -516,58 +631,114 @@ public class StudentUI {
                     while (rs.next()) {
 
                         exams[i] = rs.getString(1);
-                        
+
                         i++;
 
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 }
-               
-                
-            examcomboBox.setModel(new DefaultComboBoxModel(exams));
+
+                examcomboBox.setModel(new DefaultComboBoxModel(exams));
         //examcomboBox.setBounds(111, 75, 94, 20);
-        //frmStudentInterface.getContentPane().add(examcomboBox);
+                //frmStudentInterface.getContentPane().add(examcomboBox);
             }
 
         });
 
-        String select = coursecomboBox.getSelectedItem().toString();
-        System.out.println(select);
+        //String select = coursecomboBox.getSelectedItem().toString();
+        //System.out.println(select);
 
         examcomboBox = new JComboBox();
         examcomboBox.setModel(new DefaultComboBoxModel());
-        examcomboBox.setBounds(111, 75, 94, 20);
+        examcomboBox.setBounds(111, 75, 194, 20);
         frmStudentInterface.getContentPane().add(examcomboBox);
+        
+        examcomboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                //System.out.println(coursecomboBox.getSelectedItem().toString());
+                Date[] dates = new Date[5];
+                String [] stringdates = new String[5];
+                String query = "Select startDate from exam where "
+                        + "examname = '" + examcomboBox.getSelectedItem().toString() + "'";
+                        //System.out.println(examcomboBox.getSelectedItem().toString());
+                java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+                int i = 0;
+                try {
+                    while (rs.next()) {
+
+                        dates[i] = rs.getDate(1);
+
+                        i++;
+
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                Time[] times = new Time[5];
+                
+                query = "Select StartTime from exam where "
+                        + "examname = '" + examcomboBox.getSelectedItem().toString() + "'";
+                        //System.out.println(examcomboBox.getSelectedItem().toString());
+                rs = DBConnection.ExecQuery(query);
+                i = 0;
+                try {
+                    while (rs.next()) {
+
+                        times[i] = rs.getTime(1);
+
+                        i++;
+
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                datecomboBox.setModel(new DefaultComboBoxModel(dates));
+                timecomboBox.setModel(new DefaultComboBoxModel(times));
+        //examcomboBox.setBounds(111, 75, 94, 20);
+                //frmStudentInterface.getContentPane().add(examcomboBox);
+            }
+
+        });
+        
+        datecomboBox = new JComboBox();
+        datecomboBox.setModel(new DefaultComboBoxModel());
+        datecomboBox.setBounds(111, 137, 94, 20);
+        frmStudentInterface.getContentPane().add(datecomboBox);
 
         JLabel lblExam = new JLabel("Exam:");
         lblExam.setBounds(28, 78, 46, 14);
         frmStudentInterface.getContentPane().add(lblExam);
 
         timecomboBox = new JComboBox();
-        timecomboBox.setModel(new DefaultComboBoxModel(new String []{"1:00", "1:30", "2:00", "2:30"
-        + "3:00", "3:30", "4:00", "4:30", "5:00", "5:30", "6:00", "6:30", "7:00", "7:30", "8:00"
-        + "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30"}));
-        timecomboBox.setBounds(111, 106, 44, 20);
+        //timecomboBox.setModel(new DefaultComboBoxModel(new String[]{"1:00", "1:30", "2:00", "2:30"
+        //    + "3:00", "3:30", "4:00", "4:30", "5:00", "5:30", "6:00", "6:30", "7:00", "7:30", "8:00"
+        //    + "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30"}));
+        timecomboBox.setModel(new DefaultComboBoxModel());
+        timecomboBox.setBounds(111, 106, 144, 20);
         frmStudentInterface.getContentPane().add(timecomboBox);
-        
-        ampmcomboBox = new JComboBox();
+
+        /*ampmcomboBox = new JComboBox();
         ampmcomboBox.setModel(new DefaultComboBoxModel(new String[]{"AM", "PM"}));
         ampmcomboBox.setBounds(171, 106, 44, 20);
-        frmStudentInterface.getContentPane().add(ampmcomboBox);
-        
+        frmStudentInterface.getContentPane().add(ampmcomboBox);*/
 
         JLabel lblTime = new JLabel("Time:");
         lblTime.setBounds(28, 109, 46, 14);
         frmStudentInterface.getContentPane().add(lblTime);
 
-        dateChooser = new JDateChooser();
+        /*dateChooser = new JDateChooser();
         dateChooser.setBounds(111, 137, 94, 20);
-        frmStudentInterface.getContentPane().add(dateChooser);
+        frmStudentInterface.getContentPane().add(dateChooser);*/
 
         JLabel lblDate = new JLabel("Date:");
         lblDate.setBounds(28, 132, 46, 25);
         frmStudentInterface.getContentPane().add(lblDate);
+        
+        
 
         JButton btnCancel = new JButton("Cancel");
         btnCancel.setBounds(17, 173, 89, 23);
@@ -585,9 +756,11 @@ public class StudentUI {
                 coursecomboBox.setVisible(false);
                 examcomboBox.setVisible(false);
                 lblExam.setVisible(false);
-                txtPm.setVisible(false);
+                timecomboBox.setVisible(false);
+                //ampmcomboBox.setVisible(false);
                 lblTime.setVisible(false);
-                dateChooser.setVisible(false);
+                //dateChooser.setVisible(false);
+                datecomboBox.setVisible(false);
                 lblDate.setVisible(false);
                 btnCancel.setVisible(false);
                 btnSubmit.setVisible(false);
@@ -606,68 +779,72 @@ public class StudentUI {
                 coursecomboBox.setVisible(false);
                 examcomboBox.setVisible(false);
                 lblExam.setVisible(false);
-                ampmcomboBox.setVisible(false);
+                //ampmcomboBox.setVisible(false);
                 timecomboBox.setVisible(false);
                 lblTime.setVisible(false);
-                dateChooser.setVisible(false);
+                //dateChooser.setVisible(false);
+                datecomboBox.setVisible(false);
                 lblDate.setVisible(false);
                 btnCancel.setVisible(false);
                 btnSubmit.setVisible(false);
-                
+
                 //coursecomboBox.getSelectedItem();
                 int i = 0;
-                for(i = 0; i<courses.length; i++)
-                {
-                    if(courses[i].getCoursename().equals(coursecomboBox.getSelectedItem()))
+                for (i = 0; i < courses.length; i++) {
+                    if (courses[i].getCoursename().equals(coursecomboBox.getSelectedItem())) {
                         break;
+                    }
                 }
-                
+
                 Exam exam = new Exam();
-                
-                String query = "Select * from Exam";
+
+                String query = "Select * from Exam where examname = '" + examcomboBox.getSelectedItem().toString() + "'"
+                        + " AND startDate = '" + datecomboBox.getSelectedItem() + "'"
+                        + " AND startTime = '" + timecomboBox.getSelectedItem() + "'";
                 java.sql.ResultSet rs = DBConnection.ExecQuery(query);
-                
+
                 try {
                     while (rs.next()) {
                         String id = rs.getString(1);
                         int intid = Integer.parseInt(id);
-                        
+
                         exam.setExamID(intid);
-                        exam.setStartDate(rs.getString(2));
-                        exam.setEndDate(rs.getString(3));
-                        exam.setStartTime(rs.getString(4));
-                        exam.setEndTime(rs.getString(5));
-                        
+                        exam.setStartDate(rs.getDate(2));
+                        exam.setEndDate(rs.getDate(3));
+                        exam.setStartTime(rs.getTime(4));
+                        exam.setEndTime(rs.getTime(5));
+
                         String seats = rs.getString(6);
                         int intseats = Integer.parseInt(seats);
                         exam.setSeatsAvailable(intseats);
-                        
+
                         exam.setTerm(rs.getString(7));
                         exam.setExamtype(rs.getString(8));
                         exam.setExamname(rs.getString(9));
-                       
+                        System.out.println(exam.getExamID());
 
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 //System.out.println(courses[i].getCoursename());
-                
-                
-                if(courses[i].lookupstudent(s) == false)
+
+                System.out.println(exam.getExamID());
+                if (courses[i].lookupstudent(s.getID() + "") == false) {
                     switchToCannotSchedulePage("You are not currently enrolled in this course");
-                else if(exam.lookupstudent(s) == true)
+                } else if (exam.lookupstudent(s.getID() + "") == true) {
                     switchToCannotSchedulePage("You already have an appointment for this exam");
-                else
-                    switchToAppointmentConfirmationPage();
+                } else {
+                    switchToAppointmentConfirmationPage(s, exam);
+                }
 
             }
 
         });
-        
+
     }
 
-public void switchToCannotSchedulePage(String m){
+    public void switchToCannotSchedulePage(String m) {
         JLabel notapproved = new JLabel(m);
         notapproved.setFont(new Font("Tahoma", Font.PLAIN, 15));
         notapproved.setBounds(35, 11, 277, 21);

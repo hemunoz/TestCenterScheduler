@@ -28,7 +28,7 @@ public class Course {
         
     }
 
-    public boolean lookupstudent(Student s)
+    public boolean lookupstudent(String studentID)
     {
         String query = "Select s.studentID from student s, takes t, course c where "
                 + "c.courseID = t.courseID AND t.StudentID = s.studentID AND c.courseID = '"
@@ -36,11 +36,11 @@ public class Course {
         //String query = "Select * from course where courseID = '" + getCourseID() + "'";
         System.out.println(getCourseID());
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
-        String id = s.getID() + "";
+        //String id = s.getID() + "";
         try {
             while (rs.next()) {
 
-                if (id.equals(rs.getString(1)))
+                if (studentID.equals(rs.getString(1)))
                     return true;
                 
                 //System.out.println(rs.getString(1));

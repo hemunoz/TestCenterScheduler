@@ -9,6 +9,8 @@ package cse.pkg308.ui;
 import cse.pkg308.DBConnection;
 import static cse.pkg308.ui.StudentUI.coursecomboBox;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,10 +21,10 @@ import java.util.logging.Logger;
 public class Exam {
     
     private int examID;
-    private String startDate;
-    private String endDate;
-    private String StartTime;
-    private String endTime;
+    private Date startDate;
+    private Date endDate;
+    private Time StartTime;
+    private Time endTime;
     private int seatsAvailable;
     private String term;
     private String examtype;
@@ -33,22 +35,24 @@ public class Exam {
         
     }
     
-    public boolean lookupstudent(Student s)
+    public boolean lookupstudent(String studentID)
     {
-        String query = "Select s.studentID from student s, has h, appointment a, exam e, forexam f where "
+        //System.out.println(getExamID());
+        String query = "Select h.studentID from has h, appointment a, exam e, forexam f where "
                 + "e.examID = '" + getExamID() + "' AND e.examID = f.examID AND f.appointmentID = a.appointmentID"
-                + " AND h.appointmentID = a.appointmentID AND h.studentID = s.studentID";
+                + " AND h.appointmentID = a.appointmentID";
         //String query = "Select * from course where courseID = '" + getCourseID() + "'";
-        
+        //System.out.println(getExamID());
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
-        String id = s.getID() + "";
+        //String id = s.getID() + "";
+        int takingexam = 0;
         try {
             while (rs.next()) {
-
-                if (id.equals(rs.getString(1)))
-                    return true;
-                else 
-                    return false;
+                //System.out.println(id);
+                //System.out.println(rs.getString(1));
+                if (studentID.equals(rs.getString(1)))
+                    takingexam = 1;
+                
                 //System.out.println(rs.getString(1));
 
             }
@@ -56,8 +60,11 @@ public class Exam {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        
-        return true;
+        System.out.println(takingexam);
+        if(takingexam == 0)
+            return false;
+        else
+            return true;
     }
     
     public boolean checkTime(String time)
@@ -91,56 +98,56 @@ public class Exam {
     /**
      * @return the startDate
      */
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
     /**
      * @param startDate the startDate to set
      */
-    public void setStartDate(String startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
     /**
      * @return the endDate
      */
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
     /**
      * @param endDate the endDate to set
      */
-    public void setEndDate(String endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
     /**
      * @return the StartTime
      */
-    public String getStartTime() {
+    public Time getStartTime() {
         return StartTime;
     }
 
     /**
      * @param StartTime the StartTime to set
      */
-    public void setStartTime(String StartTime) {
+    public void setStartTime(Time StartTime) {
         this.StartTime = StartTime;
     }
 
     /**
      * @return the endTime
      */
-    public String getEndTime() {
+    public Time getEndTime() {
         return endTime;
     }
 
     /**
      * @param endTime the endTime to set
      */
-    public void setEndTime(String endTime) {
+    public void setEndTime(Time endTime) {
         this.endTime = endTime;
     }
 
