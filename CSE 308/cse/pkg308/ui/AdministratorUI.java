@@ -30,10 +30,10 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class AdministratorUI {
-    
+
     public static JFrame sessionframe;
     public static JFrame frmAdministratorInterface;
-    
+
     public static JTextField textFieldOpenTime;
     public static JTextField textFieldCloseTime;
     public static JTextField textFieldID;
@@ -62,158 +62,151 @@ public class AdministratorUI {
     public static JLabel lblStudentId;
     public static JButton btnGenerateReport;
     public static JButton btnAppointments;
-    
+
     public int buttonindex = 0;
     public static JComboBox examcomboBox;
     public static JComboBox datecomboBox;
     public static JComboBox timecomboBox;
     public static Course[] courses = new Course[5];
-    
+
     public void initializeadmin(Administrator a) {
         frmAdministratorInterface = new JFrame();
         frmAdministratorInterface.setVisible(true);
-        
+
         frmAdministratorInterface.setTitle("Administrator Interface");
         frmAdministratorInterface.setBounds(100, 100, 451, 441);
         frmAdministratorInterface.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frmAdministratorInterface.getContentPane().setLayout(null);
-        
+
         lblAdministrator = new JLabel("Administrator");
         lblAdministrator.setFont(new Font("Tahoma", Font.PLAIN, 20));
         lblAdministrator.setBounds(158, 11, 121, 19);
         frmAdministratorInterface.getContentPane().add(lblAdministrator);
-        
+
         lblName = new JLabel("Name:");
         lblName.setFont(new Font("Tahoma", Font.BOLD, 11));
         lblName.setBounds(10, 41, 46, 14);
         frmAdministratorInterface.getContentPane().add(lblName);
-        
+
         lblName2 = new JLabel("");
         lblName2.setBounds(57, 41, 74, 14);
         frmAdministratorInterface.getContentPane().add(lblName2);
-        
+
         lblNumberOfSeats = new JLabel("Number of Seats Available:");
         lblNumberOfSeats.setBounds(10, 77, 144, 14);
         frmAdministratorInterface.getContentPane().add(lblNumberOfSeats);
-        
+
         comboBox = new JComboBox();
         comboBox.setModel(new DefaultComboBoxModel(new String[]{""}));
         comboBox.setBounds(156, 74, 46, 20);
         frmAdministratorInterface.getContentPane().add(comboBox);
-        
+
         lblNumberOfReserved = new JLabel("Number of Reserved Seats:");
         lblNumberOfReserved.setBounds(10, 102, 144, 14);
         frmAdministratorInterface.getContentPane().add(lblNumberOfReserved);
-        
+
         comboBox_1 = new JComboBox();
         comboBox_1.setModel(new DefaultComboBoxModel(new String[]{""}));
         comboBox_1.setBounds(156, 99, 46, 20);
         frmAdministratorInterface.getContentPane().add(comboBox_1);
-        
+
         calendar = new JCalendar();
         calendar.setBounds(226, 41, 198, 153);
         frmAdministratorInterface.getContentPane().add(calendar);
-        
+
         lblSemester = new JLabel("Semester:");
         lblSemester.setBounds(10, 146, 56, 14);
         frmAdministratorInterface.getContentPane().add(lblSemester);
-        
+
         comboBox_2 = new JComboBox();
         comboBox_2.setModel(new DefaultComboBoxModel(new String[]{""}));
         comboBox_2.setBounds(76, 143, 126, 20);
         frmAdministratorInterface.getContentPane().add(comboBox_2);
-        
+
         lblOpenTime = new JLabel("Open Time:");
         lblOpenTime.setBounds(10, 173, 56, 14);
         frmAdministratorInterface.getContentPane().add(lblOpenTime);
-        
+
         textFieldOpenTime = new JTextField();
         textFieldOpenTime.setBounds(76, 170, 86, 20);
         frmAdministratorInterface.getContentPane().add(textFieldOpenTime);
         textFieldOpenTime.setColumns(10);
-        
+
         textFieldCloseTime = new JTextField();
         textFieldCloseTime.setBounds(76, 197, 86, 20);
         frmAdministratorInterface.getContentPane().add(textFieldCloseTime);
         textFieldCloseTime.setColumns(10);
-        
+
         lblCloseTime = new JLabel("Close Time:");
         lblCloseTime.setBounds(10, 200, 56, 14);
         frmAdministratorInterface.getContentPane().add(lblCloseTime);
-        
+
         lblOpenDate = new JLabel("Open Date:");
         lblOpenDate.setBounds(10, 225, 56, 23);
         frmAdministratorInterface.getContentPane().add(lblOpenDate);
-        
+
         dateChooser = new JDateChooser();
         dateChooser.setBounds(76, 228, 91, 20);
         frmAdministratorInterface.getContentPane().add(dateChooser);
-        
+
         dateChooser_1 = new JDateChooser();
         dateChooser_1.setBounds(75, 259, 91, 20);
         frmAdministratorInterface.getContentPane().add(dateChooser_1);
-        
+
         lblCloseDate = new JLabel("Close Date:");
         lblCloseDate.setBounds(10, 259, 56, 14);
         frmAdministratorInterface.getContentPane().add(lblCloseDate);
-        
+
         btnLogOut = new JButton("Log Out");
         btnLogOut.setBounds(335, 371, 89, 23);
         frmAdministratorInterface.getContentPane().add(btnLogOut);
-        
+
         btnLogOut.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
+
             }
         });
-        
+
         btnImportData = new JButton("Import Data");
         btnImportData.setBounds(262, 205, 137, 23);
         frmAdministratorInterface.getContentPane().add(btnImportData);
-        
+
         btnApply = new JButton("Apply");
         btnApply.setBounds(57, 290, 89, 23);
         frmAdministratorInterface.getContentPane().add(btnApply);
-        
+
         btnSchedulingRequests = new JButton("Scheduling Requests");
         btnSchedulingRequests.setBounds(262, 239, 137, 23);
         frmAdministratorInterface.getContentPane().add(btnSchedulingRequests);
-        
-        btnSchedulingRequests.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                
-            }
-        });
-        
+
         btnMakeAnAppointment = new JButton("Make an Appointment");
         btnMakeAnAppointment.setBounds(262, 273, 137, 23);
         frmAdministratorInterface.getContentPane().add(btnMakeAnAppointment);
-        
+
         btnCheckInStudent = new JButton("Check In Student");
         btnCheckInStudent.setBounds(41, 371, 137, 23);
         frmAdministratorInterface.getContentPane().add(btnCheckInStudent);
-        
+
         lblStudentId = new JLabel("Student ID:");
         lblStudentId.setBounds(10, 346, 56, 14);
         frmAdministratorInterface.getContentPane().add(lblStudentId);
-        
+
         textFieldID = new JTextField();
         textFieldID.setText("");
         textFieldID.setBounds(76, 340, 126, 20);
         frmAdministratorInterface.getContentPane().add(textFieldID);
         textFieldID.setColumns(10);
-        
+
         btnGenerateReport = new JButton("Generate Report");
         btnGenerateReport.setBounds(262, 305, 137, 23);
         frmAdministratorInterface.getContentPane().add(btnGenerateReport);
-        
+
         btnAppointments = new JButton("View Appointments");
         btnAppointments.setBounds(262, 335, 137, 23);
         frmAdministratorInterface.getContentPane().add(btnAppointments);
-        
-        btnAppointments.addActionListener(new ActionListener() {
+
+        btnSchedulingRequests.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
                 lblName.setVisible(false);
                 textFieldOpenTime.setVisible(false);
                 textFieldCloseTime.setVisible(false);
@@ -244,52 +237,52 @@ public class AdministratorUI {
                 lblStudentId.setVisible(false);
                 btnGenerateReport.setVisible(false);
                 btnAppointments.setVisible(false);
-                
+
+                switchToViewRequests(a);
+            }
+        });
+
+        btnAppointments.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                lblName.setVisible(false);
+                textFieldOpenTime.setVisible(false);
+                textFieldCloseTime.setVisible(false);
+                textFieldID.setVisible(false);
+                lblAdministrator.setVisible(false);
+                lblName2.setVisible(false);
+                calendar.setVisible(false);
+                lblNumberOfSeats.setVisible(false);
+                comboBox.setVisible(false);
+                lblNumberOfReserved.setVisible(false);
+                btnLogOut.setVisible(false);
+                lblName2.setVisible(false);
+                comboBox_1.setVisible(false);
+                lblSemester.setVisible(false);
+                comboBox_2.setVisible(false);
+                lblOpenTime.setVisible(false);
+                dateChooser.setVisible(false);
+                lblCloseTime.setVisible(false);
+                lblOpenDate.setVisible(false);
+                dateChooser_1.setVisible(false);
+                lblCloseDate.setVisible(false);
+                lblOpenTime.setVisible(false);
+                btnImportData.setVisible(false);
+                btnApply.setVisible(false);
+                btnSchedulingRequests.setVisible(false);
+                btnMakeAnAppointment.setVisible(false);
+                btnCheckInStudent.setVisible(false);
+                lblStudentId.setVisible(false);
+                btnGenerateReport.setVisible(false);
+                btnAppointments.setVisible(false);
+
                 switchToViewAppointments(a);
             }
         });
-        
-        btnCheckInStudent.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                
-                lblName.setVisible(false);
-                textFieldOpenTime.setVisible(false);
-                textFieldCloseTime.setVisible(false);
-                textFieldID.setVisible(false);
-                lblAdministrator.setVisible(false);
-                lblName2.setVisible(false);
-                calendar.setVisible(false);
-                lblNumberOfSeats.setVisible(false);
-                comboBox.setVisible(false);
-                lblNumberOfReserved.setVisible(false);
-                btnLogOut.setVisible(false);
-                lblName2.setVisible(false);
-                comboBox_1.setVisible(false);
-                lblSemester.setVisible(false);
-                comboBox_2.setVisible(false);
-                lblOpenTime.setVisible(false);
-                dateChooser.setVisible(false);
-                lblCloseTime.setVisible(false);
-                lblOpenDate.setVisible(false);
-                dateChooser_1.setVisible(false);
-                lblCloseDate.setVisible(false);
-                lblOpenTime.setVisible(false);
-                btnImportData.setVisible(false);
-                btnApply.setVisible(false);
-                btnSchedulingRequests.setVisible(false);
-                btnMakeAnAppointment.setVisible(false);
-                btnCheckInStudent.setVisible(false);
-                lblStudentId.setVisible(false);
-                btnGenerateReport.setVisible(false);
-                btnAppointments.setVisible(false);
-                
-                switchToMakeStudentAppointment(a);
-            }
-        });
-        
+
         btnMakeAnAppointment.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
+
                 lblName.setVisible(false);
                 textFieldOpenTime.setVisible(false);
                 textFieldCloseTime.setVisible(false);
@@ -319,39 +312,39 @@ public class AdministratorUI {
                 btnCheckInStudent.setVisible(false);
                 lblStudentId.setVisible(false);
                 btnGenerateReport.setVisible(false);
-                
+
                 switchToMakeStudentAppointment(a);
             }
         });
     }
-    
+
     public void switchToMakeStudentAppointment(Administrator a) {
         JLabel StudentID = new JLabel("Enter Student ID");
         StudentID.setBounds(76, 160, 256, 14);
         frmAdministratorInterface.getContentPane().add(StudentID);
-        
+
         JTextField IDtext = new JTextField();
         IDtext.setBounds(76, 190, 186, 20);
         frmAdministratorInterface.getContentPane().add(IDtext);
         IDtext.setColumns(10);
-        
+
         JButton btnID = new JButton("Search Student by ID");
         btnID.setBounds(76, 220, 237, 23);
         frmAdministratorInterface.getContentPane().add(btnID);
-        
+
         JLabel Studentname = new JLabel("Enter Student Last Name");
         Studentname.setBounds(76, 40, 256, 14);
         frmAdministratorInterface.getContentPane().add(Studentname);
-        
+
         JTextField nametext = new JTextField();
         nametext.setBounds(76, 70, 186, 20);
         frmAdministratorInterface.getContentPane().add(nametext);
         nametext.setColumns(10);
-        
+
         JButton btnname = new JButton("Search Student by Last Name");
         btnname.setBounds(76, 100, 237, 23);
         frmAdministratorInterface.getContentPane().add(btnname);
-        
+
         btnname.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 StudentID.setVisible(false);
@@ -360,11 +353,11 @@ public class AdministratorUI {
                 Studentname.setVisible(false);
                 nametext.setVisible(false);
                 btnname.setVisible(false);
-                
+
                 int i = 0;
                 ArrayList<JButton> btnapp = new ArrayList();
                 ArrayList<JLabel> lblapp = new ArrayList();
-                
+
                 String query = "SELECT u.name from user u, student s where u.lastname = '" + nametext.getText() + "'"
                         + "AND s.studentid = u.userid";
 
@@ -378,25 +371,25 @@ public class AdministratorUI {
                         i++;
                         JButton testbutton = new JButton(rs.getString(1));
                         btnapp.add(testbutton);
-                        
+
                         JLabel lblname = new JLabel(rs.getString(1));
                         lblapp.add(lblname);
-                        
+
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
                 System.out.println(i);
                 int j = 0;
-                
+
                 for (j = 0; j < i; j++) {
                     lblapp.get(j).setBounds(10, 50 + (j * 35), 137, 23);
                     frmAdministratorInterface.getContentPane().add(lblapp.get(j));
-                    
+
                     btnapp.get(j).setBounds(176, 50 + (j * 35), 137, 23);
                     frmAdministratorInterface.getContentPane().add(btnapp.get(j));
-                    
+
                     btnapp.get(j).addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             String query = "Select userid from user where name = '" + e.getActionCommand() + "'";
@@ -407,7 +400,7 @@ public class AdministratorUI {
                             try {
                                 while (rs.next()) {
                                     id = rs.getString(1);
-                                    
+
                                 }
                             } catch (SQLException ex) {
                                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
@@ -417,15 +410,15 @@ public class AdministratorUI {
                                 btnapp.get(k).setVisible(false);
                                 lblapp.get(k).setVisible(false);
                             }
-                            
+
                             switchToSelectExamPage(a, id);
-                            
+
                         }
                     });
                 }
             }
         });
-        
+
         btnID.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 StudentID.setVisible(false);
@@ -434,11 +427,11 @@ public class AdministratorUI {
                 Studentname.setVisible(false);
                 nametext.setVisible(false);
                 btnname.setVisible(false);
-                
+
                 int i = 0;
                 ArrayList<JButton> btnapp = new ArrayList();
                 ArrayList<JLabel> lblapp = new ArrayList();
-                
+
                 String query = "SELECT u.name from user u where u.userid = '" + IDtext.getText() + "'";
 
                 //String query = "Select name from student";
@@ -451,62 +444,62 @@ public class AdministratorUI {
                         i++;
                         JButton testbutton = new JButton(rs.getString(1));
                         btnapp.add(testbutton);
-                        
+
                         JLabel lblname = new JLabel(rs.getString(1));
                         lblapp.add(lblname);
-                        
+
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
                 System.out.println(i);
                 int j = 0;
-                
+
                 for (j = 0; j < i; j++) {
                     lblapp.get(j).setBounds(10, 50 + (j * 35), 137, 23);
                     frmAdministratorInterface.getContentPane().add(lblapp.get(j));
-                    
+
                     btnapp.get(j).setBounds(176, 50 + (j * 35), 137, 23);
                     frmAdministratorInterface.getContentPane().add(btnapp.get(j));
-                    
+
                     btnapp.get(j).addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
-                            
+
                             for (int k = 0; k < btnapp.size(); k++) {
                                 btnapp.get(k).setVisible(false);
                                 lblapp.get(k).setVisible(false);
                             }
-                            
+
                             switchToSelectExamPage(a, IDtext.getText());
-                            
+
                         }
                     });
                 }
             }
         });
     }
-    
+
     public void switchToSelectExamPage(Administrator a, String studentID) {
-        
+
         JLabel lblTakeAnExam = new JLabel("Take an Exam");
         lblTakeAnExam.setFont(new Font("Tahoma", Font.PLAIN, 20));
         lblTakeAnExam.setBounds(44, 11, 140, 25);
         frmAdministratorInterface.getContentPane().add(lblTakeAnExam);
-        
+
         JLabel lblCourses = new JLabel("Courses:");
         lblCourses.setBounds(28, 50, 46, 14);
         frmAdministratorInterface.getContentPane().add(lblCourses);
-        
+
         String[] courselist = new String[5];
         String query = "Select * from course group by CourseName";
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
         int i = 0;
         try {
             while (rs.next()) {
-                
+
                 courselist[i] = rs.getString(3);
-                
+
                 courses[i] = new Course();
                 courses[i].setCourseID(rs.getString(1));
                 courses[i].setDepartment(rs.getString(2));
@@ -519,17 +512,17 @@ public class AdministratorUI {
         } catch (SQLException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         JComboBox coursecomboBox = new JComboBox();
         coursecomboBox.setModel(new DefaultComboBoxModel(courselist));
         coursecomboBox.setBounds(111, 47, 94, 20);
         frmAdministratorInterface.getContentPane().add(coursecomboBox);
-        
+
         JComboBox examcomboBox = new JComboBox();
         examcomboBox.setModel(new DefaultComboBoxModel());
         examcomboBox.setBounds(111, 75, 194, 20);
         frmAdministratorInterface.getContentPane().add(examcomboBox);
-        
+
         coursecomboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -542,21 +535,21 @@ public class AdministratorUI {
                 int i = 0;
                 try {
                     while (rs.next()) {
-                        
+
                         exams[i] = rs.getString(1);
-                        
+
                         i++;
-                        
+
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
                 examcomboBox.setModel(new DefaultComboBoxModel(exams));
                 //examcomboBox.setBounds(111, 75, 94, 20);
                 //frmStudentInterface.getContentPane().add(examcomboBox);
             }
-            
+
         });
 
         //String select = coursecomboBox.getSelectedItem().toString();
@@ -574,18 +567,18 @@ public class AdministratorUI {
                 int i = 0;
                 try {
                     while (rs.next()) {
-                        
+
                         dates[i] = rs.getDate(1);
-                        
+
                         i++;
-                        
+
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
                 Time[] times = new Time[5];
-                
+
                 query = "Select StartTime from exam where "
                         + "examname = '" + examcomboBox.getSelectedItem().toString() + "'";
                 //System.out.println(examcomboBox.getSelectedItem().toString());
@@ -593,33 +586,33 @@ public class AdministratorUI {
                 i = 0;
                 try {
                     while (rs.next()) {
-                        
+
                         times[i] = rs.getTime(1);
-                        
+
                         i++;
-                        
+
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
                 datecomboBox.setModel(new DefaultComboBoxModel(dates));
                 timecomboBox.setModel(new DefaultComboBoxModel(times));
                 //examcomboBox.setBounds(111, 75, 94, 20);
                 //frmStudentInterface.getContentPane().add(examcomboBox);
             }
-            
+
         });
-        
+
         datecomboBox = new JComboBox();
         datecomboBox.setModel(new DefaultComboBoxModel());
         datecomboBox.setBounds(111, 137, 94, 20);
         frmAdministratorInterface.getContentPane().add(datecomboBox);
-        
+
         JLabel lblExam = new JLabel("Exam:");
         lblExam.setBounds(28, 78, 46, 14);
         frmAdministratorInterface.getContentPane().add(lblExam);
-        
+
         timecomboBox = new JComboBox();
         //timecomboBox.setModel(new DefaultComboBoxModel(new String[]{"1:00", "1:30", "2:00", "2:30"
         //    + "3:00", "3:30", "4:00", "4:30", "5:00", "5:30", "6:00", "6:30", "7:00", "7:30", "8:00"
@@ -642,18 +635,18 @@ public class AdministratorUI {
         JLabel lblDate = new JLabel("Date:");
         lblDate.setBounds(28, 132, 46, 25);
         frmAdministratorInterface.getContentPane().add(lblDate);
-        
+
         JButton btnCancel = new JButton("Cancel");
         btnCancel.setBounds(17, 173, 89, 23);
         frmAdministratorInterface.getContentPane().add(btnCancel);
-        
+
         JButton btnSubmit = new JButton("Submit");
         btnSubmit.setBounds(116, 173, 89, 23);
         frmAdministratorInterface.getContentPane().add(btnSubmit);
-        
+
         btnCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
+
                 lblTakeAnExam.setVisible(false);
                 lblCourses.setVisible(false);
                 coursecomboBox.setVisible(false);
@@ -670,12 +663,12 @@ public class AdministratorUI {
 
                 //switchToStudentSplashScreen();
             }
-            
+
         });
-        
+
         btnSubmit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
+
                 lblTakeAnExam.setVisible(false);
                 lblCourses.setVisible(false);
                 coursecomboBox.setVisible(false);
@@ -697,34 +690,34 @@ public class AdministratorUI {
                         break;
                     }
                 }
-                
+
                 Exam exam = new Exam();
-                
+
                 String query = "Select * from Exam where examname = '" + examcomboBox.getSelectedItem().toString() + "'"
                         + " AND startDate = '" + datecomboBox.getSelectedItem() + "'"
                         + " AND startTime = '" + timecomboBox.getSelectedItem() + "'";
                 java.sql.ResultSet rs = DBConnection.ExecQuery(query);
-                
+
                 try {
                     while (rs.next()) {
                         String id = rs.getString(1);
                         int intid = Integer.parseInt(id);
-                        
+
                         exam.setExamID(intid);
                         exam.setStartDate(rs.getDate(2));
                         exam.setEndDate(rs.getDate(3));
                         exam.setStartTime(rs.getTime(4));
                         exam.setEndTime(rs.getTime(5));
-                        
+
                         String seats = rs.getString(6);
                         int intseats = Integer.parseInt(seats);
                         exam.setSeatsAvailable(intseats);
-                        
+
                         exam.setTerm(rs.getString(7));
                         exam.setExamtype(rs.getString(8));
                         exam.setExamname(rs.getString(9));
                         System.out.println(exam.getExamID());
-                        
+
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
@@ -733,25 +726,25 @@ public class AdministratorUI {
 
                 System.out.println(exam.getExamID());
                 if (courses[i].lookupstudent(studentID) == false) {
-                    switchToCannotSchedulePage("You are not currently enrolled in this course");
+                    switchToCannotSchedulePage(a, "You are not currently enrolled in this course");
                 } else if (exam.lookupstudent(studentID) == true) {
-                    switchToCannotSchedulePage("You already have an appointment for this exam");
+                    switchToCannotSchedulePage(a, "You already have an appointment for this exam");
                 } else {
-                    switchToAppointmentConfirmationPage(studentID, exam);
+                    switchToAppointmentConfirmationPage(a, studentID, exam);
                 }
-                
+
             }
-            
+
         });
-        
+
     }
-    
-    public void switchToAppointmentConfirmationPage(String studentID, Exam exam) {
+
+    public void switchToAppointmentConfirmationPage(Administrator a, String studentID, Exam exam) {
         JLabel confirmation = new JLabel("Your Appointment Has Been Confirmed");
         confirmation.setFont(new Font("Tahoma", Font.PLAIN, 15));
         confirmation.setBounds(35, 11, 177, 21);
         frmAdministratorInterface.getContentPane().add(confirmation);
-        
+
         JButton btnbacktohome = new JButton("Back to Home");
         btnbacktohome.setBounds(10, 150, 121, 23);
         frmAdministratorInterface.getContentPane().add(btnbacktohome);
@@ -780,21 +773,21 @@ public class AdministratorUI {
          DBConnection.ExecUpdateQuery(query);*/
         Appointment app = new Appointment();
         app.addappointment(exam.getExamID(), studentID, exam.getStartDate());
-        
+
         btnbacktohome.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
+
                 confirmation.setVisible(false);
                 btnbacktohome.setVisible(false);
-                
-                switchToAdminSplashScreen();
-                
+
+                switchToAdminSplashScreen(a);
+
             }
-            
+
         });
     }
-    
-    public void switchToAdminSplashScreen() {
+
+    public void switchToAdminSplashScreen(Administrator a) {
         lblName.setVisible(true);
         textFieldOpenTime.setVisible(true);
         textFieldCloseTime.setVisible(true);
@@ -825,80 +818,80 @@ public class AdministratorUI {
         lblStudentId.setVisible(true);
         btnGenerateReport.setVisible(true);
         btnAppointments.setVisible(true);
-        
+
     }
-    
-    public void switchToCannotSchedulePage(String m) {
+
+    public void switchToCannotSchedulePage(Administrator a, String m) {
         JLabel notapproved = new JLabel(m);
         notapproved.setFont(new Font("Tahoma", Font.PLAIN, 15));
         notapproved.setBounds(35, 11, 277, 21);
         frmAdministratorInterface.getContentPane().add(notapproved);
-        
+
         JButton btnbacktohome = new JButton("Back to Home");
         btnbacktohome.setBounds(10, 150, 121, 23);
         frmAdministratorInterface.getContentPane().add(btnbacktohome);
-        
+
         btnbacktohome.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
+
                 notapproved.setVisible(false);
                 btnbacktohome.setVisible(false);
-                
-                switchToAdminSplashScreen();
-                
+
+                switchToAdminSplashScreen(a);
+
             }
-            
+
         });
     }
-    
+
     public void switchToViewAppointments(Administrator a) {
         ArrayList<String> y = new ArrayList();
         String year = "";
-        
+
         for (int i = 2010; i < 2017; i++) {
             year = i + "";
             y.add(year);
         }
-        
+
         String[] years = new String[y.size()];
-        
+
         for (int i = 0; i < y.size(); i++) {
             years[i] = y.get(i);
         }
-        
+
         JComboBox season = new JComboBox();
         season.setModel(new DefaultComboBoxModel(new String[]{"Spring", "Summer", "Fall", "Winter"}));
         season.setBounds(111, 47, 94, 20);
         frmAdministratorInterface.getContentPane().add(season);
-        
+
         JComboBox yearbox = new JComboBox();
         yearbox.setModel(new DefaultComboBoxModel(years));
         yearbox.setBounds(111, 77, 94, 20);
         frmAdministratorInterface.getContentPane().add(yearbox);
-        
+
         JButton lookup = new JButton("View Term Appointments");
         lookup.setBounds(111, 107, 137, 23);
         frmAdministratorInterface.getContentPane().add(lookup);
-        
+
         lookup.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 season.setVisible(false);
                 yearbox.setVisible(false);
                 lookup.setVisible(false);
-                
+
                 String term = season.getSelectedItem().toString() + "_" + yearbox.getSelectedItem().toString();
-                
+
                 String query = "Select u.name, e.examname, e.StartDate, a.checkedin, e.examID, "
                         + "a.appointmentID, s.studentID from appointment a, "
                         + "exam e, student s, user u, has h, forexam f where e.examID = f.examID AND "
                         + "f.appointmentID = a.appointmentID AND a.appointmentID = h.appointmentID AND "
                         + "h.studentID = s.studentID AND s.studentID = u.userID AND e.term = '" + term + "'";
-                
+
                 java.sql.ResultSet rs = DBConnection.ExecQuery(query);
                 ArrayList<String> appstrings = new ArrayList();
                 ArrayList<Appointment> appointments = new ArrayList();
                 ArrayList<String> names = new ArrayList();
-                
+
                 try {
                     while (rs.next()) {
                         appstrings.add(rs.getString(1) + ": " + rs.getString(2) + "-" + rs.getString(3));
@@ -907,7 +900,7 @@ public class AdministratorUI {
                         a.setCheckedin(rs.getString(4));
                         a.setExamid(rs.getInt(5));
                         a.setStudentid(rs.getString(7));
-                        
+
                         appointments.add(a);
                         System.out.println(rs.getString(1) + ": " + rs.getString(2) + "-" + rs.getString(3));
                         names.add(rs.getString(1));
@@ -915,58 +908,58 @@ public class AdministratorUI {
                 } catch (SQLException ex) {
                     Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
                 String[] apparray = new String[appstrings.size()];
                 for (int i = 0; i < apparray.length; i++) {
                     apparray[i] = appstrings.get(i);
                 }
-                
+
                 JComboBox termappointments = new JComboBox();
                 termappointments.setModel(new DefaultComboBoxModel(apparray));
                 termappointments.setBounds(111, 77, 294, 30);
                 frmAdministratorInterface.getContentPane().add(termappointments);
-                
+
                 JButton backtohome = new JButton("Back to Home");
                 backtohome.setBounds(150, 340, 127, 23);
                 frmAdministratorInterface.getContentPane().add(backtohome);
-                
+
                 backtohome.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         termappointments.setVisible(false);
                         backtohome.setVisible(false);
-                        
-                        switchToAdminSplashScreen();
+
+                        switchToAdminSplashScreen(a);
                     }
                 });
-                
+
                 termappointments.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         backtohome.setVisible(false);
                         JButton backtohome2 = new JButton("Back to Home");
                         backtohome2.setBounds(150, 340, 127, 23);
                         frmAdministratorInterface.getContentPane().add(backtohome2);
-                        
+
                         String name = names.get(termappointments.getSelectedIndex());
                         String checkedin = appointments.get(termappointments.getSelectedIndex()).getCheckedin();
                         String appid = appointments.get(termappointments.getSelectedIndex()).getAppointmentid();
-                        
+
                         JLabel studentcheckedin = new JLabel(name + " is " + checkedin);
                         studentcheckedin.setFont(new Font("Tahoma", Font.PLAIN, 15));
                         studentcheckedin.setBounds(135, 111, 377, 21);
                         frmAdministratorInterface.getContentPane().add(studentcheckedin);
-                        
+
                         JButton CheckedIn = new JButton("Checked In");
                         CheckedIn.setBounds(150, 140, 127, 23);
                         frmAdministratorInterface.getContentPane().add(CheckedIn);
-                        
+
                         JButton Pending = new JButton("Pending");
                         Pending.setBounds(150, 170, 127, 23);
                         frmAdministratorInterface.getContentPane().add(Pending);
-                        
+
                         JButton NotCheckedIn = new JButton("Not Checked In");
                         NotCheckedIn.setBounds(150, 200, 127, 23);
                         frmAdministratorInterface.getContentPane().add(NotCheckedIn);
-                        
+
                         backtohome2.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 backtohome2.setVisible(false);
@@ -975,60 +968,379 @@ public class AdministratorUI {
                                 Pending.setVisible(false);
                                 NotCheckedIn.setVisible(false);
                                 termappointments.setVisible(false);
-                                
-                                switchToAdminSplashScreen();
+
+                                switchToAdminSplashScreen(a);
                             }
                         });
-                        
+
                         CheckedIn.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 String query = "UPDATE `scheduler`.`appointment` SET `checkedin`='checked in' "
                                         + "WHERE `appointmentID`= '" + appid + "'";
-                                
+
                                 DBConnection.ExecUpdateQuery(query);
-                                
+
                                 appointments.get(termappointments.getSelectedIndex()).setCheckedin("checked in");
-                                
+
                                 studentcheckedin.setText(name + " is checked in");
-                                
+
                             }
-                            
+
                         });
-                        
+
                         Pending.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 String query = "UPDATE `scheduler`.`appointment` SET `checkedin`='checked in' "
                                         + "WHERE `appointmentID`= '" + appid + "'";
-                                
+
                                 DBConnection.ExecUpdateQuery(query);
-                                
+
                                 appointments.get(termappointments.getSelectedIndex()).setCheckedin("pending");
-                                
+
                                 studentcheckedin.setText(name + " is pending");
-                                
+
                             }
-                            
+
                         });
-                        
+
                         NotCheckedIn.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 String query = "UPDATE `scheduler`.`appointment` SET `checkedin`='checked in' "
                                         + "WHERE `appointmentID`= '" + appid + "'";
-                                
+
                                 DBConnection.ExecUpdateQuery(query);
-                                
+
                                 appointments.get(termappointments.getSelectedIndex()).setCheckedin("not checked in");
-                                
+
                                 studentcheckedin.setText(name + " is not checked in");
-                                
+
                             }
-                            
+
                         });
-                        
+
                     }
                 });
             }
         });
     }
-    
+
+    public void switchToViewRequests(Administrator a) {
+        ArrayList<String> y = new ArrayList();
+        String year = "";
+
+        for (int i = 2010; i < 2017; i++) {
+            year = i + "";
+            y.add(year);
+        }
+
+        String[] years = new String[y.size()];
+
+        for (int i = 0; i < y.size(); i++) {
+            years[i] = y.get(i);
+        }
+
+        JComboBox season = new JComboBox();
+        season.setModel(new DefaultComboBoxModel(new String[]{"Spring", "Summer", "Fall", "Winter"}));
+        season.setBounds(100, 47, 94, 20);
+        frmAdministratorInterface.getContentPane().add(season);
+
+        JComboBox yearbox = new JComboBox();
+        yearbox.setModel(new DefaultComboBoxModel(years));
+        yearbox.setBounds(100, 77, 94, 20);
+        frmAdministratorInterface.getContentPane().add(yearbox);
+
+        JButton lookup = new JButton("View Exam Requests");
+        lookup.setBounds(100, 107, 137, 23);
+        frmAdministratorInterface.getContentPane().add(lookup);
+
+        JLabel instrlabel = new JLabel("Instructor:");
+        instrlabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        instrlabel.setBounds(100, 100, 100, 20);
+        frmAdministratorInterface.getContentPane().add(instrlabel);
+
+        JLabel startdatelabel = new JLabel("Start Date:");
+        startdatelabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        startdatelabel.setBounds(100, 120, 100, 20);
+        frmAdministratorInterface.getContentPane().add(startdatelabel);
+
+        JLabel enddatelabel = new JLabel("End Date:");
+        enddatelabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        enddatelabel.setBounds(100, 140, 100, 20);
+        frmAdministratorInterface.getContentPane().add(enddatelabel);
+
+        JLabel starttimelabel = new JLabel("Start Time:");
+        starttimelabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        starttimelabel.setBounds(100, 160, 100, 20);
+        frmAdministratorInterface.getContentPane().add(starttimelabel);
+
+        JLabel endtimelabel = new JLabel("End Time:");
+        endtimelabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        endtimelabel.setBounds(100, 180, 100, 20);
+        frmAdministratorInterface.getContentPane().add(endtimelabel);
+
+        JLabel courselabel = new JLabel("Course:");
+        courselabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        courselabel.setBounds(100, 200, 100, 20);
+        frmAdministratorInterface.getContentPane().add(courselabel);
+
+        JLabel instr = new JLabel();
+        instr.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        instr.setBounds(200, 100, 200, 20);
+        frmAdministratorInterface.getContentPane().add(instr);
+
+        JLabel startdate = new JLabel();
+        startdate.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        startdate.setBounds(200, 120, 200, 20);
+        frmAdministratorInterface.getContentPane().add(startdate);
+
+        JLabel enddate = new JLabel();
+        enddate.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        enddate.setBounds(200, 140, 200, 20);
+        frmAdministratorInterface.getContentPane().add(enddate);
+
+        JLabel starttime = new JLabel();
+        starttime.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        starttime.setBounds(200, 160, 200, 20);
+        frmAdministratorInterface.getContentPane().add(starttime);
+
+        JLabel endtime = new JLabel();
+        endtime.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        endtime.setBounds(200, 180, 200, 20);
+        frmAdministratorInterface.getContentPane().add(endtime);
+
+        JLabel course = new JLabel();
+        course.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        course.setBounds(200, 200, 200, 20);
+        frmAdministratorInterface.getContentPane().add(course);
+
+        JLabel approvelabel = new JLabel();
+        approvelabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        approvelabel.setBounds(200, 180, 200, 20);
+        frmAdministratorInterface.getContentPane().add(approvelabel);
+
+        JLabel denylabel = new JLabel();
+        denylabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        denylabel.setBounds(200, 200, 200, 20);
+        frmAdministratorInterface.getContentPane().add(denylabel);
+
+        JButton approve = new JButton("Approve");
+        approve.setBounds(300, 150, 100, 50);
+        frmAdministratorInterface.getContentPane().add(approve);
+
+        JButton deny = new JButton("Deny");
+        deny.setBounds(300, 200, 100, 50);
+        frmAdministratorInterface.getContentPane().add(deny);
+
+        instrlabel.setVisible(false);
+        startdatelabel.setVisible(false);
+        enddatelabel.setVisible(false);
+        starttimelabel.setVisible(false);
+        endtimelabel.setVisible(false);
+        courselabel.setVisible(false);
+        instr.setVisible(false);
+        startdate.setVisible(false);
+        enddate.setVisible(false);
+        starttime.setVisible(false);
+        endtime.setVisible(false);
+        course.setVisible(false);
+        approve.setVisible(false);
+        deny.setVisible(false);
+        approvelabel.setVisible(false);
+        denylabel.setVisible(false);
+
+        lookup.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                season.setVisible(false);
+                yearbox.setVisible(false);
+                lookup.setVisible(false);
+                frmAdministratorInterface.getContentPane().remove(season);
+                frmAdministratorInterface.getContentPane().remove(yearbox);
+                frmAdministratorInterface.getContentPane().remove(lookup);
+
+                String term = season.getSelectedItem().toString() + " " + yearbox.getSelectedItem().toString();
+
+                String query = "Select requestname from pendingrequest where term = '" + term + "'"
+                        + "AND status = 'pending'";
+
+                java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+                ArrayList<String> names = new ArrayList();
+
+                try {
+                    while (rs.next()) {
+                        names.add(rs.getString(1));
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                String[] namearray = new String[names.size()];
+                for (int i = 0; i < namearray.length; i++) {
+                    namearray[i] = names.get(i);
+                }
+
+                JComboBox exams = new JComboBox();
+                exams.setModel(new DefaultComboBoxModel(namearray));
+                exams.setBounds(100, 47, 124, 20);
+                frmAdministratorInterface.getContentPane().add(exams);
+
+                instrlabel.setVisible(true);
+                startdatelabel.setVisible(true);
+                enddatelabel.setVisible(true);
+                starttimelabel.setVisible(true);
+                endtimelabel.setVisible(true);
+                courselabel.setVisible(true);
+
+                exams.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+
+                        String query = "Select u.name, p.StartDate, p.EndDate, p.startTime, p.endTime, "
+                                + "p.requestID, p.course, i.instructorid from pendingrequest p, "
+                                + "requests r, instructor i, user u where r.requestID = p.requestID AND "
+                                + "r.instructorID = i.instructorID AND i.instructorID = u.userID AND p.Term = '"
+                                + term + "' AND p.requestname = '" + exams.getSelectedItem().toString() + "'";
+
+                        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+                        
+                        PendingRequest p = new PendingRequest();
+
+
+                        try {
+                            while (rs.next()) {
+                                p.setStartDate(rs.getDate(2));
+                                p.setEndDate(rs.getDate(3));
+                                p.setStartTime(rs.getTime(4));
+                                p.setEndTime(rs.getTime(5));
+                                p.setRequestid(rs.getString(6));
+                                p.setCourse(rs.getString(7));
+                                p.setRequestname(exams.getSelectedItem().toString());
+                                p.setTerm(term);
+                                
+                                instr.setText(rs.getString(1));
+                                startdate.setText(rs.getString(2));
+                                enddate.setText(rs.getString(3));
+                                starttime.setText(rs.getString(4));
+                                endtime.setText(rs.getString(5));
+                                course.setText(rs.getString(7));
+
+                                
+
+                                instr.setVisible(true);
+                                startdate.setVisible(true);
+                                enddate.setVisible(true);
+                                starttime.setVisible(true);
+                                endtime.setVisible(true);
+                                course.setVisible(true);
+
+                                approve.setVisible(true);
+                                deny.setVisible(true);
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+
+                        approve.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                instrlabel.setVisible(false);
+                                startdatelabel.setVisible(false);
+                                enddatelabel.setVisible(false);
+                                starttimelabel.setVisible(false);
+                                endtimelabel.setVisible(false);
+                                courselabel.setVisible(false);
+                                instr.setVisible(false);
+                                startdate.setVisible(false);
+                                enddate.setVisible(false);
+                                starttime.setVisible(false);
+                                endtime.setVisible(false);
+                                course.setVisible(false);
+                                approve.setVisible(false);
+                                deny.setVisible(false);
+                                exams.setVisible(false);
+
+                                String query = "UPDATE `scheduler`.`pendingrequest` SET `status`='approved' WHERE `requestID`= '" + p.getRequestid() + "'";
+                                DBConnection.ExecUpdateQuery(query);
+
+                                query = "Select (Max(examid)+1) from exam";
+                                java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+                                String id = "";
+
+                                try {
+                                    while (rs.next()) {
+                                        id = rs.getString(1);
+                                    }
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                
+                                query = "INSERT INTO `scheduler`.`exam` (`examID`, `startDate`, `endDate`, `StartTime`, "
+                                        + "`endTime`, `seatsAvailable`, `term`, `examtype`, `examname`) VALUES "
+                                        + "('" + id + "', '" + p.getStartDate() + "', '" + p.getEndDate() + "', '"
+                                        + p.getStartTime() + "', '" + p.getEndTime() + "', '100', '" + p.getTerm()
+                                        + "', 'course', '" + p.getRequestname() + "')";
+                                DBConnection.ExecUpdateQuery(query);
+                                
+                                query = "INSERT INTO `scheduler`.`approvedfor` (`requestid`, `examid`) VALUES ('"
+                                        + p.getRequestid() + "', '" + id + "')";
+                                DBConnection.ExecUpdateQuery(query);
+                                
+                                
+
+                                switchToApproveDenyConfirmation(a, exams.getSelectedItem().toString(),
+                                        "Request for " + exams.getSelectedItem().toString() + " has been approved");
+                            }
+                        });
+
+                        deny.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                instrlabel.setVisible(false);
+                                startdatelabel.setVisible(false);
+                                enddatelabel.setVisible(false);
+                                starttimelabel.setVisible(false);
+                                endtimelabel.setVisible(false);
+                                courselabel.setVisible(false);
+                                instr.setVisible(false);
+                                startdate.setVisible(false);
+                                enddate.setVisible(false);
+                                starttime.setVisible(false);
+                                endtime.setVisible(false);
+                                course.setVisible(false);
+                                approve.setVisible(false);
+                                deny.setVisible(false);
+                                exams.setVisible(false);
+
+                                switchToApproveDenyConfirmation(a, exams.getSelectedItem().toString(),
+                                        "Request for " + exams.getSelectedItem().toString() + " has been denied");
+                            }
+                        });
+
+                    }
+                });
+
+            }
+        });
+    }
+
+    public void switchToApproveDenyConfirmation(Administrator a, String requestname, String message) {
+        JLabel approvedeny = new JLabel(message);
+        approvedeny.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        approvedeny.setBounds(200, 200, 200, 20);
+        frmAdministratorInterface.getContentPane().add(approvedeny);
+
+        JButton backhome = new JButton("Back to Home");
+        backhome.setBounds(200, 300, 100, 50);
+        frmAdministratorInterface.getContentPane().add(backhome);
+
+        backhome.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                backhome.setVisible(false);
+                approvedeny.setVisible(false);
+
+                switchToAdminSplashScreen(a);
+            }
+        });
+
+    }
+
 }
