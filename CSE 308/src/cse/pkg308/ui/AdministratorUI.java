@@ -13,11 +13,17 @@ import cse.pkg308.ui.UserUI;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,6 +34,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import org.apache.commons.io.FileUtils;
 
 public class AdministratorUI {
 
@@ -204,6 +211,43 @@ public class AdministratorUI {
         btnAppointments = new JButton("View Appointments");
         btnAppointments.setBounds(262, 335, 137, 23);
         frmAdministratorInterface.getContentPane().add(btnAppointments);
+
+        btnGenerateReport.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                lblName.setVisible(false);
+                textFieldOpenTime.setVisible(false);
+                textFieldCloseTime.setVisible(false);
+                textFieldID.setVisible(false);
+                lblAdministrator.setVisible(false);
+                lblName2.setVisible(false);
+                calendar.setVisible(false);
+                lblNumberOfSeats.setVisible(false);
+                comboBox.setVisible(false);
+                lblNumberOfReserved.setVisible(false);
+                btnLogOut.setVisible(false);
+                lblName2.setVisible(false);
+                comboBox_1.setVisible(false);
+                lblSemester.setVisible(false);
+                comboBox_2.setVisible(false);
+                lblOpenTime.setVisible(false);
+                dateChooser.setVisible(false);
+                lblCloseTime.setVisible(false);
+                lblOpenDate.setVisible(false);
+                dateChooser_1.setVisible(false);
+                lblCloseDate.setVisible(false);
+                lblOpenTime.setVisible(false);
+                btnImportData.setVisible(false);
+                btnApply.setVisible(false);
+                btnSchedulingRequests.setVisible(false);
+                btnMakeAnAppointment.setVisible(false);
+                btnCheckInStudent.setVisible(false);
+                lblStudentId.setVisible(false);
+                btnGenerateReport.setVisible(false);
+                btnAppointments.setVisible(false);
+
+                switchToGenerateReports(a);
+            }
+        });
 
         btnSchedulingRequests.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -1201,9 +1245,8 @@ public class AdministratorUI {
                                 + term + "' AND p.requestname = '" + exams.getSelectedItem().toString() + "'";
 
                         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
-                        
-                        PendingRequest p = new PendingRequest();
 
+                        PendingRequest p = new PendingRequest();
 
                         try {
                             while (rs.next()) {
@@ -1215,15 +1258,13 @@ public class AdministratorUI {
                                 p.setCourse(rs.getString(7));
                                 p.setRequestname(exams.getSelectedItem().toString());
                                 p.setTerm(term);
-                                
+
                                 instr.setText(rs.getString(1));
                                 startdate.setText(rs.getString(2));
                                 enddate.setText(rs.getString(3));
                                 starttime.setText(rs.getString(4));
                                 endtime.setText(rs.getString(5));
                                 course.setText(rs.getString(7));
-
-                                
 
                                 instr.setVisible(true);
                                 startdate.setVisible(true);
@@ -1238,7 +1279,6 @@ public class AdministratorUI {
                         } catch (SQLException ex) {
                             Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        
 
                         approve.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
@@ -1273,19 +1313,17 @@ public class AdministratorUI {
                                 } catch (SQLException ex) {
                                     Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                                
+
                                 query = "INSERT INTO `scheduler`.`exam` (`examID`, `startDate`, `endDate`, `StartTime`, "
                                         + "`endTime`, `seatsAvailable`, `term`, `examtype`, `examname`) VALUES "
                                         + "('" + id + "', '" + p.getStartDate() + "', '" + p.getEndDate() + "', '"
                                         + p.getStartTime() + "', '" + p.getEndTime() + "', '100', '" + p.getTerm()
                                         + "', 'course', '" + p.getRequestname() + "')";
                                 DBConnection.ExecUpdateQuery(query);
-                                
+
                                 query = "INSERT INTO `scheduler`.`approvedfor` (`requestid`, `examid`) VALUES ('"
                                         + p.getRequestid() + "', '" + id + "')";
                                 DBConnection.ExecUpdateQuery(query);
-                                
-                                
 
                                 switchToApproveDenyConfirmation(a, exams.getSelectedItem().toString(),
                                         "Request for " + exams.getSelectedItem().toString() + " has been approved");
@@ -1341,6 +1379,554 @@ public class AdministratorUI {
             }
         });
 
+    }
+
+    public void switchToGenerateReports(Administrator a) {
+        JLabel Select = new JLabel("Select Report Type");
+        Select.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        Select.setBounds(100, 100, 200, 20);
+        frmAdministratorInterface.getContentPane().add(Select);
+
+        JButton btnday = new JButton("Appointments By Day");
+        btnday.setBounds(50, 200, 200, 50);
+        frmAdministratorInterface.getContentPane().add(btnday);
+
+        JButton btnweek = new JButton("Appointments By Week");
+        btnweek.setBounds(50, 250, 200, 50);
+        frmAdministratorInterface.getContentPane().add(btnweek);
+
+        JButton btncourseterm = new JButton("Courses By Term");
+        btncourseterm.setBounds(50, 300, 200, 50);
+        frmAdministratorInterface.getContentPane().add(btncourseterm);
+
+        JButton btnappterm = new JButton("Appointments By Terms");
+        btnappterm.setBounds(50, 350, 200, 50);
+        frmAdministratorInterface.getContentPane().add(btnappterm);
+
+        btnday.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Select.setVisible(false);
+                btnday.setVisible(false);
+                btnweek.setVisible(false);
+                btncourseterm.setVisible(false);
+                btnappterm.setVisible(false);
+
+                switchToAppointmentsByDayPage(a);
+            }
+        });
+
+        btnweek.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Select.setVisible(false);
+                btnday.setVisible(false);
+                btnweek.setVisible(false);
+                btncourseterm.setVisible(false);
+                btnappterm.setVisible(false);
+
+                switchToAppointmentsByWeekPage(a);
+            }
+        });
+
+        btncourseterm.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Select.setVisible(false);
+                btnday.setVisible(false);
+                btnweek.setVisible(false);
+                btncourseterm.setVisible(false);
+                btnappterm.setVisible(false);
+
+                switchToCoursesByTermPage(a);
+            }
+        });
+
+        btnappterm.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Select.setVisible(false);
+                btnday.setVisible(false);
+                btnweek.setVisible(false);
+                btncourseterm.setVisible(false);
+                btnappterm.setVisible(false);
+
+                switchToAppointmentsByTermsPage(a);
+            }
+        });
+
+    }
+
+    public void switchToAppointmentsByDayPage(Administrator a) {
+        ArrayList<String> y = new ArrayList();
+        String year = "";
+
+        for (int i = 2010; i < 2017; i++) {
+            year = i + "";
+            y.add(year);
+        }
+
+        String[] years = new String[y.size()];
+
+        for (int i = 0; i < y.size(); i++) {
+            years[i] = y.get(i);
+        }
+
+        JComboBox season = new JComboBox();
+        season.setModel(new DefaultComboBoxModel(new String[]{"Spring", "Summer", "Fall", "Winter"}));
+        season.setBounds(111, 47, 94, 20);
+        frmAdministratorInterface.getContentPane().add(season);
+
+        JComboBox yearbox = new JComboBox();
+        yearbox.setModel(new DefaultComboBoxModel(years));
+        yearbox.setBounds(111, 77, 94, 20);
+        frmAdministratorInterface.getContentPane().add(yearbox);
+
+        JButton lookup = new JButton("View Term Appointments");
+        lookup.setBounds(111, 200, 137, 23);
+        frmAdministratorInterface.getContentPane().add(lookup);
+
+        lookup.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
+                Date startdate = new Date();
+                Date enddate = new Date();
+                int year = Integer.parseInt(yearbox.getSelectedItem().toString());
+
+                FileWriter fWriter;
+                BufferedWriter newfile;
+                try {
+                    fWriter = new FileWriter("C:/Users/Owner/Desktop/TermReport.xhtml");
+                    newfile = new BufferedWriter(fWriter);
+                    newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
+                            + "<title>Term Report</title>\n </head>\n<body>\n");
+
+                    newfile.write("Courses that used Testing Center in " + season.getSelectedItem()
+                            + " " + yearbox.getSelectedItem() + "<br></br><br></br>");
+
+                    if (season.getSelectedItem().equals("Fall")) {
+                        startdate.setYear(year);
+                        startdate.setMonth(7);
+                        startdate.setDate(25);
+                        enddate.setYear(year);
+                        enddate.setMonth(11);
+                        enddate.setDate(18);
+                        System.out.println(startdate);
+                        System.out.println(enddate);
+                    } else if (season.getSelectedItem().equals("Winter")) {
+                        startdate.setYear(year);
+                        startdate.setMonth(11);
+                        startdate.setDate(19);
+                        enddate.setYear(year + 1);
+                        enddate.setMonth(0);
+                        enddate.setDate(25);
+                    } else if (season.getSelectedItem().equals("Spring")) {
+                        startdate.setYear(year);
+                        startdate.setMonth(0);
+                        startdate.setDate(26);
+                        enddate.setYear(year);
+                        enddate.setMonth(4);
+                        enddate.setDate(18);
+                    } else {
+                        startdate.setYear(year);
+                        startdate.setMonth(4);
+                        startdate.setDate(25);
+                        enddate.setYear(year);
+                        enddate.setMonth(6);
+                        enddate.setDate(10);
+                    }
+
+                    Date currentdate = new Date();
+                    currentdate.setYear(startdate.getYear());
+                    currentdate.setMonth(startdate.getMonth());
+                    currentdate.setDate(startdate.getDate());
+
+                    Calendar cal = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+
+                    cal.set(Calendar.YEAR, currentdate.getYear());
+                    cal.set(Calendar.MONTH, currentdate.getMonth());
+                    cal.set(Calendar.DAY_OF_MONTH, currentdate.getDate());
+                    java.sql.Date newdate = new java.sql.Date(cal.getTimeInMillis());
+
+                    while (currentdate.getYear() != enddate.getYear() || currentdate.getMonth() != enddate.getMonth() || currentdate.getDate() != enddate.getDate()) {
+
+                        String query = "Select count(a.appointmentID) from appointment a where"
+                                + " a.date = '" + newdate + "'";
+
+                        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+                        while (rs.next()) {
+                            newfile.write(currentdate.getMonth() + 1 + "/" + currentdate.getDate() + "/"
+                                    + currentdate.getYear() + ": " + rs.getString(1) + "<br></br>");
+                        }
+
+                        currentdate.setDate(currentdate.getDate() + 1);
+                        cal.set(Calendar.YEAR, currentdate.getYear());
+                        cal.set(Calendar.MONTH, currentdate.getMonth());
+                        cal.set(Calendar.DAY_OF_MONTH, currentdate.getDate());
+                        newdate = new java.sql.Date(cal.getTimeInMillis());
+                    }
+
+                    newfile.write("\n</body>\n </html>");
+
+                    //newfile.newLine();
+                    newfile.close();
+
+                } catch (Exception ex) {
+                    //catch any exceptions here
+                }
+
+            }
+        });
+    }
+
+    public void switchToAppointmentsByWeekPage(Administrator a) {
+        ArrayList<String> y = new ArrayList();
+        String year = "";
+
+        for (int i = 2010; i < 2017; i++) {
+            year = i + "";
+            y.add(year);
+        }
+
+        String[] years = new String[y.size()];
+
+        for (int i = 0; i < y.size(); i++) {
+            years[i] = y.get(i);
+        }
+
+        JComboBox season = new JComboBox();
+        season.setModel(new DefaultComboBoxModel(new String[]{"Spring", "Summer", "Fall", "Winter"}));
+        season.setBounds(111, 47, 94, 20);
+        frmAdministratorInterface.getContentPane().add(season);
+
+        JComboBox yearbox = new JComboBox();
+        yearbox.setModel(new DefaultComboBoxModel(years));
+        yearbox.setBounds(111, 77, 94, 20);
+        frmAdministratorInterface.getContentPane().add(yearbox);
+
+        JButton lookup = new JButton("View Term Appointments");
+        lookup.setBounds(111, 200, 137, 23);
+        frmAdministratorInterface.getContentPane().add(lookup);
+
+        lookup.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
+                Date startdate = new Date();
+                Date enddate = new Date();
+                int year = Integer.parseInt(yearbox.getSelectedItem().toString());
+
+                FileWriter fWriter = null;
+                BufferedWriter newfile = null;
+                try {
+                    fWriter = new FileWriter("C:/Users/Owner/Desktop/TermReport.xhtml");
+                    newfile = new BufferedWriter(fWriter);
+                    newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
+                            + "<title>Term Report</title>\n </head>\n<body>\n");
+
+                    newfile.write("Courses that used Testing Center in " + season.getSelectedItem()
+                            + " " + yearbox.getSelectedItem() + "<br></br><br></br>");
+
+                    if (season.getSelectedItem().equals("Fall")) {
+                        startdate.setYear(year);
+                        startdate.setMonth(7);
+                        startdate.setDate(25);
+                        enddate.setYear(year);
+                        enddate.setMonth(11);
+                        enddate.setDate(18);
+
+                    } else if (season.getSelectedItem().equals("Winter")) {
+                        startdate.setYear(year);
+                        startdate.setMonth(11);
+                        startdate.setDate(19);
+                        enddate.setYear(year + 1);
+                        enddate.setMonth(0);
+                        enddate.setDate(25);
+                    } else if (season.getSelectedItem().equals("Spring")) {
+                        startdate.setYear(year);
+                        startdate.setMonth(0);
+                        startdate.setDate(26);
+                        enddate.setYear(year);
+                        enddate.setMonth(4);
+                        enddate.setDate(18);
+                    } else {
+                        startdate.setYear(year);
+                        startdate.setMonth(4);
+                        startdate.setDate(25);
+                        enddate.setYear(year);
+                        enddate.setMonth(6);
+                        enddate.setDate(10);
+                    }
+
+                    Date currentdate = new Date();
+                    currentdate.setYear(startdate.getYear());
+                    currentdate.setMonth(startdate.getMonth());
+                    currentdate.setDate(startdate.getDate());
+
+                    Calendar cal = Calendar.getInstance();
+                    //SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+
+                    cal.set(Calendar.YEAR, currentdate.getYear());
+                    cal.set(Calendar.MONTH, currentdate.getMonth());
+                    cal.set(Calendar.DAY_OF_MONTH, currentdate.getDate());
+                    java.sql.Date newdate = new java.sql.Date(cal.getTimeInMillis());
+                    int week = cal.get(Calendar.WEEK_OF_YEAR);
+                    int num = 0;
+
+                    //java.sql.Date startweek = new java.sql.Date(cal.getTimeInMillis());
+                    //System.out.println(startweek.getYear());
+                    Date startweek = new Date();
+                    startweek.setYear(currentdate.getYear());
+                    startweek.setMonth(currentdate.getMonth());
+                    startweek.setDate(currentdate.getDate());
+                    Date endweek = startweek;
+                    
+                    ArrayList <String> courses = new ArrayList();
+
+                    while (currentdate.getYear() != enddate.getYear() || currentdate.getMonth() != enddate.getMonth() || currentdate.getDate() != enddate.getDate()) {
+                        endweek = startweek;
+                        
+                        String query = "Select count(a.appointmentID) from appointment a where"
+                                + " a.date = '" + newdate + "'";
+
+                        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+                        while (rs.next()) {
+                            num = num + rs.getInt(1);
+                            //System.out.println(startweek.getYear());
+                        }
+                        
+                        query = "Select ce.courseidentifier from exam e, courseexam ce, appointment a, forexam f"
+                                + " where a.date = '" + newdate + "' AND a.appointmentID = f.appointmentID"
+                                + " AND f.examID = e.examID AND e.examID = ce.examID";
+                        
+                        rs = DBConnection.ExecQuery(query);
+
+                        while (rs.next()) {
+                            courses.add(rs.getString(1));
+                        }
+
+                        currentdate.setDate(currentdate.getDate() + 1);
+                        cal.set(Calendar.YEAR, currentdate.getYear());
+                        cal.set(Calendar.MONTH, currentdate.getMonth());
+                        cal.set(Calendar.DAY_OF_MONTH, currentdate.getDate());
+                        newdate = new java.sql.Date(cal.getTimeInMillis());
+                        endweek = currentdate;
+
+                        if (cal.get(Calendar.WEEK_OF_YEAR) != week) {
+                            currentdate.setDate(currentdate.getDate() - 1);
+                            week = cal.get(Calendar.WEEK_OF_YEAR);
+                            
+                            
+                            newfile.write((startweek.getMonth() + 1) + "/" + startweek.getDate() + "/"
+                                    + startweek.getYear() + " - " + (endweek.getMonth() + 1) + "/" + endweek.getDate() + "/"
+                                    + endweek.getYear() + ": " + num + "   ");
+                            
+                            for(int i = 0; i<courses.size(); i++)
+                            {
+                                newfile.write(courses.get(i) + "  ");
+                            }
+                            newfile.write("<br></br>");
+                            
+                            int j = courses.size();
+                            
+                            for(int i = j-1; i>=0; i--)
+                            {
+                                courses.remove(i);
+                            }
+                            
+                            num = 0;
+                        
+                            
+                        startweek.setYear(currentdate.getYear());
+                    startweek.setMonth(currentdate.getMonth());
+                    startweek.setDate(currentdate.getDate());
+                            
+                        }
+
+                    }
+                    newfile.write((startweek.getMonth() + 1) + "/" + startweek.getDate() + "/"
+                                    + startweek.getYear() + " - " + (endweek.getMonth() + 1) + "/" + endweek.getDate() + "/"
+                                    + endweek.getYear() + ": " + num + "  ");
+                    
+                    for(int i = 0; i<courses.size(); i++)
+                            {
+                                newfile.write(courses.get(i) + "  ");
+                            }
+                            newfile.write("<br></br>");
+                            
+                            int j = courses.size();
+                            
+                            for(int i = j-1; i>=0; i--)
+                            {
+                                courses.remove(i);
+                            }
+
+                    newfile.write("\n</body>\n </html>");
+
+                    newfile.close();
+
+                } catch (Exception ex) {
+                    //catch any exceptions here
+                }
+
+            }
+        });
+    }
+
+    public void switchToCoursesByTermPage(Administrator a) {
+        ArrayList<String> y = new ArrayList();
+        String year = "";
+
+        for (int i = 2010; i < 2017; i++) {
+            year = i + "";
+            y.add(year);
+        }
+
+        String[] years = new String[y.size()];
+
+        for (int i = 0; i < y.size(); i++) {
+            years[i] = y.get(i);
+        }
+
+        JComboBox season = new JComboBox();
+        season.setModel(new DefaultComboBoxModel(new String[]{"Spring", "Summer", "Fall", "Winter"}));
+        season.setBounds(111, 47, 94, 20);
+        frmAdministratorInterface.getContentPane().add(season);
+
+        JComboBox yearbox = new JComboBox();
+        yearbox.setModel(new DefaultComboBoxModel(years));
+        yearbox.setBounds(111, 77, 94, 20);
+        frmAdministratorInterface.getContentPane().add(yearbox);
+
+        JButton lookup = new JButton("View Term Appointments");
+        lookup.setBounds(111, 107, 137, 23);
+        frmAdministratorInterface.getContentPane().add(lookup);
+
+        lookup.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
+
+                FileWriter fWriter;
+                BufferedWriter newfile;
+                try {
+                    fWriter = new FileWriter("C:/Users/Owner/Desktop/TermReport.xhtml");
+                    newfile = new BufferedWriter(fWriter);
+                    newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
+                            + "<title>Term Report</title>\n </head>\n<body>\n");
+
+                    newfile.write("Courses that used Testing Center in " + season.getSelectedItem()
+                            + " " + yearbox.getSelectedItem() + "<br></br><br></br>");
+
+                    String query = "Select c.course from courseexam c, exam e where"
+                            + " e.Term = '" + term + "' AND e.examID = c.examID Group By course";
+
+                    java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+                    while (rs.next()) {
+                        newfile.write(rs.getString(1) + "<br></br>");
+                    }
+
+                    newfile.write("\n</body>\n </html>");
+
+                    newfile.close();
+                } catch (Exception ex) {
+                    //catch any exceptions here
+                }
+            }
+        });
+    }
+
+    public void switchToAppointmentsByTermsPage(Administrator a) {
+        ArrayList<String> y = new ArrayList();
+        String year = "";
+
+        for (int i = 2010; i < 2017; i++) {
+            year = i + "";
+            y.add(year);
+        }
+
+        String[] years = new String[y.size()];
+
+        for (int i = 0; i < y.size(); i++) {
+            years[i] = y.get(i);
+        }
+
+        JComboBox season = new JComboBox();
+        season.setModel(new DefaultComboBoxModel(new String[]{"Spring", "Summer", "Fall", "Winter"}));
+        season.setBounds(111, 47, 94, 20);
+        frmAdministratorInterface.getContentPane().add(season);
+
+        JComboBox yearbox = new JComboBox();
+        yearbox.setModel(new DefaultComboBoxModel(years));
+        yearbox.setBounds(111, 77, 94, 20);
+        frmAdministratorInterface.getContentPane().add(yearbox);
+
+        JButton addterm = new JButton("Add term");
+        addterm.setBounds(111, 107, 137, 23);
+        frmAdministratorInterface.getContentPane().add(addterm);
+
+        JComboBox termbox = new JComboBox();
+        termbox.setModel(new DefaultComboBoxModel());
+        termbox.setBounds(111, 150, 140, 20);
+        frmAdministratorInterface.getContentPane().add(termbox);
+
+        ArrayList<String> terms = new ArrayList();
+
+        addterm.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (season.getSelectedItem() != null && yearbox.getSelectedItem() != null) {
+                    terms.add(season.getSelectedItem() + "_" + yearbox.getSelectedItem());
+                    String[] termarray = new String[terms.size()];
+                    for (int i = 0; i < termarray.length; i++) {
+                        termarray[i] = terms.get(i);
+                    }
+
+                    termbox.setModel(new DefaultComboBoxModel(termarray));
+                }
+            }
+        });
+
+        JButton lookup = new JButton("View Term Appointments");
+        lookup.setBounds(111, 200, 137, 23);
+        frmAdministratorInterface.getContentPane().add(lookup);
+
+        lookup.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // termbox.getItemAt(buttonindex)
+                //String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
+
+                FileWriter fWriter;
+                BufferedWriter newfile;
+                try {
+                    fWriter = new FileWriter("C:/Users/Owner/Desktop/TermReport.xhtml");
+                    newfile = new BufferedWriter(fWriter);
+                    newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
+                            + "<title>Term Report</title>\n </head>\n<body>\n");
+
+                    newfile.write("Number of Appointments During <br></br><br></br>");
+
+                    for (int i = 0; i < terms.size(); i++) {
+                        newfile.write(termbox.getItemAt(i).toString() + ": ");
+
+                        String query = "Select count(a.appointmentID) from appointment a, exam e, forexam f where"
+                                + " a.appointmentID = f.appointmentID AND f.examID = e.examID AND"
+                                + " e.Term = '" + termbox.getItemAt(i) + "'";
+
+                        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+                        while (rs.next()) {
+                            newfile.write(rs.getString(1) + "<br></br>");
+                        }
+
+                        newfile.write("<br></br><br></br>");
+                    }
+
+                    newfile.write("\n</body>\n </html>");
+
+                    newfile.close();
+                } catch (Exception ex) {
+                    //catch any exceptions here
+                }
+            }
+        });
     }
 
 }

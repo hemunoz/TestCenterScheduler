@@ -9,7 +9,6 @@ import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Font;
 import com.toedter.calendar.JCalendar;
-import properties_manager.PropertiesManager;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
