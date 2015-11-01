@@ -69,6 +69,7 @@ public class AdministratorUI {
     public static JLabel lblStudentId;
     public static JButton btnGenerateReport;
     public static JButton btnAppointments;
+    public static JButton btnedittestingcenter;
 
     public int buttonindex = 0;
     public static JComboBox examcomboBox;
@@ -95,74 +96,78 @@ public class AdministratorUI {
         lblName.setBounds(10, 41, 46, 14);
         frmAdministratorInterface.getContentPane().add(lblName);
 
-        lblName2 = new JLabel("");
+        lblName2 = new JLabel(a.getName());
         lblName2.setBounds(57, 41, 74, 14);
         frmAdministratorInterface.getContentPane().add(lblName2);
 
-        lblNumberOfSeats = new JLabel("Number of Seats Available:");
-        lblNumberOfSeats.setBounds(10, 77, 144, 14);
-        frmAdministratorInterface.getContentPane().add(lblNumberOfSeats);
+        btnedittestingcenter = new JButton("Edit Testing Center");
+        btnedittestingcenter.setBounds(57, 100, 189, 23);
+        frmAdministratorInterface.getContentPane().add(btnedittestingcenter);
+        /*
+         lblNumberOfSeats = new JLabel("Number of Seats Available:");
+         lblNumberOfSeats.setBounds(10, 77, 144, 14);
+         frmAdministratorInterface.getContentPane().add(lblNumberOfSeats);
 
-        comboBox = new JComboBox();
-        comboBox.setModel(new DefaultComboBoxModel(new String[]{""}));
-        comboBox.setBounds(156, 74, 46, 20);
-        frmAdministratorInterface.getContentPane().add(comboBox);
+         comboBox = new JComboBox();
+         comboBox.setModel(new DefaultComboBoxModel(new String[]{""}));
+         comboBox.setBounds(156, 74, 46, 20);
+         frmAdministratorInterface.getContentPane().add(comboBox);
 
-        lblNumberOfReserved = new JLabel("Number of Reserved Seats:");
-        lblNumberOfReserved.setBounds(10, 102, 144, 14);
-        frmAdministratorInterface.getContentPane().add(lblNumberOfReserved);
+         lblNumberOfReserved = new JLabel("Number of Reserved Seats:");
+         lblNumberOfReserved.setBounds(10, 102, 144, 14);
+         frmAdministratorInterface.getContentPane().add(lblNumberOfReserved);
 
-        comboBox_1 = new JComboBox();
-        comboBox_1.setModel(new DefaultComboBoxModel(new String[]{""}));
-        comboBox_1.setBounds(156, 99, 46, 20);
-        frmAdministratorInterface.getContentPane().add(comboBox_1);
+         comboBox_1 = new JComboBox();
+         comboBox_1.setModel(new DefaultComboBoxModel(new String[]{""}));
+         comboBox_1.setBounds(156, 99, 46, 20);
+         frmAdministratorInterface.getContentPane().add(comboBox_1);*/
 
         calendar = new JCalendar();
         calendar.setBounds(226, 41, 198, 153);
         frmAdministratorInterface.getContentPane().add(calendar);
+        /*
+         lblSemester = new JLabel("Semester:");
+         lblSemester.setBounds(10, 146, 56, 14);
+         frmAdministratorInterface.getContentPane().add(lblSemester);
 
-        lblSemester = new JLabel("Semester:");
-        lblSemester.setBounds(10, 146, 56, 14);
-        frmAdministratorInterface.getContentPane().add(lblSemester);
+         comboBox_2 = new JComboBox();
+         comboBox_2.setModel(new DefaultComboBoxModel(new String[]{""}));
+         comboBox_2.setBounds(76, 143, 126, 20);
+         frmAdministratorInterface.getContentPane().add(comboBox_2);
 
-        comboBox_2 = new JComboBox();
-        comboBox_2.setModel(new DefaultComboBoxModel(new String[]{""}));
-        comboBox_2.setBounds(76, 143, 126, 20);
-        frmAdministratorInterface.getContentPane().add(comboBox_2);
+         lblOpenTime = new JLabel("Open Time:");
+         lblOpenTime.setBounds(10, 173, 56, 14);
+         frmAdministratorInterface.getContentPane().add(lblOpenTime);
 
-        lblOpenTime = new JLabel("Open Time:");
-        lblOpenTime.setBounds(10, 173, 56, 14);
-        frmAdministratorInterface.getContentPane().add(lblOpenTime);
+         textFieldOpenTime = new JTextField();
+         textFieldOpenTime.setBounds(76, 170, 86, 20);
+         frmAdministratorInterface.getContentPane().add(textFieldOpenTime);
+         textFieldOpenTime.setColumns(10);
 
-        textFieldOpenTime = new JTextField();
-        textFieldOpenTime.setBounds(76, 170, 86, 20);
-        frmAdministratorInterface.getContentPane().add(textFieldOpenTime);
-        textFieldOpenTime.setColumns(10);
+         textFieldCloseTime = new JTextField();
+         textFieldCloseTime.setBounds(76, 197, 86, 20);
+         frmAdministratorInterface.getContentPane().add(textFieldCloseTime);
+         textFieldCloseTime.setColumns(10);
 
-        textFieldCloseTime = new JTextField();
-        textFieldCloseTime.setBounds(76, 197, 86, 20);
-        frmAdministratorInterface.getContentPane().add(textFieldCloseTime);
-        textFieldCloseTime.setColumns(10);
+         lblCloseTime = new JLabel("Close Time:");
+         lblCloseTime.setBounds(10, 200, 56, 14);
+         frmAdministratorInterface.getContentPane().add(lblCloseTime);
 
-        lblCloseTime = new JLabel("Close Time:");
-        lblCloseTime.setBounds(10, 200, 56, 14);
-        frmAdministratorInterface.getContentPane().add(lblCloseTime);
+         lblOpenDate = new JLabel("Open Date:");
+         lblOpenDate.setBounds(10, 225, 56, 23);
+         frmAdministratorInterface.getContentPane().add(lblOpenDate);
 
-        lblOpenDate = new JLabel("Open Date:");
-        lblOpenDate.setBounds(10, 225, 56, 23);
-        frmAdministratorInterface.getContentPane().add(lblOpenDate);
+         dateChooser = new JDateChooser();
+         dateChooser.setBounds(76, 228, 91, 20);
+         frmAdministratorInterface.getContentPane().add(dateChooser);
 
-        dateChooser = new JDateChooser();
-        dateChooser.setBounds(76, 228, 91, 20);
-        frmAdministratorInterface.getContentPane().add(dateChooser);
+         dateChooser_1 = new JDateChooser();
+         dateChooser_1.setBounds(75, 259, 91, 20);
+         frmAdministratorInterface.getContentPane().add(dateChooser_1);
 
-        dateChooser_1 = new JDateChooser();
-        dateChooser_1.setBounds(75, 259, 91, 20);
-        frmAdministratorInterface.getContentPane().add(dateChooser_1);
-
-        lblCloseDate = new JLabel("Close Date:");
-        lblCloseDate.setBounds(10, 259, 56, 14);
-        frmAdministratorInterface.getContentPane().add(lblCloseDate);
+         lblCloseDate = new JLabel("Close Date:");
+         lblCloseDate.setBounds(10, 259, 56, 14);
+         frmAdministratorInterface.getContentPane().add(lblCloseDate);*/
 
         btnLogOut = new JButton("Log Out");
         btnLogOut.setBounds(335, 371, 89, 23);
@@ -212,30 +217,30 @@ public class AdministratorUI {
         btnAppointments.setBounds(262, 335, 137, 23);
         frmAdministratorInterface.getContentPane().add(btnAppointments);
 
-        btnGenerateReport.addActionListener(new ActionListener() {
+        btnedittestingcenter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 lblName.setVisible(false);
-                textFieldOpenTime.setVisible(false);
-                textFieldCloseTime.setVisible(false);
+                /*textFieldOpenTime.setVisible(false);
+                 textFieldCloseTime.setVisible(false);*/
                 textFieldID.setVisible(false);
                 lblAdministrator.setVisible(false);
                 lblName2.setVisible(false);
                 calendar.setVisible(false);
-                lblNumberOfSeats.setVisible(false);
-                comboBox.setVisible(false);
-                lblNumberOfReserved.setVisible(false);
+                /*lblNumberOfSeats.setVisible(false);
+                 comboBox.setVisible(false);
+                 lblNumberOfReserved.setVisible(false);*/
                 btnLogOut.setVisible(false);
                 lblName2.setVisible(false);
-                comboBox_1.setVisible(false);
-                lblSemester.setVisible(false);
-                comboBox_2.setVisible(false);
-                lblOpenTime.setVisible(false);
-                dateChooser.setVisible(false);
-                lblCloseTime.setVisible(false);
-                lblOpenDate.setVisible(false);
-                dateChooser_1.setVisible(false);
-                lblCloseDate.setVisible(false);
-                lblOpenTime.setVisible(false);
+                /*comboBox_1.setVisible(false);
+                 lblSemester.setVisible(false);
+                 comboBox_2.setVisible(false);
+                 lblOpenTime.setVisible(false);
+                 dateChooser.setVisible(false);
+                 lblCloseTime.setVisible(false);
+                 lblOpenDate.setVisible(false);
+                 dateChooser_1.setVisible(false);
+                 lblCloseDate.setVisible(false);
+                 lblOpenTime.setVisible(false);*/
                 btnImportData.setVisible(false);
                 btnApply.setVisible(false);
                 btnSchedulingRequests.setVisible(false);
@@ -244,6 +249,45 @@ public class AdministratorUI {
                 lblStudentId.setVisible(false);
                 btnGenerateReport.setVisible(false);
                 btnAppointments.setVisible(false);
+                btnedittestingcenter.setVisible(false);
+
+                switchToEditTestingCenter(a);
+            }
+        });
+
+        btnGenerateReport.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                lblName.setVisible(false);
+                /*textFieldOpenTime.setVisible(false);
+                 textFieldCloseTime.setVisible(false);*/
+                textFieldID.setVisible(false);
+                lblAdministrator.setVisible(false);
+                lblName2.setVisible(false);
+                calendar.setVisible(false);
+                /*lblNumberOfSeats.setVisible(false);
+                 comboBox.setVisible(false);
+                 lblNumberOfReserved.setVisible(false);*/
+                btnLogOut.setVisible(false);
+                lblName2.setVisible(false);
+                /*comboBox_1.setVisible(false);
+                 lblSemester.setVisible(false);
+                 comboBox_2.setVisible(false);
+                 lblOpenTime.setVisible(false);
+                 dateChooser.setVisible(false);
+                 lblCloseTime.setVisible(false);
+                 lblOpenDate.setVisible(false);
+                 dateChooser_1.setVisible(false);
+                 lblCloseDate.setVisible(false);
+                 lblOpenTime.setVisible(false);*/
+                btnImportData.setVisible(false);
+                btnApply.setVisible(false);
+                btnSchedulingRequests.setVisible(false);
+                btnMakeAnAppointment.setVisible(false);
+                btnCheckInStudent.setVisible(false);
+                lblStudentId.setVisible(false);
+                btnGenerateReport.setVisible(false);
+                btnAppointments.setVisible(false);
+                btnedittestingcenter.setVisible(false);
 
                 switchToGenerateReports(a);
             }
@@ -252,27 +296,27 @@ public class AdministratorUI {
         btnSchedulingRequests.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 lblName.setVisible(false);
-                textFieldOpenTime.setVisible(false);
-                textFieldCloseTime.setVisible(false);
+                /*textFieldOpenTime.setVisible(false);
+                 textFieldCloseTime.setVisible(false);*/
                 textFieldID.setVisible(false);
                 lblAdministrator.setVisible(false);
                 lblName2.setVisible(false);
                 calendar.setVisible(false);
-                lblNumberOfSeats.setVisible(false);
-                comboBox.setVisible(false);
-                lblNumberOfReserved.setVisible(false);
+                /*lblNumberOfSeats.setVisible(false);
+                 comboBox.setVisible(false);
+                 lblNumberOfReserved.setVisible(false);*/
                 btnLogOut.setVisible(false);
                 lblName2.setVisible(false);
-                comboBox_1.setVisible(false);
-                lblSemester.setVisible(false);
-                comboBox_2.setVisible(false);
-                lblOpenTime.setVisible(false);
-                dateChooser.setVisible(false);
-                lblCloseTime.setVisible(false);
-                lblOpenDate.setVisible(false);
-                dateChooser_1.setVisible(false);
-                lblCloseDate.setVisible(false);
-                lblOpenTime.setVisible(false);
+                /*comboBox_1.setVisible(false);
+                 lblSemester.setVisible(false);
+                 comboBox_2.setVisible(false);
+                 lblOpenTime.setVisible(false);
+                 dateChooser.setVisible(false);
+                 lblCloseTime.setVisible(false);
+                 lblOpenDate.setVisible(false);
+                 dateChooser_1.setVisible(false);
+                 lblCloseDate.setVisible(false);
+                 lblOpenTime.setVisible(false);*/
                 btnImportData.setVisible(false);
                 btnApply.setVisible(false);
                 btnSchedulingRequests.setVisible(false);
@@ -281,6 +325,7 @@ public class AdministratorUI {
                 lblStudentId.setVisible(false);
                 btnGenerateReport.setVisible(false);
                 btnAppointments.setVisible(false);
+                btnedittestingcenter.setVisible(false);
 
                 switchToViewRequests(a);
             }
@@ -290,27 +335,27 @@ public class AdministratorUI {
             public void actionPerformed(ActionEvent e) {
 
                 lblName.setVisible(false);
-                textFieldOpenTime.setVisible(false);
-                textFieldCloseTime.setVisible(false);
+                /*textFieldOpenTime.setVisible(false);
+                 textFieldCloseTime.setVisible(false);*/
                 textFieldID.setVisible(false);
                 lblAdministrator.setVisible(false);
                 lblName2.setVisible(false);
                 calendar.setVisible(false);
-                lblNumberOfSeats.setVisible(false);
-                comboBox.setVisible(false);
-                lblNumberOfReserved.setVisible(false);
+                /*lblNumberOfSeats.setVisible(false);
+                 comboBox.setVisible(false);
+                 lblNumberOfReserved.setVisible(false);*/
                 btnLogOut.setVisible(false);
                 lblName2.setVisible(false);
-                comboBox_1.setVisible(false);
-                lblSemester.setVisible(false);
-                comboBox_2.setVisible(false);
-                lblOpenTime.setVisible(false);
-                dateChooser.setVisible(false);
-                lblCloseTime.setVisible(false);
-                lblOpenDate.setVisible(false);
-                dateChooser_1.setVisible(false);
-                lblCloseDate.setVisible(false);
-                lblOpenTime.setVisible(false);
+                /*comboBox_1.setVisible(false);
+                 lblSemester.setVisible(false);
+                 comboBox_2.setVisible(false);
+                 lblOpenTime.setVisible(false);
+                 dateChooser.setVisible(false);
+                 lblCloseTime.setVisible(false);
+                 lblOpenDate.setVisible(false);
+                 dateChooser_1.setVisible(false);
+                 lblCloseDate.setVisible(false);
+                 lblOpenTime.setVisible(false);*/
                 btnImportData.setVisible(false);
                 btnApply.setVisible(false);
                 btnSchedulingRequests.setVisible(false);
@@ -319,6 +364,7 @@ public class AdministratorUI {
                 lblStudentId.setVisible(false);
                 btnGenerateReport.setVisible(false);
                 btnAppointments.setVisible(false);
+                btnedittestingcenter.setVisible(false);
 
                 switchToViewAppointments(a);
             }
@@ -328,27 +374,27 @@ public class AdministratorUI {
             public void actionPerformed(ActionEvent e) {
 
                 lblName.setVisible(false);
-                textFieldOpenTime.setVisible(false);
-                textFieldCloseTime.setVisible(false);
+                /*textFieldOpenTime.setVisible(false);
+                 textFieldCloseTime.setVisible(false);*/
                 textFieldID.setVisible(false);
                 lblAdministrator.setVisible(false);
                 lblName2.setVisible(false);
                 calendar.setVisible(false);
-                lblNumberOfSeats.setVisible(false);
-                comboBox.setVisible(false);
-                lblNumberOfReserved.setVisible(false);
+                /*lblNumberOfSeats.setVisible(false);
+                 comboBox.setVisible(false);
+                 lblNumberOfReserved.setVisible(false);*/
                 btnLogOut.setVisible(false);
                 lblName2.setVisible(false);
-                comboBox_1.setVisible(false);
-                lblSemester.setVisible(false);
-                comboBox_2.setVisible(false);
-                lblOpenTime.setVisible(false);
-                dateChooser.setVisible(false);
-                lblCloseTime.setVisible(false);
-                lblOpenDate.setVisible(false);
-                dateChooser_1.setVisible(false);
-                lblCloseDate.setVisible(false);
-                lblOpenTime.setVisible(false);
+                /*comboBox_1.setVisible(false);
+                 lblSemester.setVisible(false);
+                 comboBox_2.setVisible(false);
+                 lblOpenTime.setVisible(false);
+                 dateChooser.setVisible(false);
+                 lblCloseTime.setVisible(false);
+                 lblOpenDate.setVisible(false);
+                 dateChooser_1.setVisible(false);
+                 lblCloseDate.setVisible(false);
+                 lblOpenTime.setVisible(false);*/
                 btnImportData.setVisible(false);
                 btnApply.setVisible(false);
                 btnSchedulingRequests.setVisible(false);
@@ -356,6 +402,8 @@ public class AdministratorUI {
                 btnCheckInStudent.setVisible(false);
                 lblStudentId.setVisible(false);
                 btnGenerateReport.setVisible(false);
+                btnAppointments.setVisible(false);
+                btnedittestingcenter.setVisible(false);
 
                 switchToMakeStudentAppointment(a);
             }
@@ -1677,12 +1725,12 @@ public class AdministratorUI {
                     startweek.setMonth(currentdate.getMonth());
                     startweek.setDate(currentdate.getDate());
                     Date endweek = startweek;
-                    
-                    ArrayList <String> courses = new ArrayList();
+
+                    ArrayList<String> courses = new ArrayList();
 
                     while (currentdate.getYear() != enddate.getYear() || currentdate.getMonth() != enddate.getMonth() || currentdate.getDate() != enddate.getDate()) {
                         endweek = startweek;
-                        
+
                         String query = "Select count(a.appointmentID) from appointment a where"
                                 + " a.date = '" + newdate + "'";
 
@@ -1692,11 +1740,11 @@ public class AdministratorUI {
                             num = num + rs.getInt(1);
                             //System.out.println(startweek.getYear());
                         }
-                        
+
                         query = "Select ce.courseidentifier from exam e, courseexam ce, appointment a, forexam f"
                                 + " where a.date = '" + newdate + "' AND a.appointmentID = f.appointmentID"
                                 + " AND f.examID = e.examID AND e.examID = ce.examID";
-                        
+
                         rs = DBConnection.ExecQuery(query);
 
                         while (rs.next()) {
@@ -1713,51 +1761,45 @@ public class AdministratorUI {
                         if (cal.get(Calendar.WEEK_OF_YEAR) != week) {
                             currentdate.setDate(currentdate.getDate() - 1);
                             week = cal.get(Calendar.WEEK_OF_YEAR);
-                            
-                            
+
                             newfile.write((startweek.getMonth() + 1) + "/" + startweek.getDate() + "/"
                                     + startweek.getYear() + " - " + (endweek.getMonth() + 1) + "/" + endweek.getDate() + "/"
                                     + endweek.getYear() + ": " + num + "   ");
-                            
-                            for(int i = 0; i<courses.size(); i++)
-                            {
+
+                            for (int i = 0; i < courses.size(); i++) {
                                 newfile.write(courses.get(i) + "  ");
                             }
                             newfile.write("<br></br>");
-                            
+
                             int j = courses.size();
-                            
-                            for(int i = j-1; i>=0; i--)
-                            {
+
+                            for (int i = j - 1; i >= 0; i--) {
                                 courses.remove(i);
                             }
-                            
+
                             num = 0;
-                        
-                            
-                        startweek.setYear(currentdate.getYear());
-                    startweek.setMonth(currentdate.getMonth());
-                    startweek.setDate(currentdate.getDate());
-                            
+
+                            startweek.setYear(currentdate.getYear());
+                            startweek.setMonth(currentdate.getMonth());
+                            startweek.setDate(currentdate.getDate());
+
                         }
 
                     }
                     newfile.write((startweek.getMonth() + 1) + "/" + startweek.getDate() + "/"
-                                    + startweek.getYear() + " - " + (endweek.getMonth() + 1) + "/" + endweek.getDate() + "/"
-                                    + endweek.getYear() + ": " + num + "  ");
-                    
-                    for(int i = 0; i<courses.size(); i++)
-                            {
-                                newfile.write(courses.get(i) + "  ");
-                            }
-                            newfile.write("<br></br>");
-                            
-                            int j = courses.size();
-                            
-                            for(int i = j-1; i>=0; i--)
-                            {
-                                courses.remove(i);
-                            }
+                            + startweek.getYear() + " - " + (endweek.getMonth() + 1) + "/" + endweek.getDate() + "/"
+                            + endweek.getYear() + ": " + num + "  ");
+
+                    for (int i = 0; i < courses.size(); i++) {
+                        newfile.write(courses.get(i) + "  ");
+                    }
+                    newfile.write("<br></br>");
+
+                    int j = courses.size();
+
+                    for (int i = j - 1; i >= 0; i--) {
+                        courses.remove(i);
+                    }
 
                     newfile.write("\n</body>\n </html>");
 
@@ -1925,6 +1967,169 @@ public class AdministratorUI {
                 } catch (Exception ex) {
                     //catch any exceptions here
                 }
+            }
+        });
+    }
+
+    public void switchToEditTestingCenter(Administrator a) {
+        ArrayList<String> y = new ArrayList();
+        String year = "";
+
+        for (int i = 2015; i < 2017; i++) {
+            year = i + "";
+            y.add(year);
+        }
+
+        String[] years = new String[y.size()];
+
+        for (int i = 0; i < y.size(); i++) {
+            years[i] = y.get(i);
+        }
+
+        JComboBox season = new JComboBox();
+        season.setModel(new DefaultComboBoxModel(new String[]{"Spring", "Summer", "Fall", "Winter"}));
+        season.setBounds(111, 47, 94, 20);
+        frmAdministratorInterface.getContentPane().add(season);
+
+        JComboBox yearbox = new JComboBox();
+        yearbox.setModel(new DefaultComboBoxModel(years));
+        yearbox.setBounds(111, 77, 94, 20);
+        frmAdministratorInterface.getContentPane().add(yearbox);
+
+        JButton lookup = new JButton("Testing Center Term");
+        lookup.setBounds(111, 107, 137, 23);
+        frmAdministratorInterface.getContentPane().add(lookup);
+
+        lookup.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                season.setVisible(false);
+                yearbox.setVisible(false);
+                lookup.setVisible(false);
+
+                String term = season.getSelectedItem() + " " + yearbox.getSelectedItem();
+
+                String query = "Select * from testingcenter where term = '" + term + "'";
+
+                java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+                String id = "";
+
+                try {
+                    while (rs.next()) {
+                        id = rs.getString(1);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                TestingCenter t = new TestingCenter();
+                if (id.equals("")) {
+                    
+                    t.newterm(term);
+
+                }
+                else
+                {
+                    query = "Select * from testingcenter where testingcenterid = '" + id + "'";
+
+        rs = DBConnection.ExecQuery(query);
+
+        try {
+            while (rs.next()) {
+                
+                t.setId(rs.getString(1));
+                t.setSeats(rs.getInt(2), term);
+                t.setOpens(rs.getTime(3));
+                t.setCloses(rs.getTime(4));
+                t.setSetasideseats(rs.getInt(5), term);
+                t.setTerm(rs.getString(6));
+                t.setGaptime(rs.getTime(7));
+                t.setReminder(rs.getTime(8));
+                
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TestingCenter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+                }
+
+                JButton seats = new JButton("Edit Seats");
+                seats.setBounds(111, 107, 137, 23);
+                frmAdministratorInterface.getContentPane().add(seats);
+                
+                JButton setaside = new JButton("Edit Set-Aside Seats");
+                setaside.setBounds(111, 150, 137, 23);
+                frmAdministratorInterface.getContentPane().add(setaside);
+                
+                setaside.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        seats.setVisible(false);
+                        setaside.setVisible(false);
+
+                        JLabel lbleditsetaside = new JLabel("Enter number of set-aside seats:");
+                        lbleditsetaside.setBounds(10, 30, 56, 14);
+                        frmAdministratorInterface.getContentPane().add(lbleditsetaside);
+
+                        JButton entersetaside = new JButton("Enter");
+                        entersetaside.setBounds(50, 107, 137, 23);
+                        frmAdministratorInterface.getContentPane().add(entersetaside);
+
+                        JTextField newsetaside = new JTextField();
+                        newsetaside.setText(t.getSetasideseats() + "");
+                        newsetaside.setBounds(100, 30, 126, 20);
+                        frmAdministratorInterface.getContentPane().add(newsetaside);
+                        newsetaside.setColumns(10);
+                        
+                        JLabel seatslabel = new JLabel("Seats in testing center for " + term + ": " + t.getSetasideseats());
+                        seatslabel.setBounds(200, 60, 300, 40);
+                        frmAdministratorInterface.getContentPane().add(seatslabel);
+
+                        
+                        entersetaside.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        int seatnum = Integer.parseInt(newsetaside.getText());
+                        
+                        t.setSetasideseats(seatnum, term);
+                    }
+                        });
+
+                    }
+                });
+
+                seats.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        seats.setVisible(false);
+                        setaside.setVisible(false);
+
+                        JLabel lbleditseats = new JLabel("Enter number of seats:");
+                        lbleditseats.setBounds(10, 30, 56, 14);
+                        frmAdministratorInterface.getContentPane().add(lbleditseats);
+
+                        JButton enter = new JButton("Enter");
+                        enter.setBounds(50, 107, 137, 23);
+                        frmAdministratorInterface.getContentPane().add(enter);
+
+                        JTextField newseats = new JTextField();
+                        newseats.setText(t.getSeats() + "");
+                        newseats.setBounds(100, 30, 126, 20);
+                        frmAdministratorInterface.getContentPane().add(newseats);
+                        newseats.setColumns(10);
+                        
+                        JLabel seatslabel = new JLabel("Seats in testing center for " + term + ": " + t.getSeats());
+                        seatslabel.setBounds(20, 150, 300, 40);
+                        frmAdministratorInterface.getContentPane().add(seatslabel);
+
+                        
+                        enter.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        int seatnum = Integer.parseInt(newseats.getText());
+                        System.out.println(seatnum);
+                        
+                        t.setSeats(seatnum, term);
+                    }
+                        });
+
+                    }
+                });
             }
         });
     }

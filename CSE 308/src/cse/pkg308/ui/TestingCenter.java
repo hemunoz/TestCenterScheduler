@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cse.pkg308.ui;
 
 import java.util.Date;
@@ -19,7 +18,7 @@ import java.util.logging.Logger;
  * @author Owner
  */
 public class TestingCenter {
-    
+
     private int seats;
     private Date opens;
     private Date closes;
@@ -28,10 +27,21 @@ public class TestingCenter {
     private Date gaptime;
     private static Date reminder;
     private Date[] closeddates;
+    public String id;
 
-        
-    public TestingCenter(){
-        
+    public TestingCenter() {
+
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param seats the seats to set
+     */
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
@@ -44,7 +54,11 @@ public class TestingCenter {
     /**
      * @param seats the seats to set
      */
-    public void setSeats(int seats) {
+    public void setSeats(int seats, String term) {
+        String query = "UPDATE `scheduler`.`testingcenter` SET seats='" + seats + "' WHERE term = '" + term + "'";
+        
+        DBConnection.ExecUpdateQuery(query);
+        
         this.seats = seats;
     }
 
@@ -86,7 +100,11 @@ public class TestingCenter {
     /**
      * @param setasideseats the setasideseats to set
      */
-    public void setSetasideseats(int setasideseats) {
+    public void setSetasideseats(int setasideseats, String term) {
+        String query = "UPDATE `scheduler`.`testingcenter` SET setasideseats='" + setasideseats + "' WHERE term = '" + term + "'";
+        
+        DBConnection.ExecUpdateQuery(query);
+        
         this.setasideseats = setasideseats;
     }
 
@@ -125,17 +143,14 @@ public class TestingCenter {
         String query = "Select reminderinterval from testingcenter";
         java.sql.ResultSet rs1 = DBConnection.ExecQuery(query);
 
-        
         try {
-            while(rs1.next())
-            {
+            while (rs1.next()) {
                 reminder = rs1.getTime(1);
             }
         } catch (SQLException ex) {
             Logger.getLogger(TestingCenter.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        
         return reminder;
     }
 
@@ -159,5 +174,51 @@ public class TestingCenter {
     public void setCloseddates(Date[] closeddates) {
         this.closeddates = closeddates;
     }
-    
+
+    public void editseats(int seats) {
+
+    }
+
+    public void newterm(String term) {
+        String query = "Select (max(testingcenterid) + 1) from testingcenter";
+        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+        String id = "";
+
+        try {
+            while (rs.next()) {
+                id = rs.getString(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        query = "INSERT INTO `scheduler`.`testingcenter` (`testingcenterID`, `seats`, "
+                + "`Opens`, `Closes`, `setasideseats`, `term`, `gaptime`, `reminderinterval`) "
+                + "VALUES ('" + id + "', '100', '10:00:00', '19:00:00', '20', "
+                + "'" + term + "', '00:30:00', '01:00:00')";
+        DBConnection.ExecUpdateQuery(query);
+
+        query = "Select * from testingcenter where testingcenterid = '" + id + "'";
+
+        rs = DBConnection.ExecQuery(query);
+
+        try {
+            while (rs.next()) {
+                setId(rs.getString(1));
+                setSeats(rs.getInt(2), term);
+                setOpens(rs.getTime(3));
+                setCloses(rs.getTime(4));
+                setSetasideseats(rs.getInt(5), term);
+                setTerm(rs.getString(6));
+                setGaptime(rs.getTime(7));
+                setReminder(rs.getTime(8));
+                
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TestingCenter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
 }
