@@ -360,10 +360,11 @@ public class UserUI {
             a.setName(name);
             a.setEmail(email);
             
+            
+            
             if(!(a.getName().equals("")))
                 User.admin.initializeadmin(a);
-            else
-                switchToTryAgainPage();
+            
         }
         else
             switchToTryAgainPage();

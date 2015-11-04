@@ -60,7 +60,7 @@ public class PrintTime extends TimerTask{
        
        UserUI.time.setText(hours + ":" + minutes + ":" + seconds);
         
-       int searchhours = cal.getTime().getHours() + TestingCenter.getReminder().getHours();
+       int searchhours = cal.getTime().getHours() + TestingCenter.getReminderForTime().getHours();
        if(searchhours > 24)
            searchhours = searchhours - 24;
        

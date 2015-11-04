@@ -973,7 +973,7 @@ public class AdministratorUI {
 
                 String term = season.getSelectedItem().toString() + "_" + yearbox.getSelectedItem().toString();
 
-                String query = "Select u.name, e.examname, e.StartDate, a.checkedin, e.examID, "
+                String query = "Select u.name, e.examname, a.date, a.checkedin, e.examID, "
                         + "a.appointmentID, s.studentID from appointment a, "
                         + "exam e, student s, user u, has h, forexam f where e.examID = f.examID AND "
                         + "f.appointmentID = a.appointmentID AND a.appointmentID = h.appointmentID AND "
@@ -992,9 +992,11 @@ public class AdministratorUI {
                         a.setCheckedin(rs.getString(4));
                         a.setExamid(rs.getInt(5));
                         a.setStudentid(rs.getString(7));
+                        a.setDate(rs.getDate(3));
 
+                        //a.getDate().setYear(a.getDate().getYear() + 1900);
                         appointments.add(a);
-                        System.out.println(rs.getString(1) + ": " + rs.getString(2) + "-" + rs.getString(3));
+                        System.out.println(rs.getString(1) + ": " + rs.getString(2) + "-" + a.getDate().getYear());
                         names.add(rs.getString(1));
                     }
                 } catch (SQLException ex) {
@@ -1052,6 +1054,81 @@ public class AdministratorUI {
                         NotCheckedIn.setBounds(150, 200, 127, 23);
                         frmAdministratorInterface.getContentPane().add(NotCheckedIn);
 
+                        JButton cancel = new JButton("Cancel Appointments");
+                        cancel.setBounds(100, 260, 127, 23);
+                        frmAdministratorInterface.getContentPane().add(cancel);
+
+                        JButton modify = new JButton("Modify Appointments");
+                        modify.setBounds(250, 260, 127, 23);
+                        frmAdministratorInterface.getContentPane().add(modify);
+
+                        modify.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                Appointment ap = appointments.get(termappointments.getSelectedIndex());
+
+                                backtohome2.setVisible(false);
+                                studentcheckedin.setVisible(false);
+                                CheckedIn.setVisible(false);
+                                Pending.setVisible(false);
+                                NotCheckedIn.setVisible(false);
+                                termappointments.setVisible(false);
+                                cancel.setVisible(false);
+                                modify.setVisible(false);
+
+                                System.out.println(ap.getDate());
+
+                                JLabel date = new JLabel("Date: " + ap.getDate());
+                                date.setFont(new Font("Tahoma", Font.PLAIN, 15));
+                                date.setBounds(50, 151, 207, 21);
+                                frmAdministratorInterface.getContentPane().add(date);
+
+                                JCalendar appcalendar = new JCalendar();
+                                appcalendar.setBounds(226, 41, 198, 153);
+                                frmAdministratorInterface.getContentPane().add(appcalendar);
+
+                                JButton setdate = new JButton("Print Date");
+                                setdate.setBounds(50, 200, 127, 23);
+                                frmAdministratorInterface.getContentPane().add(setdate);
+
+                                setdate.addActionListener(new ActionListener() {
+                                    public void actionPerformed(ActionEvent e) {
+                                        Calendar cal = Calendar.getInstance();
+
+                                        cal.set(Calendar.YEAR, appcalendar.getDate().getYear());
+                                        cal.set(Calendar.MONTH, appcalendar.getDate().getMonth());
+                                        cal.set(Calendar.DAY_OF_MONTH, appcalendar.getDate().getDate());
+                                        java.sql.Date newdate = new java.sql.Date(cal.getTimeInMillis());
+
+                                        newdate.setYear(newdate.getYear() + 1900);
+
+                                        ap.setDate(newdate);
+                                        String query = "UPDATE `scheduler`.`appointment` SET `date`= '" + newdate + "' WHERE `appointmentID`='" + ap.getAppointmentid() + "'";
+                                        DBConnection.ExecUpdateQuery(query);
+
+                                        date.setText("Date: " + ap.getDate());
+
+                                    }
+                                });
+
+                            }
+                        });
+
+                        cancel.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                Appointment ap = appointments.get(termappointments.getSelectedIndex());
+                                ap.deleteappointment(appid);
+
+                                backtohome2.setVisible(false);
+                                studentcheckedin.setVisible(false);
+                                CheckedIn.setVisible(false);
+                                Pending.setVisible(false);
+                                NotCheckedIn.setVisible(false);
+                                termappointments.setVisible(false);
+                                cancel.setVisible(false);
+                                modify.setVisible(false);
+                            }
+                        });
+
                         backtohome2.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 backtohome2.setVisible(false);
@@ -1060,6 +1137,8 @@ public class AdministratorUI {
                                 Pending.setVisible(false);
                                 NotCheckedIn.setVisible(false);
                                 termappointments.setVisible(false);
+                                cancel.setVisible(false);
+                                modify.setVisible(false);
 
                                 switchToAdminSplashScreen(a);
                             }
@@ -2023,47 +2102,165 @@ public class AdministratorUI {
                 }
                 TestingCenter t = new TestingCenter();
                 if (id.equals("")) {
-                    
+
                     t.newterm(term);
 
-                }
-                else
-                {
+                } else {
                     query = "Select * from testingcenter where testingcenterid = '" + id + "'";
 
-        rs = DBConnection.ExecQuery(query);
+                    rs = DBConnection.ExecQuery(query);
 
-        try {
-            while (rs.next()) {
-                
-                t.setId(rs.getString(1));
-                t.setSeats(rs.getInt(2), term);
-                t.setOpens(rs.getTime(3));
-                t.setCloses(rs.getTime(4));
-                t.setSetasideseats(rs.getInt(5), term);
-                t.setTerm(rs.getString(6));
-                t.setGaptime(rs.getTime(7));
-                t.setReminder(rs.getTime(8));
-                
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(TestingCenter.class.getName()).log(Level.SEVERE, null, ex);
-        }
+                    try {
+                        while (rs.next()) {
+
+                            t.setId(rs.getString(1));
+                            t.setSeats(rs.getInt(2), term);
+                            t.setOpens(rs.getTime(3));
+                            t.setCloses(rs.getTime(4));
+                            t.setSetasideseats(rs.getInt(5), term);
+                            t.setTerm(rs.getString(6));
+                            t.setGaptime(rs.getTime(7), term);
+                            t.setReminder(rs.getTime(8));
+
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(TestingCenter.class.getName()).log(Level.SEVERE, null, ex);
+                    }
 
                 }
 
                 JButton seats = new JButton("Edit Seats");
-                seats.setBounds(111, 107, 137, 23);
+                seats.setBounds(111, 50, 137, 23);
                 frmAdministratorInterface.getContentPane().add(seats);
-                
+
                 JButton setaside = new JButton("Edit Set-Aside Seats");
-                setaside.setBounds(111, 150, 137, 23);
+                setaside.setBounds(111, 80, 137, 23);
                 frmAdministratorInterface.getContentPane().add(setaside);
+
+                JButton gaptime = new JButton("Edit Gap Time");
+                gaptime.setBounds(111, 110, 137, 23);
+                frmAdministratorInterface.getContentPane().add(gaptime);
                 
-                setaside.addActionListener(new ActionListener() {
+                JButton reminder = new JButton("Edit Reminder Interval");
+                reminder.setBounds(111, 140, 137, 23);
+                frmAdministratorInterface.getContentPane().add(reminder);
+                
+                
+reminder.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         seats.setVisible(false);
                         setaside.setVisible(false);
+                        gaptime.setVisible(false);
+                        reminder.setVisible(false);
+
+                        JLabel lbleditreminder = new JLabel("Enter Reminder Interval :");
+                        lbleditreminder.setBounds(10, 30, 56, 14);
+                        frmAdministratorInterface.getContentPane().add(lbleditreminder);
+
+                        JButton enterreminder = new JButton("Enter");
+                        enterreminder.setBounds(50, 107, 137, 23);
+                        frmAdministratorInterface.getContentPane().add(enterreminder);
+
+                        String[] hours = new String[24];
+                        String[] minutes = new String[60];
+
+                        for (int i = 0; i < 24; i++) {
+                            hours[i] = i + "";
+                        }
+                        
+                        for(int i = 0; i< 60; i++){
+                            minutes[i] = i + "";
+                        }
+
+                        JComboBox hourcomboBox = new JComboBox();
+
+                        hourcomboBox.setModel(new DefaultComboBoxModel(hours));
+                        hourcomboBox.setBounds(211, 106, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(hourcomboBox);
+                        
+                        JComboBox minutecomboBox = new JComboBox();
+                        minutecomboBox.setModel(new DefaultComboBoxModel(minutes));
+                        minutecomboBox.setBounds(300, 106, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(minutecomboBox);
+
+                        JLabel reminderlabel = new JLabel("Reminder Interval: " + t.getReminder());
+                        reminderlabel.setBounds(200, 60, 300, 40);
+                        frmAdministratorInterface.getContentPane().add(reminderlabel);
+
+                        enterreminder.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                if(!(hourcomboBox.getSelectedItem().equals("0") && minutecomboBox.getSelectedItem().equals("0")))
+                                {
+
+                                Time time = new Time(hourcomboBox.getSelectedIndex(), minutecomboBox.getSelectedIndex(), 0);
+                                
+                                t.setReminder(time);
+                                reminderlabel.setText("Reminder Interval: " + t.getReminder());
+                                }
+                                
+                            }
+                        });
+
+                    }
+
+                });
+
+                gaptime.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        seats.setVisible(false);
+                        setaside.setVisible(false);
+                        gaptime.setVisible(false);
+
+                        JLabel lbleditgap = new JLabel("Enter Gap Time :");
+                        lbleditgap.setBounds(10, 30, 56, 14);
+                        frmAdministratorInterface.getContentPane().add(lbleditgap);
+
+                        JButton entergap = new JButton("Enter");
+                        entergap.setBounds(50, 107, 137, 23);
+                        frmAdministratorInterface.getContentPane().add(entergap);
+
+                        String[] times = new String[30];
+
+                        for (int i = 0; i < 30; i++) {
+                            times[i] = (i + 1) + " Minutes";
+                        }
+
+                        JComboBox timecomboBox = new JComboBox();
+
+                        timecomboBox.setModel(new DefaultComboBoxModel(times));
+                        timecomboBox.setBounds(211, 106, 144, 20);
+                        frmAdministratorInterface.getContentPane().add(timecomboBox);
+
+                        JLabel gaplabel = new JLabel("Gap Time for " + term + ": " + t.getGaptime());
+                        gaplabel.setBounds(200, 60, 300, 40);
+                        frmAdministratorInterface.getContentPane().add(gaplabel);
+
+                        entergap.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                if(timecomboBox.getSelectedItem() != null)
+                                {
+                                
+                                System.out.println(timecomboBox.getSelectedIndex() + 1);
+                                Time time = new Time(0, timecomboBox.getSelectedIndex() + 1, 0);
+                                
+                                t.setGaptime(time, t.getTerm());
+                                gaplabel.setText("Gap Time for " + term + ": " + t.getGaptime());
+                                }
+                                
+                            }
+                        });
+
+                    }
+
+                });
+
+                setaside.addActionListener ( new ActionListener() {
+                    
+
+                    public void actionPerformed(ActionEvent e) {
+                        seats.setVisible(false);
+                        setaside.setVisible(false);
+                        gaptime.setVisible(false);
 
                         JLabel lbleditsetaside = new JLabel("Enter number of set-aside seats:");
                         lbleditsetaside.setBounds(10, 30, 56, 14);
@@ -2078,18 +2275,17 @@ public class AdministratorUI {
                         newsetaside.setBounds(100, 30, 126, 20);
                         frmAdministratorInterface.getContentPane().add(newsetaside);
                         newsetaside.setColumns(10);
-                        
+
                         JLabel seatslabel = new JLabel("Seats in testing center for " + term + ": " + t.getSetasideseats());
                         seatslabel.setBounds(200, 60, 300, 40);
                         frmAdministratorInterface.getContentPane().add(seatslabel);
 
-                        
                         entersetaside.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        int seatnum = Integer.parseInt(newsetaside.getText());
-                        
-                        t.setSetasideseats(seatnum, term);
-                    }
+                            public void actionPerformed(ActionEvent e) {
+                                int seatnum = Integer.parseInt(newsetaside.getText());
+
+                                t.setSetasideseats(seatnum, term);
+                            }
                         });
 
                     }
@@ -2113,25 +2309,28 @@ public class AdministratorUI {
                         newseats.setBounds(100, 30, 126, 20);
                         frmAdministratorInterface.getContentPane().add(newseats);
                         newseats.setColumns(10);
-                        
+
                         JLabel seatslabel = new JLabel("Seats in testing center for " + term + ": " + t.getSeats());
                         seatslabel.setBounds(20, 150, 300, 40);
                         frmAdministratorInterface.getContentPane().add(seatslabel);
 
-                        
                         enter.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        int seatnum = Integer.parseInt(newseats.getText());
-                        System.out.println(seatnum);
-                        
-                        t.setSeats(seatnum, term);
-                    }
+                            public void actionPerformed(ActionEvent e) {
+                                int seatnum = Integer.parseInt(newseats.getText());
+                                System.out.println(seatnum);
+
+                                t.setSeats(seatnum, term);
+                            }
                         });
 
                     }
                 });
             }
         });
+    }
+
+    public void switchToCancelPage(Administrator a, String id) {
+
     }
 
 }

@@ -132,15 +132,19 @@ public class TestingCenter {
     /**
      * @param gaptime the gaptime to set
      */
-    public void setGaptime(Date gaptime) {
+    public void setGaptime(Date gaptime, String term) {
+        String query = "UPDATE `scheduler`.`testingcenter` SET gaptime='" + gaptime + "' WHERE term = '" + term + "'";
+        
+        DBConnection.ExecUpdateQuery(query);
+        
         this.gaptime = gaptime;
     }
 
     /**
      * @return the reminder
      */
-    public static Date getReminder() {
-        String query = "Select reminderinterval from testingcenter";
+    public static Date getReminderForTime() {
+        String query = "Select reminderinterval from testingcenter where testingcenterid = '1'";
         java.sql.ResultSet rs1 = DBConnection.ExecQuery(query);
 
         try {
@@ -153,11 +157,18 @@ public class TestingCenter {
 
         return reminder;
     }
+    
+    public Date getReminder(){
+        return reminder;
+    }
 
     /**
      * @param reminder the reminder to set
      */
     public void setReminder(Date reminder) {
+        String query = "UPDATE `scheduler`.`testingcenter` SET `reminderinterval`='" + reminder + "'";
+        DBConnection.ExecUpdateQuery(query);
+        
         this.reminder = reminder;
     }
 
@@ -211,7 +222,7 @@ public class TestingCenter {
                 setCloses(rs.getTime(4));
                 setSetasideseats(rs.getInt(5), term);
                 setTerm(rs.getString(6));
-                setGaptime(rs.getTime(7));
+                setGaptime(rs.getTime(7), term);
                 setReminder(rs.getTime(8));
                 
             }

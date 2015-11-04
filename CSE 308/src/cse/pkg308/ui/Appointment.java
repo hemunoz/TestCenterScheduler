@@ -35,6 +35,7 @@ public class Appointment {
     private String checkedin;
     private int examid;
     private String studentid;
+    private Date date;
     
     public Appointment(){
         
@@ -68,6 +69,18 @@ public class Appointment {
 
         query = "INSERT INTO forexam VALUES ('" + id + "', '" + examID + "')";
         DBConnection.ExecUpdateQuery(query);
+    }
+    
+    public void deleteappointment(String id)
+    {
+        String query = "Delete from has where appointmentID = '" + id + "'";
+                    DBConnection.ExecUpdateQuery(query);
+
+                    query = "Delete from forexam where appointmentID = '" + id + "'";
+                    DBConnection.ExecUpdateQuery(query);
+
+                    query = "Delete from appointment where appointmentID = '" + id + "'";
+                    DBConnection.ExecUpdateQuery(query);
     }
 
     /**
@@ -124,6 +137,15 @@ public class Appointment {
      */
     public void setStudentid(String studentid) {
         this.studentid = studentid;
+    }
+    
+    public Date getDate() {
+        return date;
+    }
+
+   
+    public void setDate(Date date) {
+        this.date = date;
     }
     
 }
