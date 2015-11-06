@@ -1075,8 +1075,6 @@ public class AdministratorUI {
                                 cancel.setVisible(false);
                                 modify.setVisible(false);
 
-                                System.out.println(ap.getDate());
-
                                 JLabel date = new JLabel("Date: " + ap.getDate());
                                 date.setFont(new Font("Tahoma", Font.PLAIN, 15));
                                 date.setBounds(50, 151, 207, 21);
@@ -2115,8 +2113,8 @@ public class AdministratorUI {
 
                             t.setId(rs.getString(1));
                             t.setSeats(rs.getInt(2), term);
-                            t.setOpens(rs.getTime(3));
-                            t.setCloses(rs.getTime(4));
+                            t.setOpens(rs.getTime(3), term);
+                            t.setCloses(rs.getTime(4), term);
                             t.setSetasideseats(rs.getInt(5), term);
                             t.setTerm(rs.getString(6));
                             t.setGaptime(rs.getTime(7), term);
@@ -2140,13 +2138,228 @@ public class AdministratorUI {
                 JButton gaptime = new JButton("Edit Gap Time");
                 gaptime.setBounds(111, 110, 137, 23);
                 frmAdministratorInterface.getContentPane().add(gaptime);
-                
+
                 JButton reminder = new JButton("Edit Reminder Interval");
                 reminder.setBounds(111, 140, 137, 23);
                 frmAdministratorInterface.getContentPane().add(reminder);
-                
-                
-reminder.addActionListener(new ActionListener() {
+
+                JButton hours = new JButton("Edit Testing Center Hours");
+                hours.setBounds(111, 170, 237, 23);
+                frmAdministratorInterface.getContentPane().add(hours);
+
+                JButton closed = new JButton("Edit Testing Center Closed Dates");
+                closed.setBounds(111, 200, 237, 23);
+                frmAdministratorInterface.getContentPane().add(closed);
+
+                closed.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        seats.setVisible(false);
+                        setaside.setVisible(false);
+                        gaptime.setVisible(false);
+                        reminder.setVisible(false);
+                        hours.setVisible(false);
+                        closed.setVisible(false);
+
+                        Calendar cal = Calendar.getInstance();
+                        java.sql.Date start = new java.sql.Date(cal.getTimeInMillis());
+                        java.sql.Date end = new java.sql.Date(cal.getTimeInMillis());
+                        java.sql.Date current = new java.sql.Date(cal.getTimeInMillis());
+
+                        JCalendar calendar = new JCalendar();
+                        calendar.setBounds(226, 41, 198, 153);
+                        frmAdministratorInterface.getContentPane().add(calendar);
+
+                        JButton setstartdate = new JButton("Start Date");
+                        setstartdate.setBounds(50, 200, 127, 23);
+                        frmAdministratorInterface.getContentPane().add(setstartdate);
+
+                        JButton setenddate = new JButton("End Date");
+                        setenddate.setBounds(50, 230, 127, 23);
+                        frmAdministratorInterface.getContentPane().add(setenddate);
+                        
+                        JButton enterrange = new JButton("Enter Closed Date Range");
+                        enterrange.setBounds(100, 260, 160, 23);
+                        frmAdministratorInterface.getContentPane().add(enterrange);
+
+                        JLabel startlabel = new JLabel();
+                        startlabel.setBounds(300, 200, 150, 23);
+                        frmAdministratorInterface.getContentPane().add(startlabel);
+
+                        JLabel endlabel = new JLabel();
+                        endlabel.setBounds(300, 230, 150, 23);
+                        frmAdministratorInterface.getContentPane().add(endlabel);
+
+                        setstartdate.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+
+                                Calendar cal = Calendar.getInstance();
+                                cal.set(Calendar.YEAR, calendar.getDate().getYear());
+                                cal.set(Calendar.MONTH, calendar.getDate().getMonth());
+                                cal.set(Calendar.DAY_OF_MONTH, calendar.getDate().getDate());
+                                //java.sql.Date newdate = new java.sql.Date(cal.getTimeInMillis());
+                                //start = new java.sql.Date(cal.getTimeInMillis());
+                                java.sql.Date selected = new java.sql.Date(cal.getTimeInMillis());
+                                selected.setYear(selected.getYear() + 1900);
+
+                                if (selected.getTime() > end.getTime() && end.getTime() != current.getTime()) {
+                                    System.out.println("Invalid");
+                                } else {
+                                    start.setTime(cal.getTimeInMillis());
+
+                                    start.setYear(start.getYear() + 1900);
+                                    startlabel.setText(start.toString());
+                                }
+
+                            }
+                        });
+
+                        setenddate.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                Calendar cal = Calendar.getInstance();
+
+                                cal.set(Calendar.YEAR, calendar.getDate().getYear());
+                                cal.set(Calendar.MONTH, calendar.getDate().getMonth());
+                                cal.set(Calendar.DAY_OF_MONTH, calendar.getDate().getDate());
+
+                                java.sql.Date selected = new java.sql.Date(cal.getTimeInMillis());
+                                selected.setYear(selected.getYear() + 1900);
+
+                                if (start.getTime() > selected.getTime() && start.getTime() != current.getTime()) {
+                                    System.out.println("Invalid");
+                                } else {
+                                    end.setTime(cal.getTimeInMillis());
+
+                                    end.setYear(end.getYear() + 1900);
+                                    endlabel.setText(end.toString());
+                                }
+
+                            }
+                        });
+                        
+                        enterrange.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                if(start.getTime() != current.getTime() && end.getTime() != current.getTime())
+                                {
+                                    t.setStartclosed(start);
+                                    t.setEndclosed(end);
+                                    
+                                    t.editClosedDates(start, end);
+                                }
+                            }
+                        });
+                    }
+                });
+
+                hours.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        seats.setVisible(false);
+                        setaside.setVisible(false);
+                        gaptime.setVisible(false);
+                        reminder.setVisible(false);
+                        hours.setVisible(false);
+                        closed.setVisible(false);
+
+                        /* JLabel lbleditopen = new JLabel("Enter Open Time :");
+                         lbleditopen.setBounds(10, 230, 56, 14);
+                         frmAdministratorInterface.getContentPane().add(lbleditopen);
+                         */
+                        JButton enteropen = new JButton("Enter for Open Time");
+                        enteropen.setBounds(20, 200, 60, 23);
+                        frmAdministratorInterface.getContentPane().add(enteropen);
+                        /*
+                         JLabel lbleditclose = new JLabel("Enter Close Time :");
+                         lbleditclose.setBounds(100, 230, 56, 14);
+                         frmAdministratorInterface.getContentPane().add(lbleditclose);
+                         */
+                        JButton enterclose = new JButton("Enter for Close Time");
+                        enterclose.setBounds(100, 200, 60, 23);
+                        frmAdministratorInterface.getContentPane().add(enterclose);
+
+                        String[] hours = new String[12];
+                        String[] minutes = new String[60];
+
+                        for (int i = 0; i < 12; i++) {
+                            hours[i] = i + 1 + "";
+                        }
+
+                        for (int i = 0; i < 60; i++) {
+                            minutes[i] = i + "";
+                        }
+
+                        JComboBox openhour = new JComboBox();
+                        openhour.setModel(new DefaultComboBoxModel(hours));
+                        openhour.setBounds(20, 30, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(openhour);
+
+                        JComboBox openminute = new JComboBox();
+                        openminute.setModel(new DefaultComboBoxModel(minutes));
+                        openminute.setBounds(20, 60, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(openminute);
+
+                        JComboBox openampm = new JComboBox();
+                        openampm.setModel(new DefaultComboBoxModel(new String[]{"AM", "PM"}));
+                        openampm.setBounds(20, 90, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(openampm);
+
+                        JLabel openlabel = new JLabel("Open Time: " + t.getOpens());
+                        openlabel.setBounds(20, 120, 200, 40);
+                        frmAdministratorInterface.getContentPane().add(openlabel);
+
+                        JComboBox closehour = new JComboBox();
+                        closehour.setModel(new DefaultComboBoxModel(hours));
+                        closehour.setBounds(200, 30, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(closehour);
+
+                        JComboBox closeminute = new JComboBox();
+                        closeminute.setModel(new DefaultComboBoxModel(minutes));
+                        closeminute.setBounds(200, 60, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(closeminute);
+
+                        JComboBox closeampm = new JComboBox();
+                        closeampm.setModel(new DefaultComboBoxModel(new String[]{"AM", "PM"}));
+                        closeampm.setBounds(200, 90, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(closeampm);
+
+                        JLabel closelabel = new JLabel("Close Time: " + t.getCloses());
+                        closelabel.setBounds(200, 120, 250, 40);
+                        frmAdministratorInterface.getContentPane().add(closelabel);
+
+                        enteropen.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                Time opentime = new Time(openhour.getSelectedIndex() + 1, openminute.getSelectedIndex(), 0);
+                                if (openampm.getSelectedItem().equals("PM")) {
+                                    opentime.setHours(opentime.getHours() + 12);
+                                }
+
+                                t.setOpens(opentime, term);
+
+                                openlabel.setText("Open Time: " + t.getOpens());
+                                /*
+                                 */
+                            }
+
+                        });
+
+                        enterclose.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                Time closetime = new Time(closehour.getSelectedIndex() + 1, closeminute.getSelectedIndex(), 0);
+                                if (closeampm.getSelectedItem().equals("PM")) {
+                                    closetime.setHours(closetime.getHours() + 12);
+                                }
+
+                                t.setCloses(closetime, term);
+
+                                closelabel.setText("Close Time: " + t.getCloses());
+
+                            }
+
+                        });
+
+                    }
+
+                });
+
+                reminder.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         seats.setVisible(false);
                         setaside.setVisible(false);
@@ -2167,8 +2380,8 @@ reminder.addActionListener(new ActionListener() {
                         for (int i = 0; i < 24; i++) {
                             hours[i] = i + "";
                         }
-                        
-                        for(int i = 0; i< 60; i++){
+
+                        for (int i = 0; i < 60; i++) {
                             minutes[i] = i + "";
                         }
 
@@ -2177,7 +2390,7 @@ reminder.addActionListener(new ActionListener() {
                         hourcomboBox.setModel(new DefaultComboBoxModel(hours));
                         hourcomboBox.setBounds(211, 106, 80, 20);
                         frmAdministratorInterface.getContentPane().add(hourcomboBox);
-                        
+
                         JComboBox minutecomboBox = new JComboBox();
                         minutecomboBox.setModel(new DefaultComboBoxModel(minutes));
                         minutecomboBox.setBounds(300, 106, 80, 20);
@@ -2189,15 +2402,14 @@ reminder.addActionListener(new ActionListener() {
 
                         enterreminder.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
-                                if(!(hourcomboBox.getSelectedItem().equals("0") && minutecomboBox.getSelectedItem().equals("0")))
-                                {
+                                if (!(hourcomboBox.getSelectedItem().equals("0") && minutecomboBox.getSelectedItem().equals("0"))) {
 
-                                Time time = new Time(hourcomboBox.getSelectedIndex(), minutecomboBox.getSelectedIndex(), 0);
-                                
-                                t.setReminder(time);
-                                reminderlabel.setText("Reminder Interval: " + t.getReminder());
+                                    Time time = new Time(hourcomboBox.getSelectedIndex(), minutecomboBox.getSelectedIndex(), 0);
+
+                                    t.setReminder(time);
+                                    reminderlabel.setText("Reminder Interval: " + t.getReminder());
                                 }
-                                
+
                             }
                         });
 
@@ -2237,16 +2449,15 @@ reminder.addActionListener(new ActionListener() {
 
                         entergap.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
-                                if(timecomboBox.getSelectedItem() != null)
-                                {
-                                
-                                System.out.println(timecomboBox.getSelectedIndex() + 1);
-                                Time time = new Time(0, timecomboBox.getSelectedIndex() + 1, 0);
-                                
-                                t.setGaptime(time, t.getTerm());
-                                gaplabel.setText("Gap Time for " + term + ": " + t.getGaptime());
+                                if (timecomboBox.getSelectedItem() != null) {
+
+                                    System.out.println(timecomboBox.getSelectedIndex() + 1);
+                                    Time time = new Time(0, timecomboBox.getSelectedIndex() + 1, 0);
+
+                                    t.setGaptime(time, t.getTerm());
+                                    gaplabel.setText("Gap Time for " + term + ": " + t.getGaptime());
                                 }
-                                
+
                             }
                         });
 
@@ -2254,8 +2465,7 @@ reminder.addActionListener(new ActionListener() {
 
                 });
 
-                setaside.addActionListener ( new ActionListener() {
-                    
+                setaside.addActionListener(new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
                         seats.setVisible(false);

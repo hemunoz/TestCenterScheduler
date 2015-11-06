@@ -26,7 +26,8 @@ public class TestingCenter {
     private String Term;
     private Date gaptime;
     private static Date reminder;
-    private Date[] closeddates;
+    private Date startclosed;
+    private Date endclosed;
     public String id;
 
     public TestingCenter() {
@@ -72,7 +73,10 @@ public class TestingCenter {
     /**
      * @param opens the opens to set
      */
-    public void setOpens(Date opens) {
+    public void setOpens(Date opens, String term) {
+        String query = "UPDATE `scheduler`.`testingcenter` SET Opens='" + opens + "' WHERE term = '" + term + "'";
+        DBConnection.ExecUpdateQuery(query);
+        
         this.opens = opens;
     }
 
@@ -86,7 +90,10 @@ public class TestingCenter {
     /**
      * @param closes the closes to set
      */
-    public void setCloses(Date closes) {
+    public void setCloses(Date closes, String term) {
+        String query = "UPDATE `scheduler`.`testingcenter` SET Closes='" + closes + "' WHERE term = '" + term + "'";
+        DBConnection.ExecUpdateQuery(query);
+        
         this.closes = closes;
     }
 
@@ -175,16 +182,7 @@ public class TestingCenter {
     /**
      * @return the closeddates
      */
-    public Date[] getCloseddates() {
-        return closeddates;
-    }
-
-    /**
-     * @param closeddates the closeddates to set
-     */
-    public void setCloseddates(Date[] closeddates) {
-        this.closeddates = closeddates;
-    }
+    
 
     public void editseats(int seats) {
 
@@ -218,8 +216,8 @@ public class TestingCenter {
             while (rs.next()) {
                 setId(rs.getString(1));
                 setSeats(rs.getInt(2), term);
-                setOpens(rs.getTime(3));
-                setCloses(rs.getTime(4));
+                setOpens(rs.getTime(3), term);
+                setCloses(rs.getTime(4), term);
                 setSetasideseats(rs.getInt(5), term);
                 setTerm(rs.getString(6));
                 setGaptime(rs.getTime(7), term);
@@ -230,6 +228,70 @@ public class TestingCenter {
             Logger.getLogger(TestingCenter.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    /**
+     * @return the startclosed
+     */
+    public Date getStartclosed() {
+        return startclosed;
+    }
+
+    /**
+     * @param startclosed the startclosed to set
+     */
+    public void setStartclosed(Date startclosed) {
+        this.startclosed = startclosed;
+    }
+
+    /**
+     * @return the endclosed
+     */
+    public Date getEndclosed() {
+        return endclosed;
+    }
+
+    /**
+     * @param endclosed the endclosed to set
+     */
+    public void setEndclosed(Date endclosed) {
+        this.endclosed = endclosed;
+    }
+    
+    public void editClosedDates(Date start, Date end)
+    {
+        start = getStartclosed();
+        end = getEndclosed();
+        
+        int id = 0;
+        
+        String query = "Select (Max(rangeid) + 1) from closedranges";
+        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+        
+        try {
+            while(rs.next())
+            {
+                id = rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TestingCenter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        query = "INSERT INTO `scheduler`.`closedranges` (`term`, `closedstart`, `rangeid`, "
+                + "`closedend`) VALUES ('" + getTerm() + "', '" + start + "', '" + id + "', '" + end + "')";
+        
+        DBConnection.ExecUpdateQuery(query);
+        
+        Date curs =  start;
+        
+        while(curs.getDate() != end.getDate() + 1)
+        {
+            query = "INSERT INTO `scheduler`.`closeddates` (`date`, `term`) VALUES ('" + curs + "', '" + getTerm() + "')";
+            DBConnection.ExecUpdateQuery(query);
+            
+            curs.setDate(curs.getDate() + 1);
+            System.out.println(curs);
+        }
     }
 
 }
