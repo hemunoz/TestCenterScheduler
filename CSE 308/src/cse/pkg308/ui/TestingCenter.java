@@ -5,11 +5,13 @@
  */
 package cse.pkg308.ui;
 
-import java.util.Date;
 import cse.pkg308.DBConnection;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -258,7 +260,7 @@ public class TestingCenter {
         this.endclosed = endclosed;
     }
     
-    public void editClosedDates(Date start, Date end)
+    public void addClosedDates(Date start, Date end)
     {
         start = getStartclosed();
         end = getEndclosed();
@@ -277,21 +279,85 @@ public class TestingCenter {
             Logger.getLogger(TestingCenter.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        query = "INSERT INTO `scheduler`.`closedranges` (`term`, `closedstart`, `rangeid`, "
+      /*  query = "INSERT INTO `scheduler`.`closedranges` (`term`, `closedstart`, `rangeid`, "
                 + "`closedend`) VALUES ('" + getTerm() + "', '" + start + "', '" + id + "', '" + end + "')";
         
-        DBConnection.ExecUpdateQuery(query);
+        DBConnection.ExecUpdateQuery(query);*/
         
         Date curs =  start;
         
-        while(curs.getDate() != end.getDate() + 1)
+        System.out.println(end);
+        
+        while(curs.getTime() < end.getTime())
         {
+            System.out.println(curs);
             query = "INSERT INTO `scheduler`.`closeddates` (`date`, `term`) VALUES ('" + curs + "', '" + getTerm() + "')";
             DBConnection.ExecUpdateQuery(query);
             
             curs.setDate(curs.getDate() + 1);
-            System.out.println(curs);
+            
         }
+    }
+    
+    public void removeClosedDates(Date start, Date end)
+    {
+        
+        Date curs =  start;
+        
+        while(curs.getTime() < end.getTime())
+        {
+            String query = "Delete from `scheduler`.`closeddates` where Date = '" + curs + "'";
+            DBConnection.ExecUpdateQuery(query);
+            
+            curs.setDate(curs.getDate() + 1);
+            
+        }
+    }
+    
+    public void addnonsbtime(Time start, Time end)
+    {
+        String query = "Select Max(rangeid) + 1 from nonsbtimes";
+        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+        
+        int id = 0;
+        
+        try {
+            while(rs.next())
+            {
+                id = rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TestingCenter.class.getName()).log(Level.SEVERE, null, ex);
+        }    
+        
+        query = "INSERT INTO `scheduler`.`nonsbtimes` (`rangeid`, `term`, `starttime`, `endtime`) "
+                + "VALUES ('" + id + "', '" + getTerm() + "', '" + start + "', '" + end + "')";
+        DBConnection.ExecUpdateQuery(query);
+    }
+    
+    public String[] getNonSBTimes(){
+        ArrayList <String> nonsb = new ArrayList();
+        
+        String query = "Select starttime, endtime from nonsbtimes where term = '" + getTerm() + "'";
+        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+        
+        try {
+            while(rs.next())
+            {
+                nonsb.add(rs.getString(1) + "-" + rs.getString(2));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TestingCenter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        String [] nonsbarray = new String [nonsb.size()];
+        
+        for(int i = 0; i < nonsbarray.length; i++)
+        {
+            nonsbarray[i] = nonsb.get(i);
+        }
+        
+        return nonsbarray;
     }
 
 }

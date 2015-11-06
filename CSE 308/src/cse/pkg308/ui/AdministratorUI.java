@@ -2150,6 +2150,113 @@ public class AdministratorUI {
                 JButton closed = new JButton("Edit Testing Center Closed Dates");
                 closed.setBounds(111, 200, 237, 23);
                 frmAdministratorInterface.getContentPane().add(closed);
+                
+                JButton nonsb = new JButton("Edit Testing Center Non-Stony Brook Hours");
+                nonsb.setBounds(111, 230, 237, 23);
+                frmAdministratorInterface.getContentPane().add(nonsb);
+                
+                nonsb.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        seats.setVisible(false);
+                        setaside.setVisible(false);
+                        gaptime.setVisible(false);
+                        reminder.setVisible(false);
+                        hours.setVisible(false);
+                        closed.setVisible(false);
+                        nonsb.setVisible(false);
+                        
+                        JButton addnonsb = new JButton("Enter for Open Time");
+                        addnonsb.setBounds(20, 200, 60, 23);
+                        frmAdministratorInterface.getContentPane().add(addnonsb);
+                        
+
+                        String[] hours = new String[12];
+                        String[] minutes = new String[60];
+
+                        for (int i = 0; i < 12; i++) {
+                            hours[i] = i + 1 + "";
+                        }
+
+                        for (int i = 0; i < 60; i++) {
+                            minutes[i] = i + "";
+                        }
+
+                        JComboBox openhour = new JComboBox();
+                        openhour.setModel(new DefaultComboBoxModel(hours));
+                        openhour.setBounds(20, 30, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(openhour);
+
+                        JComboBox openminute = new JComboBox();
+                        openminute.setModel(new DefaultComboBoxModel(minutes));
+                        openminute.setBounds(20, 60, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(openminute);
+
+                        JComboBox openampm = new JComboBox();
+                        openampm.setModel(new DefaultComboBoxModel(new String[]{"AM", "PM"}));
+                        openampm.setBounds(20, 90, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(openampm);
+
+                        JLabel openlabel = new JLabel();
+                        openlabel.setBounds(20, 120, 200, 40);
+                        frmAdministratorInterface.getContentPane().add(openlabel);
+
+                        JComboBox closehour = new JComboBox();
+                        closehour.setModel(new DefaultComboBoxModel(hours));
+                        closehour.setBounds(200, 30, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(closehour);
+
+                        JComboBox closeminute = new JComboBox();
+                        closeminute.setModel(new DefaultComboBoxModel(minutes));
+                        closeminute.setBounds(200, 60, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(closeminute);
+
+                        JComboBox closeampm = new JComboBox();
+                        closeampm.setModel(new DefaultComboBoxModel(new String[]{"AM", "PM"}));
+                        closeampm.setBounds(200, 90, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(closeampm);
+
+                        JLabel closelabel = new JLabel();
+                        closelabel.setBounds(200, 120, 250, 40);
+                        frmAdministratorInterface.getContentPane().add(closelabel);
+                        
+                        JComboBox ranges = new JComboBox();
+                        ranges.setModel(new DefaultComboBoxModel(t.getNonSBTimes()));
+                        ranges.setBounds(150, 190, 80, 20);
+                        frmAdministratorInterface.getContentPane().add(ranges);
+
+                        addnonsb.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                Time opentime = new Time(openhour.getSelectedIndex() + 1, openminute.getSelectedIndex(), 0);
+                                if (openampm.getSelectedItem().equals("PM") && (openhour.getSelectedIndex() + 1) != 12) {
+                                    opentime.setHours(opentime.getHours() + 12);
+                                }
+                                
+                                if (openampm.getSelectedItem().equals("AM") && (openhour.getSelectedIndex() + 1) == 12) {
+                                    opentime.setHours(opentime.getHours() - 12);
+                                }
+                                
+                                Time closetime = new Time(closehour.getSelectedIndex() + 1, closeminute.getSelectedIndex(), 0);
+                                if (closeampm.getSelectedItem().equals("PM")&& (closehour.getSelectedIndex() + 1) != 12 ) {
+                                    closetime.setHours(closetime.getHours() + 12);
+                                }
+                                
+                                if (closeampm.getSelectedItem().equals("AM") && (closehour.getSelectedIndex() + 1) == 12) {
+                                    closetime.setHours(closetime.getHours() - 12);
+                                }
+
+                                openlabel.setText("Open Time Added: " + opentime);
+                                closelabel.setText("Close Time Added: " + closetime);
+                                
+                                t.addnonsbtime(opentime, closetime);
+                                
+                                ranges.setModel(new DefaultComboBoxModel(t.getNonSBTimes()));
+                                
+                            }
+
+                        });
+                        
+                    }
+                });
 
                 closed.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -2177,9 +2284,13 @@ public class AdministratorUI {
                         setenddate.setBounds(50, 230, 127, 23);
                         frmAdministratorInterface.getContentPane().add(setenddate);
                         
-                        JButton enterrange = new JButton("Enter Closed Date Range");
-                        enterrange.setBounds(100, 260, 160, 23);
-                        frmAdministratorInterface.getContentPane().add(enterrange);
+                        JButton addrange = new JButton("Add Closed Date Range");
+                        addrange.setBounds(100, 260, 160, 23);
+                        frmAdministratorInterface.getContentPane().add(addrange);
+                        
+                        JButton removerange = new JButton("Remove Closed Date Range");
+                        removerange.setBounds(100, 290, 160, 23);
+                        frmAdministratorInterface.getContentPane().add(removerange);
 
                         JLabel startlabel = new JLabel();
                         startlabel.setBounds(300, 200, 150, 23);
@@ -2236,14 +2347,26 @@ public class AdministratorUI {
                             }
                         });
                         
-                        enterrange.addActionListener(new ActionListener() {
+                        addrange.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 if(start.getTime() != current.getTime() && end.getTime() != current.getTime())
                                 {
                                     t.setStartclosed(start);
                                     t.setEndclosed(end);
                                     
-                                    t.editClosedDates(start, end);
+                                    t.addClosedDates(start, end);
+                                }
+                            }
+                        });
+                        
+                        removerange.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                if(start.getTime() != current.getTime() && end.getTime() != current.getTime())
+                                {
+                                    t.setStartclosed(start);
+                                    t.setEndclosed(end);
+                                    
+                                    t.removeClosedDates(start, end);
                                 }
                             }
                         });
@@ -2330,6 +2453,12 @@ public class AdministratorUI {
                                 if (openampm.getSelectedItem().equals("PM")) {
                                     opentime.setHours(opentime.getHours() + 12);
                                 }
+                                
+                                if (openampm.getSelectedItem().equals("AM") && (openhour.getSelectedIndex() + 1) == 12) {
+                                    opentime.setHours(opentime.getHours() - 12);
+                                }
+                                
+                                
 
                                 t.setOpens(opentime, term);
 
@@ -2345,6 +2474,10 @@ public class AdministratorUI {
                                 Time closetime = new Time(closehour.getSelectedIndex() + 1, closeminute.getSelectedIndex(), 0);
                                 if (closeampm.getSelectedItem().equals("PM")) {
                                     closetime.setHours(closetime.getHours() + 12);
+                                }
+
+                                if (closeampm.getSelectedItem().equals("AM") && (closehour.getSelectedIndex() + 1) == 12) {
+                                    closetime.setHours(closetime.getHours() - 12);
                                 }
 
                                 t.setCloses(closetime, term);
