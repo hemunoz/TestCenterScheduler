@@ -1353,6 +1353,11 @@ public class AdministratorUI {
                 exams.setBounds(100, 47, 124, 20);
                 frmAdministratorInterface.getContentPane().add(exams);
 
+                /*JButton info = new JButton("Request Info");
+
+                info.setBounds(10, 47, 80, 20);
+                frmAdministratorInterface.getContentPane().add(info);*/
+
                 instrlabel.setVisible(true);
                 startdatelabel.setVisible(true);
                 enddatelabel.setVisible(true);
@@ -1375,6 +1380,7 @@ public class AdministratorUI {
 
                         try {
                             while (rs.next()) {
+
                                 p.setStartDate(rs.getDate(2));
                                 p.setEndDate(rs.getDate(3));
                                 p.setStartTime(rs.getTime(4));
@@ -1384,19 +1390,19 @@ public class AdministratorUI {
                                 p.setRequestname(exams.getSelectedItem().toString());
                                 p.setTerm(term);
 
-                                instr.setText(rs.getString(1));
-                                startdate.setText(rs.getString(2));
-                                enddate.setText(rs.getString(3));
-                                starttime.setText(rs.getString(4));
-                                endtime.setText(rs.getString(5));
-                                course.setText(rs.getString(7));
-
                                 instr.setVisible(true);
                                 startdate.setVisible(true);
                                 enddate.setVisible(true);
                                 starttime.setVisible(true);
                                 endtime.setVisible(true);
                                 course.setVisible(true);
+
+                                instr.setText(rs.getString(1));
+                                startdate.setText(rs.getString(2));
+                                enddate.setText(rs.getString(3));
+                                starttime.setText(rs.getString(4));
+                                endtime.setText(rs.getString(5));
+                                course.setText(rs.getString(7));
 
                                 approve.setVisible(true);
                                 deny.setVisible(true);
@@ -1449,6 +1455,65 @@ public class AdministratorUI {
                                 query = "INSERT INTO `scheduler`.`approvedfor` (`requestid`, `examid`) VALUES ('"
                                         + p.getRequestid() + "', '" + id + "')";
                                 DBConnection.ExecUpdateQuery(query);
+
+                                query = "Select seats from testingcenter where term = '" + term + "'";
+                                int seats = 0;
+                                rs = DBConnection.ExecQuery(query);
+                                try {
+                                    while (rs.next()) {
+                                        seats = rs.getInt(1);
+                                    }
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+
+                                Date curs = p.getStartDate();
+
+                                System.out.println(seats);
+
+                                while (curs.getTime() <= p.getEndDate().getTime()) {
+                                    query = "Select max(individualid) + 1 from individualexam";
+                                    rs = DBConnection.ExecQuery(query);
+                                    String rangeid = "";
+
+                                    try {
+                                        while (rs.next()) {
+                                            rangeid = rs.getString(1);
+                                        }
+                                    } catch (SQLException ex) {
+                                        Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+
+                                    String query2 = "Select Min(seatsavailable) from individualexam where date = '" + curs
+                                            + "' AND ((starttime <= '" + p.getEndTime() + "' AND endtime >= '" + p.getEndTime() + "') OR "
+                                            + "(starttime <= '" + p.getStartTime() + "' AND endtime >= '" + p.getEndTime() + "') OR (starttime >= '" + p.getStartTime() + "' AND "
+                                            + "endtime <= '" + p.getEndTime() + "') OR (starttime <= '" + p.getStartTime() + "' AND endtime >= '" + p.getStartTime() + "'))";
+                                    java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
+
+                                    try {
+                                        while (rs2.next()) {
+                                            seats = rs2.getInt(1);
+                                        }
+                                    } catch (SQLException ex) {
+                                        Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+
+                                    String query3 = "INSERT INTO `scheduler`.`individualexam` (`individualid`, `examid`, `date`, "
+                                            + "`starttime`, `endtime`, `seatsavailable`) VALUES ('" + rangeid + "', '" + id
+                                            + "', '" + curs + "', '" + p.getStartTime() + "', '" + p.getEndTime() + "', '" + seats + "')";
+                                    DBConnection.ExecUpdateQuery(query3);
+                                    
+                                    query3 = "UPDATE `scheduler`.`individualexam` SET `seatsavailable`='" + seats + "' where date = '" + curs
+                                            + "' AND ((starttime <= '" + p.getEndTime() + "' AND endtime >= '" + p.getEndTime() + "') OR "
+                                            + "(starttime <= '" + p.getStartTime() + "' AND endtime >= '" + p.getEndTime() + "') OR (starttime >= '" + p.getStartTime() + "' AND "
+                                            + "endtime <= '" + p.getEndTime() + "') OR (starttime <= '" + p.getStartTime() + "' AND endtime >= '" + p.getStartTime() + "'))";
+                                    DBConnection.ExecUpdateQuery(query3);
+
+                                    System.out.println(seats);
+
+                                    curs.setDate(curs.getDate() + 1);
+
+                                }
 
                                 switchToApproveDenyConfirmation(a, exams.getSelectedItem().toString(),
                                         "Request for " + exams.getSelectedItem().toString() + " has been approved");
@@ -2150,11 +2215,11 @@ public class AdministratorUI {
                 JButton closed = new JButton("Edit Testing Center Closed Dates");
                 closed.setBounds(111, 200, 237, 23);
                 frmAdministratorInterface.getContentPane().add(closed);
-                
+
                 JButton nonsb = new JButton("Edit Testing Center Non-Stony Brook Hours");
                 nonsb.setBounds(111, 230, 237, 23);
                 frmAdministratorInterface.getContentPane().add(nonsb);
-                
+
                 nonsb.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         seats.setVisible(false);
@@ -2164,11 +2229,10 @@ public class AdministratorUI {
                         hours.setVisible(false);
                         closed.setVisible(false);
                         nonsb.setVisible(false);
-                        
+
                         JButton addnonsb = new JButton("Enter for Open Time");
                         addnonsb.setBounds(20, 200, 60, 23);
                         frmAdministratorInterface.getContentPane().add(addnonsb);
-                        
 
                         String[] hours = new String[12];
                         String[] minutes = new String[60];
@@ -2218,7 +2282,7 @@ public class AdministratorUI {
                         JLabel closelabel = new JLabel();
                         closelabel.setBounds(200, 120, 250, 40);
                         frmAdministratorInterface.getContentPane().add(closelabel);
-                        
+
                         JComboBox ranges = new JComboBox();
                         ranges.setModel(new DefaultComboBoxModel(t.getNonSBTimes()));
                         ranges.setBounds(150, 190, 80, 20);
@@ -2230,31 +2294,31 @@ public class AdministratorUI {
                                 if (openampm.getSelectedItem().equals("PM") && (openhour.getSelectedIndex() + 1) != 12) {
                                     opentime.setHours(opentime.getHours() + 12);
                                 }
-                                
+
                                 if (openampm.getSelectedItem().equals("AM") && (openhour.getSelectedIndex() + 1) == 12) {
                                     opentime.setHours(opentime.getHours() - 12);
                                 }
-                                
+
                                 Time closetime = new Time(closehour.getSelectedIndex() + 1, closeminute.getSelectedIndex(), 0);
-                                if (closeampm.getSelectedItem().equals("PM")&& (closehour.getSelectedIndex() + 1) != 12 ) {
+                                if (closeampm.getSelectedItem().equals("PM") && (closehour.getSelectedIndex() + 1) != 12) {
                                     closetime.setHours(closetime.getHours() + 12);
                                 }
-                                
+
                                 if (closeampm.getSelectedItem().equals("AM") && (closehour.getSelectedIndex() + 1) == 12) {
                                     closetime.setHours(closetime.getHours() - 12);
                                 }
 
                                 openlabel.setText("Open Time Added: " + opentime);
                                 closelabel.setText("Close Time Added: " + closetime);
-                                
+
                                 t.addnonsbtime(opentime, closetime);
-                                
+
                                 ranges.setModel(new DefaultComboBoxModel(t.getNonSBTimes()));
-                                
+
                             }
 
                         });
-                        
+
                     }
                 });
 
@@ -2283,11 +2347,11 @@ public class AdministratorUI {
                         JButton setenddate = new JButton("End Date");
                         setenddate.setBounds(50, 230, 127, 23);
                         frmAdministratorInterface.getContentPane().add(setenddate);
-                        
+
                         JButton addrange = new JButton("Add Closed Date Range");
                         addrange.setBounds(100, 260, 160, 23);
                         frmAdministratorInterface.getContentPane().add(addrange);
-                        
+
                         JButton removerange = new JButton("Remove Closed Date Range");
                         removerange.setBounds(100, 290, 160, 23);
                         frmAdministratorInterface.getContentPane().add(removerange);
@@ -2346,26 +2410,24 @@ public class AdministratorUI {
 
                             }
                         });
-                        
+
                         addrange.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
-                                if(start.getTime() != current.getTime() && end.getTime() != current.getTime())
-                                {
+                                if (start.getTime() != current.getTime() && end.getTime() != current.getTime()) {
                                     t.setStartclosed(start);
                                     t.setEndclosed(end);
-                                    
+
                                     t.addClosedDates(start, end);
                                 }
                             }
                         });
-                        
+
                         removerange.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
-                                if(start.getTime() != current.getTime() && end.getTime() != current.getTime())
-                                {
+                                if (start.getTime() != current.getTime() && end.getTime() != current.getTime()) {
                                     t.setStartclosed(start);
                                     t.setEndclosed(end);
-                                    
+
                                     t.removeClosedDates(start, end);
                                 }
                             }
@@ -2453,12 +2515,10 @@ public class AdministratorUI {
                                 if (openampm.getSelectedItem().equals("PM")) {
                                     opentime.setHours(opentime.getHours() + 12);
                                 }
-                                
+
                                 if (openampm.getSelectedItem().equals("AM") && (openhour.getSelectedIndex() + 1) == 12) {
                                     opentime.setHours(opentime.getHours() - 12);
                                 }
-                                
-                                
 
                                 t.setOpens(opentime, term);
 

@@ -67,6 +67,40 @@ public class Exam {
             return true;
     }
     
+    public boolean availableseats(String examID, Date date)
+    {
+        String query = "Select seatsavailable from individualexam where examid = '" + examID + "'"
+                + " AND date = '" + date + "'";
+        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+        
+        int seats = 0;
+        
+        try {
+            while(rs.next())
+            {
+                seats = rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Exam.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if(seats == 0)
+        {
+            return false;
+        }
+        else
+        {
+            seats--;
+            query = "UPDATE `scheduler`.`individualexam` SET `seatsavailable`='" + seats + "' WHERE"
+                    + " examID = '" + examID + "' AND date = '" + date + "'";
+            DBConnection.ExecUpdateQuery(query);
+            
+            return true;
+        }
+        
+        
+    }
+    
     public boolean checkTime(String time)
     {
         if(!(getStartTime().equals(time)))

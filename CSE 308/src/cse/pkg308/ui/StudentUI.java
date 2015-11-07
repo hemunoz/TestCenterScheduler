@@ -348,7 +348,6 @@ public class StudentUI {
             Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-
         Appointment app = new Appointment();
         app.addappointment(exam.getExamID(), s.getID() + "", date);
         System.out.println(s.getID());
@@ -517,6 +516,30 @@ public class StudentUI {
                 System.out.println(s.getID());
 
                 if (PrintTime.morethanaday(examcomboBox.getSelectedItem().toString())) {
+                    
+
+                    query = "Select i.examid, i.date, i.seatsavailable from individualexam i, forexam f, appointment a where"
+                            + " i.examid = f.examid AND f.appointmentid = a.appointmentID AND a.appointmentID"
+                            + " = '" + id + "' AND a.date = i.date";
+
+                    rs = DBConnection.ExecQuery(query);
+                    String date = "";
+                    String examid = "";
+                    int seats = 0;
+                    try {
+                        while (rs.next()) {
+                            examid = rs.getString(1);
+                            date = rs.getString(2);
+                            seats = rs.getInt(3);
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    seats++;
+                    query = "UPDATE individualexam SET seatsavailable ='" + seats + "' WHERE"
+                            + " examid = '" + examid + "' AND date = '" + date + "'";
+                    DBConnection.ExecUpdateQuery(query);
+                    
                     query = "Delete from has where appointmentID = '" + id + "'";
                     DBConnection.ExecUpdateQuery(query);
 
@@ -668,16 +691,16 @@ public class StudentUI {
                             temp2.setYear(tempdate.getYear());
                             temp2.setMonth(tempdate.getMonth());
                             temp2.setDate(tempdate.getDate() + j);
-                            
+
                             SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
 
                             cal.set(Calendar.YEAR, tempdate.getYear());
-                            cal.set(Calendar.MONTH, tempdate.getMonth()); 
+                            cal.set(Calendar.MONTH, tempdate.getMonth());
                             cal.set(Calendar.DAY_OF_MONTH, tempdate.getDate() + j);
-                            
+
                             java.sql.Date newdate = new java.sql.Date(cal.getTimeInMillis());
                             newdate.setYear(tempdate.getYear());
-                            
+
                             System.out.println(newdate);
                             System.out.println(sdf.format(newdate));
 
@@ -814,7 +837,7 @@ public class StudentUI {
                 Exam exam = new Exam();
 
                 String query = "Select * from Exam where examname = '" + examcomboBox.getSelectedItem().toString() + "'";
-                       // + " AND startDate = '" + datecomboBox.getSelectedItem() + "'"
+                // + " AND startDate = '" + datecomboBox.getSelectedItem() + "'"
                 // + " AND startTime = '" + timecomboBox.getSelectedItem() + "'";
                 java.sql.ResultSet rs = DBConnection.ExecQuery(query);
 
@@ -849,6 +872,8 @@ public class StudentUI {
                     switchToCannotSchedulePage("You are not currently enrolled in this course");
                 } else if (exam.lookupstudent(s.getID() + "") == true) {
                     switchToCannotSchedulePage("You already have an appointment for this exam");
+                } else if (exam.availableseats(exam.getExamID() + "", dates.get(datecomboBox.getSelectedIndex())) == false) {
+                    switchToCannotSchedulePage("No Available Seats");
                 } else {
                     System.out.println("HIIII");
                     switchToAppointmentConfirmationPage(s, exam, dates.get(datecomboBox.getSelectedIndex()));
