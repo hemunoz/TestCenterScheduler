@@ -62,7 +62,7 @@ public class AdministratorUI {
     public static JLabel lblCloseDate;
     public static JButton btnLogOut;
     public static JButton btnImportData;
-    public static JButton btnApply;
+    public static JButton btnUtilization;
     public static JButton btnSchedulingRequests;
     public static JButton btnMakeAnAppointment;
     public static JButton btnCheckInStudent;
@@ -183,9 +183,9 @@ public class AdministratorUI {
         btnImportData.setBounds(262, 205, 137, 23);
         frmAdministratorInterface.getContentPane().add(btnImportData);
 
-        btnApply = new JButton("Apply");
-        btnApply.setBounds(57, 290, 89, 23);
-        frmAdministratorInterface.getContentPane().add(btnApply);
+        btnUtilization = new JButton("Utilization");
+        btnUtilization.setBounds(57, 290, 89, 23);
+        frmAdministratorInterface.getContentPane().add(btnUtilization);
 
         btnSchedulingRequests = new JButton("Scheduling Requests");
         btnSchedulingRequests.setBounds(262, 239, 137, 23);
@@ -217,6 +217,44 @@ public class AdministratorUI {
         btnAppointments.setBounds(262, 335, 137, 23);
         frmAdministratorInterface.getContentPane().add(btnAppointments);
 
+        btnUtilization.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                lblName.setVisible(false);
+                /*textFieldOpenTime.setVisible(false);
+                 textFieldCloseTime.setVisible(false);*/
+                textFieldID.setVisible(false);
+                lblAdministrator.setVisible(false);
+                lblName2.setVisible(false);
+                calendar.setVisible(false);
+                /*lblNumberOfSeats.setVisible(false);
+                 comboBox.setVisible(false);
+                 lblNumberOfReserved.setVisible(false);*/
+                btnLogOut.setVisible(false);
+                lblName2.setVisible(false);
+                /*comboBox_1.setVisible(false);
+                 lblSemester.setVisible(false);
+                 comboBox_2.setVisible(false);
+                 lblOpenTime.setVisible(false);
+                 dateChooser.setVisible(false);
+                 lblCloseTime.setVisible(false);
+                 lblOpenDate.setVisible(false);
+                 dateChooser_1.setVisible(false);
+                 lblCloseDate.setVisible(false);
+                 lblOpenTime.setVisible(false);*/
+                btnImportData.setVisible(false);
+                btnUtilization.setVisible(false);
+                btnSchedulingRequests.setVisible(false);
+                btnMakeAnAppointment.setVisible(false);
+                btnCheckInStudent.setVisible(false);
+                lblStudentId.setVisible(false);
+                btnGenerateReport.setVisible(false);
+                btnAppointments.setVisible(false);
+                btnedittestingcenter.setVisible(false);
+
+                switchToDisplayUtilization(a);
+            }
+        });
+
         btnedittestingcenter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 lblName.setVisible(false);
@@ -242,7 +280,7 @@ public class AdministratorUI {
                  lblCloseDate.setVisible(false);
                  lblOpenTime.setVisible(false);*/
                 btnImportData.setVisible(false);
-                btnApply.setVisible(false);
+                btnUtilization.setVisible(false);
                 btnSchedulingRequests.setVisible(false);
                 btnMakeAnAppointment.setVisible(false);
                 btnCheckInStudent.setVisible(false);
@@ -280,7 +318,7 @@ public class AdministratorUI {
                  lblCloseDate.setVisible(false);
                  lblOpenTime.setVisible(false);*/
                 btnImportData.setVisible(false);
-                btnApply.setVisible(false);
+                btnUtilization.setVisible(false);
                 btnSchedulingRequests.setVisible(false);
                 btnMakeAnAppointment.setVisible(false);
                 btnCheckInStudent.setVisible(false);
@@ -318,7 +356,7 @@ public class AdministratorUI {
                  lblCloseDate.setVisible(false);
                  lblOpenTime.setVisible(false);*/
                 btnImportData.setVisible(false);
-                btnApply.setVisible(false);
+                btnUtilization.setVisible(false);
                 btnSchedulingRequests.setVisible(false);
                 btnMakeAnAppointment.setVisible(false);
                 btnCheckInStudent.setVisible(false);
@@ -357,7 +395,7 @@ public class AdministratorUI {
                  lblCloseDate.setVisible(false);
                  lblOpenTime.setVisible(false);*/
                 btnImportData.setVisible(false);
-                btnApply.setVisible(false);
+                btnUtilization.setVisible(false);
                 btnSchedulingRequests.setVisible(false);
                 btnMakeAnAppointment.setVisible(false);
                 btnCheckInStudent.setVisible(false);
@@ -396,7 +434,7 @@ public class AdministratorUI {
                  lblCloseDate.setVisible(false);
                  lblOpenTime.setVisible(false);*/
                 btnImportData.setVisible(false);
-                btnApply.setVisible(false);
+                btnUtilization.setVisible(false);
                 btnSchedulingRequests.setVisible(false);
                 btnMakeAnAppointment.setVisible(false);
                 btnCheckInStudent.setVisible(false);
@@ -903,7 +941,7 @@ public class AdministratorUI {
         lblCloseDate.setVisible(true);
         lblOpenTime.setVisible(true);
         btnImportData.setVisible(true);
-        btnApply.setVisible(true);
+        btnUtilization.setVisible(true);
         btnSchedulingRequests.setVisible(true);
         btnMakeAnAppointment.setVisible(true);
         btnCheckInStudent.setVisible(true);
@@ -1355,9 +1393,8 @@ public class AdministratorUI {
 
                 /*JButton info = new JButton("Request Info");
 
-                info.setBounds(10, 47, 80, 20);
-                frmAdministratorInterface.getContentPane().add(info);*/
-
+                 info.setBounds(10, 47, 80, 20);
+                 frmAdministratorInterface.getContentPane().add(info);*/
                 instrlabel.setVisible(true);
                 startdatelabel.setVisible(true);
                 enddatelabel.setVisible(true);
@@ -1502,7 +1539,7 @@ public class AdministratorUI {
                                             + "`starttime`, `endtime`, `seatsavailable`) VALUES ('" + rangeid + "', '" + id
                                             + "', '" + curs + "', '" + p.getStartTime() + "', '" + p.getEndTime() + "', '" + seats + "')";
                                     DBConnection.ExecUpdateQuery(query3);
-                                    
+
                                     query3 = "UPDATE `scheduler`.`individualexam` SET `seatsavailable`='" + seats + "' where date = '" + curs
                                             + "' AND ((starttime <= '" + p.getEndTime() + "' AND endtime >= '" + p.getEndTime() + "') OR "
                                             + "(starttime <= '" + p.getStartTime() + "' AND endtime >= '" + p.getEndTime() + "') OR (starttime >= '" + p.getStartTime() + "' AND "
@@ -2734,6 +2771,40 @@ public class AdministratorUI {
 
     public void switchToCancelPage(Administrator a, String id) {
 
+    }
+
+    public void switchToDisplayUtilization(Administrator a) {
+        JCalendar utilcalendar = new JCalendar();
+        utilcalendar.setBounds(226, 41, 198, 153);
+        frmAdministratorInterface.getContentPane().add(utilcalendar);
+
+        JButton dateinfo = new JButton("Display Date Info");
+        dateinfo.setBounds(50, 107, 137, 23);
+        frmAdministratorInterface.getContentPane().add(dateinfo);
+        
+        JLabel utilization = new JLabel();
+        utilization.setBounds(50, 200, 337, 123);
+        frmAdministratorInterface.getContentPane().add(utilization);
+        
+        Calendar cal = Calendar.getInstance();
+
+        dateinfo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(utilcalendar.getDate().getYear() < cal.getTime().getYear()
+                        || utilcalendar.getDate().getYear() == cal.getTime().getYear() && utilcalendar.getDate().getMonth() < cal.getTime().getMonth()
+                        || utilcalendar.getDate().getYear() == cal.getTime().getYear() && utilcalendar.getDate().getMonth() == cal.getTime().getMonth()
+                        && utilcalendar.getDate().getDate() <= cal.getTime().getDate())
+                {
+                    TestingCenter t = new TestingCenter();
+                    utilization.setText(t.pastutilization(utilcalendar.getDate()));
+                }
+                else
+                {
+                    TestingCenter t = new TestingCenter();
+                    utilization.setText(t.futureutilization(utilcalendar.getDate()));
+                }
+            }
+        });
     }
 
 }
