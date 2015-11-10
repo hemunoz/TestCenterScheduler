@@ -127,9 +127,10 @@ public class PrintTime extends TimerTask{
  
   }
 
-  public static boolean morethanaday(String exam){
+  public static boolean morethanaday(String exam, String term){
       String query = "Select a.date, e.startTime from exam e, appointment a, forexam f where "
-              + "e.examname = '" + exam + "' AND e.examID = f.examID AND f.appointmentID = a.appointmentID";
+              + "e.examname = '" + exam + "' AND e.examID = f.examID AND f.appointmentID = a.appointmentID"
+              + " AND e.term = '" + term + "'";
       java.sql.ResultSet rs = DBConnection.ExecQuery(query);
       
       Date date = cal2.getTime();

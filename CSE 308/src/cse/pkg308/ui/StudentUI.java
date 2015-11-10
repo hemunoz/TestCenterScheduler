@@ -214,46 +214,16 @@ public class StudentUI {
         frmStudentInterface.getContentPane().add(btnLogOut);
 
         lblName.setVisible(true);
-        /*student.setVisible(true);
-         studentname.setVisible(true);
-         lblId.setVisible(true);
-         studentId.setVisible(true);
-         calendar.setVisible(true);
-         btnTakeAnExam.setVisible(true);
-         btnCancelAnExam.setVisible(true);
-         btnSetAReminder.setVisible(true);*/
+
         btnLogOut.setVisible(true);
 
         btnLogOut.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                frmStudentInterface.setVisible(false);
+                
 
-                lblName.setVisible(false);
-                student.setVisible(false);
-                studentname.setVisible(false);
-                lblId.setVisible(false);
-                studentId.setVisible(false);
-                calendar.setVisible(false);
-                btnTakeAnExam.setVisible(false);
-                btnCancelAnExam.setVisible(false);
-                btnSetAReminder.setVisible(false);
-                btnLogOut.setVisible(false);
-
-                frmStudentInterface.remove(lblId);
-                frmStudentInterface.remove(lblName);
-                frmStudentInterface.remove(student);
-                frmStudentInterface.remove(studentname);
-                frmStudentInterface.remove(studentId);
-                frmStudentInterface.remove(calendar);
-                frmStudentInterface.remove(btnTakeAnExam);
-                frmStudentInterface.remove(btnCancelAnExam);
-                frmStudentInterface.remove(btnSetAReminder);
-                frmStudentInterface.remove(btnLogOut);
-
-                //user.getSession().remove(lblName);
-                //User.setLogin(sessionframe);
-                //user.switchToLogin();
-                //System.out.println(2);
-                User u = new User();
+                //sessionframe.setVisible(true);
+                user.initializeLogin(sessionframe);
                 //switchToLogin();
 
             }
@@ -274,7 +244,7 @@ public class StudentUI {
                 btnSetAReminder.setVisible(false);
                 btnLogOut.setVisible(false);
 
-                switchToTakeExamPage(s);
+                switchToTermPage(s, "Take");
 
             }
 
@@ -294,7 +264,7 @@ public class StudentUI {
                 btnSetAReminder.setVisible(false);
                 btnLogOut.setVisible(false);
 
-                switchToCancelExamPage(s);
+                switchToTermPage(s, "Cancel");
 
             }
         });
@@ -417,7 +387,7 @@ public class StudentUI {
 
     }
 
-    public void switchToCancelExamPage(Student s) {
+    public void switchToCancelExamPage(Student s, String term) {
 
         JLabel lblCancelAnExam = new JLabel("Cancel an Exam");
         lblCancelAnExam.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -441,7 +411,7 @@ public class StudentUI {
 
         String query = "Select e.examname from exam e, forexam f, appointment a, has h where "
                 + "e.examID = f.examID AND f.appointmentID = a.appointmentID AND a.appointmentID"
-                + " = h.appointmentID AND h.studentID = '" + s.getID() + "'";
+                + " = h.appointmentID AND h.studentID = '" + s.getID() + "' AND e.term = '" + term + "'";
 
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
         int i = 0;
@@ -498,7 +468,7 @@ public class StudentUI {
                 String query = "Select a.appointmentID from appointment a, forexam f, exam e, has h where"
                         + " e.examname = '" + examcomboBox.getSelectedItem().toString() + "' AND "
                         + "e.examID = f.examID AND f.appointmentID = a.appointmentID AND a.appointmentID = "
-                        + "h.appointmentID AND h.studentID = '" + s.getID() + "'";
+                        + "h.appointmentID AND h.studentID = '" + s.getID() + "' AND e.term = '" + term + "'";
 
                 java.sql.ResultSet rs = DBConnection.ExecQuery(query);
 
@@ -515,7 +485,7 @@ public class StudentUI {
                 System.out.println(examcomboBox.getSelectedItem().toString());
                 System.out.println(s.getID());
 
-                if (PrintTime.morethanaday(examcomboBox.getSelectedItem().toString())) {
+                if (PrintTime.morethanaday(examcomboBox.getSelectedItem().toString(), term)) {
                     
 
                     query = "Select i.examid, i.date, i.seatsavailable from individualexam i, forexam f, appointment a where"
@@ -582,8 +552,54 @@ public class StudentUI {
 
         });
     }
+    
+    public void switchToTermPage(Student s, String option)
+    {
+        ArrayList<String> y = new ArrayList();
+        String year = "";
 
-    public void switchToTakeExamPage(Student s) {
+        for (int i = 2010; i < 2017; i++) {
+            year = i + "";
+            y.add(year);
+        }
+
+        String[] years = new String[y.size()];
+
+        for (int i = 0; i < y.size(); i++) {
+            years[i] = y.get(i);
+        }
+
+        JComboBox season = new JComboBox();
+        season.setModel(new DefaultComboBoxModel(new String[]{"Spring", "Summer", "Fall", "Winter"}));
+        season.setBounds(111, 47, 94, 20);
+        frmStudentInterface.getContentPane().add(season);
+
+        JComboBox yearbox = new JComboBox();
+        yearbox.setModel(new DefaultComboBoxModel(years));
+        yearbox.setBounds(111, 77, 94, 20);
+        frmStudentInterface.getContentPane().add(yearbox);
+
+        JButton lookup = new JButton("View Term Appointments");
+        lookup.setBounds(111, 107, 137, 23);
+        frmStudentInterface.getContentPane().add(lookup);
+        
+        lookup.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                season.setVisible(false);
+                yearbox.setVisible(false);
+                lookup.setVisible(false);
+                
+                String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
+                
+                if(option.equals("Take"))
+                    switchToTakeExamPage(s, term);
+                else
+                    switchToCancelExamPage(s, term);
+            }
+        });
+    }
+
+    public void switchToTakeExamPage(Student s, String term) {
         //frmTakeAnExam = new JFrame();
 		/*frmTakeAnExam.setTitle("Take an Exam");
          frmTakeAnExam.setBounds(100, 100, 236, 246);
@@ -598,57 +614,85 @@ public class StudentUI {
         JLabel lblCourses = new JLabel("Courses:");
         lblCourses.setBounds(28, 50, 46, 14);
         frmStudentInterface.getContentPane().add(lblCourses);
+        
+        ArrayList <Course> cl = new ArrayList();
 
-        String[] courselist = new String[5];
         String query = "Select * from course group by CourseName";
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
         int i = 0;
         try {
             while (rs.next()) {
 
-                courselist[i] = rs.getString(3);
+                Course c = new Course();
+                
+                c.setCourseID(rs.getString(1));
+                c.setDepartment(rs.getString(2));
+                c.setCoursename(rs.getString(3));
+                c.setCoursedescription(rs.getString(4));
+                
+                cl.add(c);
 
-                courses[i] = new Course();
-                courses[i].setCourseID(rs.getString(1));
-                courses[i].setDepartment(rs.getString(2));
-                courses[i].setCoursename(rs.getString(3));
-                courses[i].setCoursedescription(rs.getString(4));
-                i++;
                 //System.out.println(courses[i].getCoursename());
 
             }
         } catch (SQLException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        String [] courselist = new String[cl.size()];
+        
+        for(i = 0; i<cl.size(); i++)
+        {
+            courselist[i] = cl.get(i).getCoursename();
+        }
 
         coursecomboBox = new JComboBox();
         coursecomboBox.setModel(new DefaultComboBoxModel(courselist));
         coursecomboBox.setBounds(111, 47, 94, 20);
         frmStudentInterface.getContentPane().add(coursecomboBox);
+        
+        ArrayList <String> exams = new ArrayList();
+        ArrayList<Date> dates = new ArrayList();
 
         coursecomboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                //System.out.println(coursecomboBox.getSelectedItem().toString());
-                String[] exams = new String[5];
+                if(exams.size() > 0)
+                {
+                    for(int i = exams.size() - 1; i >= 0; i--)
+                        exams.remove(i);
+                    for(int i = dates.size() - 1; i >= 0; i--)
+                        dates.remove(i);
+                    
+                    examcomboBox.setModel(new DefaultComboBoxModel());
+                    datecomboBox.setModel(new DefaultComboBoxModel());
+                timecomboBox.setModel(new DefaultComboBoxModel());
+                }
+                
                 String query = "Select examname from exam e, courseexam c where e.examID = c.examID"
                         //+ " AND c.course = CSE 308";
-                        + " AND c.Course = '" + coursecomboBox.getSelectedItem().toString() + "'";
+                        + " AND c.Course = '" + coursecomboBox.getSelectedItem().toString() + "'"
+                        + " AND e.term = '" + term + "'";
                 java.sql.ResultSet rs = DBConnection.ExecQuery(query);
                 int i = 0;
                 try {
                     while (rs.next()) {
-
-                        exams[i] = rs.getString(1);
-
-                        i++;
+                        
+                        exams.add(rs.getString(1));
 
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                
+                String [] examlist = new String[exams.size()];
+                
+                for(i = 0; i < exams.size(); i++)
+                {
+                    examlist[i] = exams.get(i);
+                }
 
-                examcomboBox.setModel(new DefaultComboBoxModel(exams));
+                examcomboBox.setModel(new DefaultComboBoxModel(examlist));
                 //examcomboBox.setBounds(111, 75, 94, 20);
                 //frmStudentInterface.getContentPane().add(examcomboBox);
             }
@@ -662,22 +706,28 @@ public class StudentUI {
         examcomboBox.setBounds(111, 75, 194, 20);
         frmStudentInterface.getContentPane().add(examcomboBox);
 
-        ArrayList<Date> dates = new ArrayList();
+        
 
         examcomboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                //System.out.println(coursecomboBox.getSelectedItem().toString());
+                    for(int i = dates.size() - 1; i >= 0; i--)
+                        dates.remove(i);
+
+                    datecomboBox.setModel(new DefaultComboBoxModel());
+                timecomboBox.setModel(new DefaultComboBoxModel());
+                
                 String[] stringdates = new String[5];
                 String query = "Select startDate, endDate from exam where "
-                        + "examname = '" + examcomboBox.getSelectedItem().toString() + "'";
+                        + "examname = '" + examcomboBox.getSelectedItem().toString() + "'"
+                        + " AND term = '" + term + "'";
                 //System.out.println(examcomboBox.getSelectedItem().toString());
                 java.sql.ResultSet rs = DBConnection.ExecQuery(query);
 
                 try {
                     while (rs.next()) {
 
-                        dates.add(rs.getDate(1));
+                        //dates.add(rs.getDate(1));
 
                         Date tempdate = rs.getDate(1);
                         int j = 0;
@@ -692,7 +742,6 @@ public class StudentUI {
                             temp2.setMonth(tempdate.getMonth());
                             temp2.setDate(tempdate.getDate() + j);
 
-                            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
 
                             cal.set(Calendar.YEAR, tempdate.getYear());
                             cal.set(Calendar.MONTH, tempdate.getMonth());
@@ -700,9 +749,6 @@ public class StudentUI {
 
                             java.sql.Date newdate = new java.sql.Date(cal.getTimeInMillis());
                             newdate.setYear(tempdate.getYear());
-
-                            System.out.println(newdate);
-                            System.out.println(sdf.format(newdate));
 
                             dates.add(newdate);
 
@@ -722,7 +768,8 @@ public class StudentUI {
                 Time[] times = new Time[5];
 
                 query = "Select StartTime from exam where "
-                        + "examname = '" + examcomboBox.getSelectedItem().toString() + "'";
+                        + "examname = '" + examcomboBox.getSelectedItem().toString() + "'"
+                        + " AND term = '" + term + "'";
                 //System.out.println(examcomboBox.getSelectedItem().toString());
                 rs = DBConnection.ExecQuery(query);
                 int i = 0;
@@ -828,8 +875,8 @@ public class StudentUI {
 
                 //coursecomboBox.getSelectedItem();
                 int i = 0;
-                for (i = 0; i < courses.length; i++) {
-                    if (courses[i].getCoursename().equals(coursecomboBox.getSelectedItem())) {
+                for (i = 0; i < courselist.length; i++) {
+                    if (courselist[i].equals(coursecomboBox.getSelectedItem())) {
                         break;
                     }
                 }
@@ -865,10 +912,8 @@ public class StudentUI {
                 } catch (SQLException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                //System.out.println(courses[i].getCoursename());
 
-                System.out.println(exam.getExamID());
-                if (courses[i].lookupstudent(s.getID() + "") == false) {
+                if (cl.get(i).lookupstudent(s.getID() + "") == false) {
                     switchToCannotSchedulePage("You are not currently enrolled in this course");
                 } else if (exam.lookupstudent(s.getID() + "") == true) {
                     switchToCannotSchedulePage("You already have an appointment for this exam");

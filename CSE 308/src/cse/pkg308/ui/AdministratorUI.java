@@ -919,35 +919,36 @@ public class AdministratorUI {
 
     public void switchToAdminSplashScreen(Administrator a) {
         lblName.setVisible(true);
-        textFieldOpenTime.setVisible(true);
-        textFieldCloseTime.setVisible(true);
-        textFieldID.setVisible(true);
-        lblAdministrator.setVisible(true);
-        lblName2.setVisible(true);
-        calendar.setVisible(true);
-        lblNumberOfSeats.setVisible(true);
-        comboBox.setVisible(true);
-        lblNumberOfReserved.setVisible(true);
-        btnLogOut.setVisible(true);
-        lblName2.setVisible(true);
-        comboBox_1.setVisible(true);
-        lblSemester.setVisible(true);
-        comboBox_2.setVisible(true);
-        lblOpenTime.setVisible(true);
-        dateChooser.setVisible(true);
-        lblCloseTime.setVisible(true);
-        lblOpenDate.setVisible(true);
-        dateChooser_1.setVisible(true);
-        lblCloseDate.setVisible(true);
-        lblOpenTime.setVisible(true);
-        btnImportData.setVisible(true);
-        btnUtilization.setVisible(true);
-        btnSchedulingRequests.setVisible(true);
-        btnMakeAnAppointment.setVisible(true);
-        btnCheckInStudent.setVisible(true);
-        lblStudentId.setVisible(true);
-        btnGenerateReport.setVisible(true);
-        btnAppointments.setVisible(true);
+                /*textFieldOpenTime.setVisible(false);
+                 textFieldCloseTime.setVisible(false);*/
+                textFieldID.setVisible(true);
+                lblAdministrator.setVisible(true);
+                lblName2.setVisible(true);
+                calendar.setVisible(true);
+                /*lblNumberOfSeats.setVisible(false);
+                 comboBox.setVisible(false);
+                 lblNumberOfReserved.setVisible(false);*/
+                btnLogOut.setVisible(true);
+                lblName2.setVisible(true);
+                /*comboBox_1.setVisible(false);
+                 lblSemester.setVisible(false);
+                 comboBox_2.setVisible(false);
+                 lblOpenTime.setVisible(false);
+                 dateChooser.setVisible(false);
+                 lblCloseTime.setVisible(false);
+                 lblOpenDate.setVisible(false);
+                 dateChooser_1.setVisible(false);
+                 lblCloseDate.setVisible(false);
+                 lblOpenTime.setVisible(false);*/
+                btnImportData.setVisible(true);
+                btnUtilization.setVisible(true);
+                btnSchedulingRequests.setVisible(true);
+                btnMakeAnAppointment.setVisible(true);
+                btnCheckInStudent.setVisible(true);
+                lblStudentId.setVisible(true);
+                btnGenerateReport.setVisible(true);
+                btnAppointments.setVisible(true);
+                btnedittestingcenter.setVisible(true);
 
     }
 

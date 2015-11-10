@@ -25,6 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -141,7 +142,7 @@ public class UserUI {
                     public void actionPerformed(ActionEvent e){
                         //System.out.println(6);
                         
-                        
+                        System.out.println(textFieldUserID.getText());
                         switchtouserscreen();
                         
                         //Student.openstudent();
@@ -248,24 +249,13 @@ public class UserUI {
             s.setName(name);
             s.setEmail(email);
             if(!(s.getName().equals("")))
-                User.student.initializestudent(s);
-            else
-                switchToTryAgainPage();
             {
                 
-                /*textFieldUserID.setVisible(false);
-                passwordFieldPassword.setVisible(false);
-
-                lblPassword.setVisible(false);
-                lblUserID.setVisible(false);
-                lblTestingCenter.setVisible(false);
-                lblPleaseLogIn.setVisible(false);
-
-                btnLogin.setVisible(false);
-                btnExit.setVisible(false);
-                
-                continueLogin();*/
+                User.student.initializestudent(s);
+                sessionframe.setVisible(false);
             }
+
+
             //StudentUI su = new StudentUI();
             //su.initializestudent(s);
         }
@@ -305,26 +295,7 @@ public class UserUI {
             
             if(!(i.getName().equals("")))
                 User.instructor.initializeinstructor(i);
-            else
-                switchToTryAgainPage();
-            /*if(!(i.getName().equals("")))
-                User.instructor.initializeinstructor(i);
-            else
-            {
-                
-                textFieldUserID.setVisible(false);
-                passwordFieldPassword.setVisible(false);
-
-                lblPassword.setVisible(false);
-                lblUserID.setVisible(false);
-                lblTestingCenter.setVisible(false);
-                lblPleaseLogIn.setVisible(false);
-
-                btnLogin.setVisible(false);
-                btnExit.setVisible(false);
-                
-                continueLogin();
-            }*/
+ 
         }
         else if(usertype.equals("admin"))
         {
@@ -367,42 +338,13 @@ public class UserUI {
             
         }
         else
-            switchToTryAgainPage();
-        
-        
-        
-            
+        {
+            JOptionPane.showMessageDialog(sessionframe, "Invalid Login");
+        }
+     
         }
     
-    public void switchToTryAgainPage(){
-       
-		textFieldUserID.setVisible(false);
-                passwordFieldPassword.setVisible(false);
-
-                lblPassword.setVisible(false);
-                lblUserID.setVisible(false);
-                lblTestingCenter.setVisible(false);
-                lblPleaseLogIn.setVisible(false);
-                time.setVisible(false);
-
-                btnLogin.setVisible(false);
-                btnExit.setVisible(false);
-		
-                btnBacktoHome.setVisible(true);
-                invalid.setVisible(true);
-                
-                
-                btnBacktoHome.addActionListener(new ActionListener(){
-                    public void actionPerformed(ActionEvent e){
-                        invalid.setVisible(false);
-                        btnBacktoHome.setVisible(false);
-                        
-                        continueLogin();
-                        
-                        //Student.openstudent();
-                    }
-                });
-    }
+    
     
     
 }
