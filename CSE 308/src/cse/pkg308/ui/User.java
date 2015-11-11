@@ -88,7 +88,7 @@ public class User {
     public User() {
         sessionframe = new JFrame();
         //System.out.println("HH");
-        user.initializeLogin(sessionframe);
+        user.continueLogin(sessionframe);
             //user.switchToLogin();
 
         //initialize();

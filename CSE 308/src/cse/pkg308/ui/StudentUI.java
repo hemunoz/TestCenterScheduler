@@ -39,7 +39,7 @@ public class StudentUI {
     public static JFrame frmStudentInterface;
     public UserUI user = new UserUI();
 
-    private JTextField textFieldUserID;
+    //private JTextField textFieldUserID;
     private JPasswordField passwordFieldPassword;
     public static JLabel lblPassword;
     public static JLabel lblUserID;
@@ -109,10 +109,10 @@ public class StudentUI {
         lblUserID.setBounds(40, 82, 63, 14);
         sessionframe.getContentPane().add(lblUserID);
 
-        textFieldUserID = new JTextField();
+       /* textFieldUserID = new JTextField();
         textFieldUserID.setBounds(113, 79, 104, 20);
         sessionframe.getContentPane().add(textFieldUserID);
-        textFieldUserID.setColumns(10);
+        textFieldUserID.setColumns(10);*/
 
         lblPassword = new JLabel("Password:");
         lblPassword.setBounds(40, 107, 63, 14);
@@ -132,7 +132,7 @@ public class StudentUI {
 
         btnLogin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                textFieldUserID.setVisible(false);
+                //textFieldUserID.setVisible(false);
                 passwordFieldPassword.setVisible(false);
 
                 lblPassword.setVisible(false);
@@ -157,6 +157,15 @@ public class StudentUI {
     public void initializestudent(Student s) {
 
         //frmStudentInterface = user.getSession();
+        //frmStudentInterface = sessionframe;
+        /*textFieldUserID.setVisible(false);
+                        passwordFieldPassword.setVisible(false);
+                        lblUserID.setVisible(false);
+                        lblPassword.setVisible(false);
+                        lblTestingCenter.setVisible(false);
+                        lblPleaseLogIn.setVisible(false);
+                        btnLogin.setVisible(false);
+                        btnExit.setVisible(false);*/
         frmStudentInterface = new JFrame();
         frmStudentInterface.setVisible(true);
 
@@ -219,12 +228,17 @@ public class StudentUI {
 
         btnLogOut.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                frmStudentInterface.setVisible(false);
                 
-
-                //sessionframe.setVisible(true);
-                user.initializeLogin(sessionframe);
-                //switchToLogin();
+                JFrame sessionframe = new JFrame();
+               /* sessionframe.setTitle("Testing Center Login");
+        sessionframe.setBounds(100, 100, 264, 207);
+        sessionframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        sessionframe.getContentPane().setLayout(null);*/
+                sessionframe.setVisible(true);
+                
+                user.continueLogin(sessionframe);
+                
+                frmStudentInterface.setVisible(false);
 
             }
 
@@ -284,7 +298,7 @@ public class StudentUI {
     }
 
     public void switchToLogin() {
-        textFieldUserID.setVisible(true);
+        //textFieldUserID.setVisible(true);
         passwordFieldPassword.setVisible(true);
         lblUserID.setVisible(true);
         lblPassword.setVisible(true);
@@ -359,7 +373,7 @@ public class StudentUI {
     }
 
     public void switchtouserscreen() {
-        String usertype = "";
+        /*String usertype = "";
 
         String query = "SELECT usertype from isa where "
                 + "userid = '" + textFieldUserID.getText() + "'";
@@ -383,7 +397,7 @@ public class StudentUI {
             Student.openstudent();
         } else {
             initializeLogin(frmStudentInterface);
-        }
+        }*/
 
     }
 

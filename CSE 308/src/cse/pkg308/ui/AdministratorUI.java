@@ -40,6 +40,7 @@ public class AdministratorUI {
 
     public static JFrame sessionframe;
     public static JFrame frmAdministratorInterface;
+    public UserUI user = new UserUI();
 
     public static JTextField textFieldOpenTime;
     public static JTextField textFieldCloseTime;
@@ -70,6 +71,7 @@ public class AdministratorUI {
     public static JButton btnGenerateReport;
     public static JButton btnAppointments;
     public static JButton btnedittestingcenter;
+    public static JLabel time;
 
     public int buttonindex = 0;
     public static JComboBox examcomboBox;
@@ -85,6 +87,11 @@ public class AdministratorUI {
         frmAdministratorInterface.setBounds(100, 100, 451, 441);
         frmAdministratorInterface.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frmAdministratorInterface.getContentPane().setLayout(null);
+        
+        time = user.time;
+        time.setFont(new Font("Tahoma", Font.BOLD, 11));
+        time.setBounds(21, 190, 146, 21);
+        frmAdministratorInterface.getContentPane().add(time);
 
         lblAdministrator = new JLabel("Administrator");
         lblAdministrator.setFont(new Font("Tahoma", Font.PLAIN, 20));

@@ -169,8 +169,7 @@ public class InstructorUI {
         
         btnAppointedRequests.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                InstructorViewRequests instructorViewRequests = new InstructorViewRequests();
-                instructorViewRequests.InstructorViewRequests();
+                
             }
         });
         

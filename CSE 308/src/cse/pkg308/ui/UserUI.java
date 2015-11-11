@@ -31,7 +31,7 @@ import javax.swing.JTextField;
 
 public class UserUI {
     
-    public static JFrame sessionframe;
+    //public static JFrame sessionframe;
     public static JFrame frmStudentInterface;
     
     /*public static JTextField textFieldUserID = new JTextField();
@@ -42,7 +42,7 @@ public class UserUI {
     public static JLabel lblPleaseLogIn = new JLabel("Please log in");
     public static JButton btnLogin = new JButton("Login");
     public static JButton btnExit = new JButton("Exit");*/
-    public static JTextField textFieldUserID;
+    public static JTextField textFieldUserID = new JTextField();
     public static JPasswordField passwordFieldPassword;
     public static JLabel lblPassword;
     public static JLabel lblUserID;
@@ -57,8 +57,8 @@ public class UserUI {
     
     public void initializeLogin(JFrame sessionFrame)
     {
-        sessionframe = sessionFrame;
-        continueLogin();
+        //sessionframe = sessionFrame;
+        //continueLogin();
     }
     
     public JTextField getID(){
@@ -73,7 +73,8 @@ public class UserUI {
         return sessionframe;
     }
     
-    public void continueLogin(){
+    public void continueLogin(JFrame sessionframe){
+        
         
         sessionframe.setTitle("Testing Center Login");
 		sessionframe.setBounds(100, 100, 264, 207);
@@ -143,8 +144,8 @@ public class UserUI {
                         //System.out.println(6);
                         
                         System.out.println(textFieldUserID.getText());
-                        switchtouserscreen();
-                        
+                        switchtouserscreen(sessionframe);
+                        //sessionframe.setVisible(false);
                         //Student.openstudent();
                     }
                 });
@@ -172,8 +173,8 @@ public class UserUI {
                         btnLogin.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e){
                         
-                        
-                        switchtouserscreen();
+                        sessionframe.setVisible(false);
+                        //switchtouserscreen();
                         
                         //Student.openstudent();
                     }
@@ -189,7 +190,7 @@ public class UserUI {
                        
     }
     
-    public void switchtouserscreen(){
+    public void switchtouserscreen(JFrame sessionframe){
         //System.out.println(getID().getText());
             String usertype = "";
             
@@ -250,9 +251,18 @@ public class UserUI {
             s.setEmail(email);
             if(!(s.getName().equals("")))
             {
+                 /*textFieldUserID.setVisible(false);
+                        passwordFieldPassword.setVisible(false);
+                        lblUserID.setVisible(false);
+                        lblPassword.setVisible(false);
+                        lblTestingCenter.setVisible(false);
+                        lblPleaseLogIn.setVisible(false);
+                        btnLogin.setVisible(false);
+                        btnExit.setVisible(false);*/
+                sessionframe.setVisible(false);
                 
                 User.student.initializestudent(s);
-                sessionframe.setVisible(false);
+                
             }
 
 
