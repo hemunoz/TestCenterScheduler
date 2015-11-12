@@ -71,9 +71,10 @@ public class PrintTime extends TimerTask {
 
         UserUI.time.setText(hours + ":" + minutes + ":" + seconds);
 
-        if (cal.getTime().getSeconds() == 0) {
-
-            int searchhours = cal.getTime().getHours() + TestingCenter.getReminderForTime().getHours();
+        if (cal.getTime().getSeconds() == 0) 
+        {
+            int searchhours = cal.getTime().getHours();
+            //int searchhours = cal.getTime().getHours() + TestingCenter.getReminderForTime().getHours();
             if (searchhours > 24) {
                 searchhours = searchhours - 24;
             }
@@ -88,12 +89,15 @@ public class PrintTime extends TimerTask {
 
             String query = "Select examID from exam where startTime = '" + searchhours + ":"
                     + searchminutes + ":" + searchseconds + "'";
+            
+            System.out.println(searchhours + " " + searchminutes + " " + searchseconds);
 
             java.sql.ResultSet rs = DBConnection.ExecQuery(query);
             //System.out.println(DBConnection.getconnection());
             try {
                 //if(rs.next())
                 while (rs.next()) {
+                    
                     String query2 = "Select a.date, u.email, e.starttime, u.name from appointment a, forexam f, has h, exam e,"
                             + " student s, user u where h.appointmentID = a.appointmentID AND e.examID = f.examID AND "
                             + "f.examID = '" + rs.getString(1) + "' AND f.appointmentID = a.appointmentID"

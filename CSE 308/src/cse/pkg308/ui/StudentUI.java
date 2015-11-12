@@ -913,13 +913,11 @@ public class StudentUI {
                         exam.setStartTime(rs.getTime(4));
                         exam.setEndTime(rs.getTime(5));
 
-                        String seats = rs.getString(6);
-                        int intseats = Integer.parseInt(seats);
-                        exam.setSeatsAvailable(intseats);
+                        
 
-                        exam.setTerm(rs.getString(7));
-                        exam.setExamtype(rs.getString(8));
-                        exam.setExamname(rs.getString(9));
+                        exam.setTerm(rs.getString(6));
+                        exam.setExamtype(rs.getString(7));
+                        exam.setExamname(rs.getString(8));
                         System.out.println(exam.getExamID());
 
                     }

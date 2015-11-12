@@ -88,10 +88,10 @@ public class AdministratorUI {
         frmAdministratorInterface.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frmAdministratorInterface.getContentPane().setLayout(null);
         
-        time = user.time;
+        /*time = user.time;
         time.setFont(new Font("Tahoma", Font.BOLD, 11));
         time.setBounds(21, 190, 146, 21);
-        frmAdministratorInterface.getContentPane().add(time);
+        frmAdministratorInterface.getContentPane().add(time);*/
 
         lblAdministrator = new JLabel("Administrator");
         lblAdministrator.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -1773,7 +1773,7 @@ public class AdministratorUI {
                     currentdate.setDate(startdate.getDate());
 
                     Calendar cal = Calendar.getInstance();
-                    SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+                    
 
                     cal.set(Calendar.YEAR, currentdate.getYear());
                     cal.set(Calendar.MONTH, currentdate.getMonth());
@@ -1935,7 +1935,15 @@ public class AdministratorUI {
                         rs = DBConnection.ExecQuery(query);
 
                         while (rs.next()) {
-                            courses.add(rs.getString(1));
+                            int check = 0;
+                            for(int i = 0; i< courses.size(); i++)
+                            {
+                                if(rs.getString(1).equals(courses.get(i)))
+                                    check = 1;
+                            } 
+                            if(check==0)
+                                courses.add(rs.getString(1));
+                            
                         }
 
                         currentdate.setDate(currentdate.getDate() + 1);
