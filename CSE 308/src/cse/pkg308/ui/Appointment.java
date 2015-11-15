@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cse.pkg308.ui;
 
 import java.awt.EventQueue;
@@ -30,18 +29,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Appointment {
-    
+
     private String appointmentid;
     private String checkedin;
     private int examid;
     private String studentid;
     private Date date;
-    
-    public Appointment(){
-        
+
+    public Appointment() {
+
     }
-    
-    public void addappointment(int examID, String studentID, Date date){
+
+    public void addappointment(int examID, String studentID, Date date) {
+        /*
+        This query returns the maximum appointment ID value and increments it
+        */
         String query = "Select (Max(appointmentID)+1) from appointment";
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
 
@@ -49,13 +51,18 @@ public class Appointment {
 
         try {
             while (rs.next()) {
-                
+
                 id = rs.getString(1);
             }
         } catch (SQLException ex) {
             Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println(id);
+        
+        /*
+        This query will insert the incremented max id value into the appointment table
+        This is the id of the new appointment. The appointment information will also be entered
+        into the appointment object
+        */
         query = "INSERT INTO appointment VALUES ("
                 + "'" + id + "', 'pending', '" + date + "')";
         DBConnection.ExecUpdateQuery(query);
@@ -64,23 +71,65 @@ public class Appointment {
         setExamid(examID);
         setAppointmentid(id);
 
+        /*
+        This query updates the relation table "has" between Student and Appointment with the
+        student and appointment IDs where the student now has a new appointment.
+        */
         query = "INSERT INTO has VALUES ('" + studentID + "', '" + id + "')";
         DBConnection.ExecUpdateQuery(query);
 
+        /*
+        This query updates the relation table "forexam between appointment and exam with the
+        exam and appointment IDs where there is a new appointment for the exam
+        */
         query = "INSERT INTO forexam VALUES ('" + id + "', '" + examID + "')";
         DBConnection.ExecUpdateQuery(query);
+
     }
-    
-    public void deleteappointment(String id)
-    {
-        String query = "Delete from has where appointmentID = '" + id + "'";
-                    DBConnection.ExecUpdateQuery(query);
 
-                    query = "Delete from forexam where appointmentID = '" + id + "'";
-                    DBConnection.ExecUpdateQuery(query);
+    public void deleteappointment(String id) {
+        /*
+        This query returns the exam ID, date, and available seats of the exam the selected
+        appointment i for
+        */
+        String query = "Select i.examid, i.date, i.seatsavailable from individualexam i, forexam f, appointment a where"
+                + " i.examid = f.examid AND f.appointmentid = a.appointmentID AND a.appointmentID"
+                + " = '" + id + "' AND a.date = i.date";
 
-                    query = "Delete from appointment where appointmentID = '" + id + "'";
-                    DBConnection.ExecUpdateQuery(query);
+        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+        String date = "";
+        String examid = "";
+        int seats = 0;
+        try {
+            while (rs.next()) {
+                examid = rs.getString(1);
+                date = rs.getString(2);
+                seats = rs.getInt(3);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        /*
+        Increment the number of seats and set this value in the individualexam table
+        for the where the examid and date equal the selected values
+        */
+        seats++;
+        query = "UPDATE individualexam SET seatsavailable ='" + seats + "' WHERE"
+                + " examid = '" + examid + "' AND date = '" + date + "'";
+        DBConnection.ExecUpdateQuery(query);
+
+        /*
+        Delete the appointment from appointment, forexam, and has tables where the appointment
+        is no longer for the exam and the student no longer has the appointment
+        */
+        query = "Delete from has where appointmentID = '" + id + "'";
+        DBConnection.ExecUpdateQuery(query);
+
+        query = "Delete from forexam where appointmentID = '" + id + "'";
+        DBConnection.ExecUpdateQuery(query);
+
+        query = "Delete from appointment where appointmentID = '" + id + "'";
+        DBConnection.ExecUpdateQuery(query);
     }
 
     /**
@@ -138,14 +187,13 @@ public class Appointment {
     public void setStudentid(String studentid) {
         this.studentid = studentid;
     }
-    
+
     public Date getDate() {
         return date;
     }
 
-   
     public void setDate(Date date) {
         this.date = date;
     }
-    
+
 }

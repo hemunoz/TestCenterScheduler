@@ -357,11 +357,7 @@ public class InstructorUI {
     
 
     public void switchToCancelExamPage() {
-        /*frmCancelAnExam = new JFrame();
-         frmCancelAnExam.setTitle("Cancel an Exam");
-         frmCancelAnExam.setBounds(100, 100, 240, 185);
-         frmCancelAnExam.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-         frmCancelAnExam.getContentPane().setLayout(null);*/
+
 
         JLabel lblCancelAnExam = new JLabel("Cancel an Exam");
         lblCancelAnExam.setFont(new Font("Tahoma", Font.PLAIN, 20));

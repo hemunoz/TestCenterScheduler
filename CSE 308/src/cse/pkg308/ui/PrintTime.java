@@ -6,7 +6,7 @@
 package cse.pkg308.ui;
 
 //import static cse.pkg308.ui.UserUI.sessionframe;
-import static cse.pkg308.CSE308.sendEmail;
+//import static cse.pkg308.CSE308.sendEmail;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.text.DateFormat;
@@ -39,7 +39,7 @@ public class PrintTime extends TimerTask {
     Toolkit toolkit;
 
     Timer timer;
-    //static JLabel time;
+    
     public static Calendar cal2;
 
     public void run() {
@@ -51,53 +51,83 @@ public class PrintTime extends TimerTask {
         String seconds;
         String hours;
         
-        if (cal.getTime().getHours() > 12) {
+        /*
+        Hours to be displayed. The hours displayed will always be 1 to 12. 
+        If the hours are greater than 12, decrement by 12
+        */
+        if (cal.getTime().getHours() > 12)
             hours = (cal.getTime().getHours() - 12) + "";
-        } else {
+        else if(cal.getTime().getHours() == 0)
+            hours = "12";
+        else
             hours = cal.getTime().getHours() + "";
-        }
-
-        if (cal.getTime().getMinutes() < 10) {
+        /*
+        Minutes to be displayed. A zero is always included if there 
+        are less than 10 minutes
+        */
+        if (cal.getTime().getMinutes() < 10)
             minutes = "0" + cal.getTime().getMinutes() + "";
-        } else {
+        else
             minutes = cal.getTime().getMinutes() + "";
-        }
-
+        
+        /*
+        Seconds to be displayed. A zero is always included if there are
+        less than 10 seconds
+        */
         if (cal.getTime().getSeconds() < 10) {
             seconds = "0" + cal.getTime().getSeconds() + "";
         } else {
             seconds = cal.getTime().getSeconds() + "";
         }
 
+        /*
+        Print the time to the screen
+        */
         UserUI.time.setText(hours + ":" + minutes + ":" + seconds);
 
+        /*
+        For every minute, check if there is a student needs to be emailed a reminder
+        */
         if (cal.getTime().getSeconds() == 0) 
         {
-            int searchhours = cal.getTime().getHours();
-            //int searchhours = cal.getTime().getHours() + TestingCenter.getReminderForTime().getHours();
-            if (searchhours > 24) {
-                searchhours = searchhours - 24;
+            TestingCenter t = new TestingCenter();
+            
+            /*
+            The future time to check for appointments will be the current time plus the reminder
+            interval. Add the reminder hours to the current hours and the reminder minutes to
+            the current minutes
+            */
+            int searchhours = cal.getTime().getHours() + t.getReminderForTime().getHours();      
+            int searchminutes = cal.getTime().getMinutes() + t.getReminderForTime().getMinutes();
+            
+            /*
+            If the calculated future minutes is greater than 60 minutes, decrement the
+            minutes by 60 and increment the hours by 1
+            */
+            if(searchminutes >= 60)
+            {
+                searchminutes = searchminutes - 60;
+                searchhours++;
             }
 
-            int searchminutes = cal.getTime().getMinutes();
-       //if(searchminutes >= 60)
-            //    searchminutes = searchminutes - 60;
-
             int searchseconds = cal.getTime().getSeconds();
-      // if(searchseconds >= 60)
-            //     searchseconds = searchseconds - 60;
 
+
+            /*
+            This query returns the the exam that starts on the current time
+            */
             String query = "Select examID from exam where startTime = '" + searchhours + ":"
                     + searchminutes + ":" + searchseconds + "'";
-            
-            System.out.println(searchhours + " " + searchminutes + " " + searchseconds);
 
             java.sql.ResultSet rs = DBConnection.ExecQuery(query);
-            //System.out.println(DBConnection.getconnection());
+            
             try {
-                //if(rs.next())
+                
                 while (rs.next()) {
-                    
+                    /*
+                    This query gets the exam time, the appointment date for the exam, the name of the
+                    student with the appointment, and the student's email
+                    */
                     String query2 = "Select a.date, u.email, e.starttime, u.name from appointment a, forexam f, has h, exam e,"
                             + " student s, user u where h.appointmentID = a.appointmentID AND e.examID = f.examID AND "
                             + "f.examID = '" + rs.getString(1) + "' AND f.appointmentID = a.appointmentID"
@@ -109,11 +139,16 @@ public class PrintTime extends TimerTask {
                         while (rs2.next()) {
                             Date date = rs2.getDate(1);
                             String email = rs2.getString(2);
-
-                            if (cal.getTime().getYear() == date.getYear()
-                                    && cal.getTime().getMonth() == date.getMonth()
-                                    && cal.getTime().getDay() == date.getDay()) {
-                                //System.out.println(email);
+                            
+                            /*
+                            If the appointment date equals the current date, send an email,
+                            passing the date, exam time, email, and student name
+                            */
+                            if ((cal.getTime().getYear()) == (date.getYear())
+                                    && (cal.getTime().getMonth()) == (date.getMonth())
+                                    && cal.getTime().getDate() == date.getDate()) 
+                                    {
+                                
                                 newemail(email, rs2.getString(3), rs2.getString(4), rs2.getString(1));
                             }
 
@@ -132,15 +167,18 @@ public class PrintTime extends TimerTask {
     }
 
     public static void displaytime() {
-        //test = Calendar.getInstance();
+        /*
+        The Timer will update itself every second
+        */
         Timer timer = new Timer();
         timer.schedule(new PrintTime(), 0, 1000);
 
-        //System.out.println("Task scheduled.");
-        //return test.getTime();
     }
 
     public static boolean morethanaday(String exam, String term) {
+        /*
+        This query returns the time and date the student's appointment begins
+        */
         String query = "Select a.date, e.startTime from exam e, appointment a, forexam f where "
                 + "e.examname = '" + exam + "' AND e.examID = f.examID AND f.appointmentID = a.appointmentID"
                 + " AND e.term = '" + term + "'";
@@ -158,9 +196,20 @@ public class PrintTime extends TimerTask {
             Logger.getLogger(PrintTime.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        /*
+        Set the testdate to the current date plus 1 day.
+        */
         Date testdate = cal2.getTime();
         testdate.setDate(testdate.getDay() + 1);
 
+        /*
+        Compare the current and future dates and times to the appointment date and times.
+        An appointment can always be cancelled if the years are different, if the current and future
+        months are not the same as the appointment month, if the current and future dates are not
+        the same as the appointment date, and if the future date equals the appointment date while
+        the current hours are less than the appointment hours. All other cases will return false,
+        not allowing the appointment to be cancelled
+        */
         if (testdate.getYear() != date.getYear() && cal2.getTime().getYear() != date.getYear()) {
             return true;
         } else if (testdate.getMonth() != date.getMonth() && cal2.getTime().getMonth() != date.getMonth()) {
@@ -178,10 +227,13 @@ public class PrintTime extends TimerTask {
     }
 
     public void newemail(String dest, String time, String name, String date) {
-        String source = "carblover327@gmail.com";
-        String password = "pussycat";
-        dest = "carblover327@gmail.com"; 
 
+        String source = "carblover327@gmail.com"; //The Source email address
+        String password = "pussycat"; //The source email password
+
+        /*
+        Set up the email server and authenticate the email with the address and password
+        */
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
@@ -189,13 +241,19 @@ public class PrintTime extends TimerTask {
         props.put("mail.smtp.starttls.enable", "true");
 
         Authenticator a = new Authenticator() {
-            //override the getPasswordAuthentication method
+            
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(source, password);
             }
         };
+        /*
+        Begin a new email session
+        */
         Session session = Session.getInstance(props, a);
 
+        /*
+        Send the email with to the dest email address with the subject and body
+        */
         sendEmail(session, dest, "Exam Reminder", "Hello, " + name + 
                 ". This is a reminder that you have an exam at " + time + " on " + date);
     }

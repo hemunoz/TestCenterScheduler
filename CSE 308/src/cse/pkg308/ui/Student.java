@@ -25,30 +25,7 @@ public class Student extends User{
         private String netid;
         private String password;
         private int studentid;
-        //private StudentUI student;
-        //static Login login = new Login();
 
-	/**
-	 * Launch the application.
-	 */
-	public static void openstudent() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-                                    //User.student.initializestudent();
-                                    //PropertiesManager props = PropertiesManager.getPropertiesManager();
-					//Student window = new Student();
-                                        //window.frmStudentInterface.setVisible(true);
-                                        
-                                        
-                                        
-                                    
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the application.

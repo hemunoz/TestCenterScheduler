@@ -30,29 +30,37 @@ public class Course {
 
     public boolean lookupstudent(String studentID)
     {
+        /*
+        This query returns the students enrolled in the course
+        */
         String query = "Select s.studentID from student s, takes t, course c where "
                 + "c.courseID = t.courseID AND t.StudentID = s.studentID AND c.courseID = '"
                 + getCourseID() + "'";
-        //String query = "Select * from course where courseID = '" + getCourseID() + "'";
-        System.out.println(getCourseID());
+
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
-        //String id = s.getID() + "";
+        
         try {
             while (rs.next()) {
 
+                /*
+                If one of the student IDs equals that of the student trying to make an appointment,
+                the student is enrolled in the course. Return true
+                */
                 if (studentID.equals(rs.getString(1)))
                     return true;
-                
-                //System.out.println(rs.getString(1));
 
             }
+            /*
+            If the student's ID is not one of the IDs returned, the student is not enrolled in the
+            course. Return false
+            */
             return false;
         } catch (SQLException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         
-        return true;
+        return false;
     }
     
     /**

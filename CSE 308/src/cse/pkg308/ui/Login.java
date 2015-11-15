@@ -25,8 +25,7 @@ public class Login {
 	public static JFrame sessionframe;
 	private JTextField textFieldUserID;
 	private JPasswordField passwordFieldPassword;
-                
-        public static StudentUI student = new StudentUI();
+
         
         public static JLabel lblPassword = new JLabel("Password:");
         
@@ -70,8 +69,7 @@ public class Login {
 	 */
 	public Login() {
                 sessionframe = new JFrame();
-                student.initializeLogin(sessionframe);
-		//initialize();
+
 	}
 
 	/**
@@ -172,11 +170,7 @@ public class Login {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        if(usertype.equals("student"))
-        {
-            
-            Student.openstudent();
-        }
+ 
         
             
         }

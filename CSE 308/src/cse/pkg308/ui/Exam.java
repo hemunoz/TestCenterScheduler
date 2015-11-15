@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cse.pkg308.ui;
 
 import cse.pkg308.DBConnection;
@@ -19,102 +18,113 @@ import java.util.logging.Logger;
  * @author Owner
  */
 public class Exam {
-    
+
     private int examID;
     private Date startDate;
     private Date endDate;
     private Time StartTime;
     private Time endTime;
-    private int seatsAvailable;
     private String term;
     private String examtype;
     private String examname;
-   
-    
-    public Exam(){
-        
+
+    public Exam() {
+
     }
-    
-    public boolean lookupstudent(String studentID)
-    {
-        //System.out.println(getExamID());
+
+    public boolean lookupstudent(String studentID) {
+
+        /*
+        This query returns the student IDs of the students who have appointments for the selected
+        exam
+        */
         String query = "Select h.studentID from has h, appointment a, exam e, forexam f where "
                 + "e.examID = '" + getExamID() + "' AND e.examID = f.examID AND f.appointmentID = a.appointmentID"
                 + " AND h.appointmentID = a.appointmentID";
-        //String query = "Select * from course where courseID = '" + getCourseID() + "'";
-        //System.out.println(getExamID());
+
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
-        //String id = s.getID() + "";
+
         int takingexam = 0;
         try {
             while (rs.next()) {
-                //System.out.println(id);
-                //System.out.println(rs.getString(1));
-                if (studentID.equals(rs.getString(1)))
+
+                /*
+                Check if the student's ID is returned as one of the students with an appointment
+                */
+                if (studentID.equals(rs.getString(1))) {
                     takingexam = 1;
-                
-                //System.out.println(rs.getString(1));
+                }
 
             }
         } catch (SQLException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         System.out.println(takingexam);
-        if(takingexam == 0)
+        /*
+        If the student's ID is not returned, they do not have an appointment. Return false.
+        */
+        if (takingexam == 0) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
-    
-    public boolean availableseats(String examID, Date date)
-    {
+
+    public boolean availableseats(String examID, Date date) {
+        
+        /*
+        This query returns the number of available seats in the testing center for the selected exam
+        on the selected date in the individual exams. The individual exams are the same exam id but
+        with different dates
+        */
         String query = "Select seatsavailable from individualexam where examid = '" + examID + "'"
                 + " AND date = '" + date + "'";
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
-        
+
         int seats = 0;
-        
+
         try {
-            while(rs.next())
-            {
+            while (rs.next()) {
                 seats = rs.getInt(1);
             }
         } catch (SQLException ex) {
             Logger.getLogger(Exam.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        if(seats == 0)
-        {
+
+        /*
+        If there are no seats available, return false and don't make an appointment
+        */
+        if (seats == 0)
             return false;
-        }
-        else
-        {
+        /*
+        If there is at least one seat available, decrement the number of seats and set the number of
+        seats to this new value where for the selected exam and selected date in the individual exams
+        */
+        else {
             seats--;
             query = "UPDATE `scheduler`.`individualexam` SET `seatsavailable`='" + seats + "' WHERE"
                     + " examID = '" + examID + "' AND date = '" + date + "'";
             DBConnection.ExecUpdateQuery(query);
-            
+
             return true;
         }
-        
-        
+
     }
-    
-    public boolean checkTime(String time)
-    {
-        if(!(getStartTime().equals(time)))
+
+    public boolean checkTime(String time) {
+        if (!(getStartTime().equals(time))) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
-    
-    public boolean checkDate(String date)
-    {
-        
+
+    public boolean checkDate(String date) {
+
         return true;
     }
-    
+
     /**
      * @return the examID
      */
@@ -183,20 +193,6 @@ public class Exam {
      */
     public void setEndTime(Time endTime) {
         this.endTime = endTime;
-    }
-
-    /**
-     * @return the seatsAvailable
-     */
-    public int getSeatsAvailable() {
-        return seatsAvailable;
-    }
-
-    /**
-     * @param seatsAvailable the seatsAvailable to set
-     */
-    public void setSeatsAvailable(int seatsAvailable) {
-        this.seatsAvailable = seatsAvailable;
     }
 
     /**
