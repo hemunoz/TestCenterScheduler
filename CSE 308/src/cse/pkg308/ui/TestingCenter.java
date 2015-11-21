@@ -97,6 +97,7 @@ public class TestingCenter {
                 seats minus the setaside seats available
                 */
                 newseats = seats - (getseats - rs.getInt(2));
+                //System.out.println(newseats);
 
                 /*
                 This query inserts the new setaside seats available into the individualexam
@@ -513,7 +514,7 @@ public class TestingCenter {
             season = "Fall";
         }
 
-        String term = season + " " + (date.getYear() + 1900);//Term
+        String term = season + "_" + (date.getYear() + 1900);//Term
 
         /*
         This query returns the seats, gap time, open time, and closing time of the
@@ -560,8 +561,7 @@ public class TestingCenter {
         This query gets the exam time of an exam where an appointment for the exam has
         the selected date
         */
-        query = "Select e.starttime, e.endtime from appointment a, forexam f, exam e where a.appointmentid = "
-                + "f.appointmentid AND f.examID = e.examID AND a.date = '" + newdate + "'";
+        query = "Select starttime, endtime from appointment where date = '" + newdate + "'";
         rs = DBConnection.ExecQuery(query);
 
         try {
@@ -616,18 +616,21 @@ public class TestingCenter {
         /*
         Get the term based on the selected date
         */
-        if (date.getMonth() == 1) {
+        if (date.getMonth() == 0) {
             season = "Winter";
-        } else if (date.getMonth() >= 2 && date.getMonth() <= 5) {
+        } else if (date.getMonth() >= 1 && date.getMonth() <= 4) {
             season = "Spring";
-        } else if (date.getMonth() >= 6 && date.getMonth() <= 7) {
+        } else if (date.getMonth() >= 5 && date.getMonth() <= 6) {
             season = "Summer";
         } else {
             season = "Fall";
         }
 
-        String term = season + " " + (date.getYear() + 1900);
+        String term = season + "_" + (date.getYear() + 1900);
+        if(season.equals("Winter"))
+            term = season + "_" + (date.getYear() + 1899);
 
+        System.out.println(term);
         /*
         This query returns the seats, gap time, open time, and closing time of the
         testing center for the selected term
@@ -673,8 +676,7 @@ public class TestingCenter {
         This query gets the exam time of an exam where an appointment for the exam has
         the selected date
         */
-        query = "Select e.starttime, e.endtime from appointment a, forexam f, exam e where a.appointmentid = "
-                + "f.appointmentid AND f.examID = e.examID AND a.date = '" + newdate + "'";
+        query = "Select starttime, endtime from appointment where date = '" + newdate + "'";
         rs = DBConnection.ExecQuery(query);
 
         try {
@@ -705,10 +707,11 @@ public class TestingCenter {
         double expected = 0.0;
 
         /*
-        This query returns the start and end time and exam ID of the individual exam
+        This query returns the start and end time and exam ID of the exam
         with the selected date
         */
-        query = "Select i.starttime, i.endtime, i.examid from individualexam i where date = '" + newdate + "'";
+        query = "Select starttime, endtime, examid, startdate, enddate from exam where "
+                + "startdate <= '" + newdate + "' AND enddate >= '" + newdate + "'";
         rs = DBConnection.ExecQuery(query);
 
         try {
@@ -716,24 +719,45 @@ public class TestingCenter {
                 /*
                 Calculate the total minutes in the exam
                 */
+                Date daycount = new Date();
+                daycount.setTime(rs.getDate(5).getTime() - rs.getDate(4).getTime());
+                
+                long daymin = daycount.getTime()/86400000;
+                
+                String query2 = "Select opens, closes from testingcenter where term = '" + term + "'";
+                java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
+                Date opens = new Date();
+                Date closes = new Date();
+                while(rs2.next())
+                {
+                    opens = rs2.getTime(1);
+                    closes = rs2.getTime(2);
+                }
+                
+                //daymin = daymin*(closes.getTime() - opens.getTime())/60000;
+                //System.out.println(closes.getTime() - opens.getTime());
+                
                 int diffhours = rs.getTime(2).getHours() - rs.getTime(1).getHours();
                 int diffminutes = rs.getTime(2).getMinutes() - rs.getTime(1).getMinutes();
-                int totalmin = diffminutes + diffhours * 60 + gaptimeminutes;
+                long totalmin = diffminutes + diffhours * 60 + gaptimeminutes;
+                
+                totalmin = totalmin + daymin;
 
                 /*
                 This query gets the total number of students in the course 
                 the exam is for
                 */
-                String query2 = "Select c.students from course c, courseexam ce where"
+                query2 = "Select c.students from course c, courseexam ce where"
                         + " ce.examid = '" + rs.getString(3) + "' AND ce.courseidentifier = "
                         + "c.courseID";
-                java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
+                rs2 = DBConnection.ExecQuery(query2);
 
                 int students = 0;//initialize students in the course
 
                 while (rs2.next()) {
                     students = rs2.getInt(1);
                 }
+                System.out.println(students);
 
                 /*
                 This query gets the number of appointments for the current exam

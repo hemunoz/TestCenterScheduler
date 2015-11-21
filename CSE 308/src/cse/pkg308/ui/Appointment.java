@@ -40,7 +40,7 @@ public class Appointment {
 
     }
 
-    public void addappointment(int examID, String studentID, Date date) {
+    public void addappointment(int examID, String studentID, Date date, Time time) {
         /*
         This query returns the maximum appointment ID value and increments it
         */
@@ -63,8 +63,10 @@ public class Appointment {
         This is the id of the new appointment. The appointment information will also be entered
         into the appointment object
         */
+        
+        Time endtime = new Time(time.getHours() + 2, time.getMinutes(), 0);
         query = "INSERT INTO appointment VALUES ("
-                + "'" + id + "', 'pending', '" + date + "')";
+                + "'" + id + "', 'pending', '" + date + "', '" + time + "', '" + endtime + "')";
         DBConnection.ExecUpdateQuery(query);
         setCheckedin("pending");
         setStudentid(studentID);
@@ -113,10 +115,10 @@ public class Appointment {
         Increment the number of seats and set this value in the individualexam table
         for the where the examid and date equal the selected values
         */
-        seats++;
+       /* seats++;
         query = "UPDATE individualexam SET seatsavailable ='" + seats + "' WHERE"
                 + " examid = '" + examid + "' AND date = '" + date + "'";
-        DBConnection.ExecUpdateQuery(query);
+        DBConnection.ExecUpdateQuery(query);*/
 
         /*
         Delete the appointment from appointment, forexam, and has tables where the appointment

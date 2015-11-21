@@ -33,15 +33,12 @@ public class Course {
         /*
         This query returns the students enrolled in the course
         */
-        String query = "Select s.studentID from student s, takes t, course c where "
-                + "c.courseID = t.courseID AND t.StudentID = s.studentID AND c.courseID = '"
-                + getCourseID() + "'";
+        String query = "Select studentID from takes where courseID = '" + getCourseID() + "'";
 
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
         
         try {
             while (rs.next()) {
-
                 /*
                 If one of the student IDs equals that of the student trying to make an appointment,
                 the student is enrolled in the course. Return true

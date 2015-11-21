@@ -116,7 +116,7 @@ public class PrintTime extends TimerTask {
             /*
             This query returns the the exam that starts on the current time
             */
-            String query = "Select examID from exam where startTime = '" + searchhours + ":"
+            String query = "Select appointmentID from appointment where startTime = '" + searchhours + ":"
                     + searchminutes + ":" + searchseconds + "'";
 
             java.sql.ResultSet rs = DBConnection.ExecQuery(query);
@@ -128,17 +128,19 @@ public class PrintTime extends TimerTask {
                     This query gets the exam time, the appointment date for the exam, the name of the
                     student with the appointment, and the student's email
                     */
-                    String query2 = "Select a.date, u.email, e.starttime, u.name from appointment a, forexam f, has h, exam e,"
-                            + " student s, user u where h.appointmentID = a.appointmentID AND e.examID = f.examID AND "
-                            + "f.examID = '" + rs.getString(1) + "' AND f.appointmentID = a.appointmentID"
+                    String query2 = "Select a.date, u.email, a.starttime, u.name from appointment a, has h,"
+                            + " student s, user u where h.appointmentID = a.appointmentID AND "
+                            + "a.appointmentID = '" + rs.getString(1) + "'"
                             + " AND h.studentID = s.studentID AND s.studentID = u.userID";
 
                     java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
 
                     try {
                         while (rs2.next()) {
+                            
                             Date date = rs2.getDate(1);
                             String email = rs2.getString(2);
+                            System.out.println(email);
                             
                             /*
                             If the appointment date equals the current date, send an email,

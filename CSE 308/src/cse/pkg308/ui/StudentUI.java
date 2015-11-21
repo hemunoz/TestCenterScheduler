@@ -47,7 +47,7 @@ public class StudentUI {
     public static JCalendar calendar;
     public static JButton btnTakeAnExam;
     public static JButton btnCancelAnExam;
-    public static JButton btnSetAReminder;
+    public static JButton btnview;
     public static JButton btnLogOut;
     public static JLabel time;
 
@@ -67,8 +67,8 @@ public class StudentUI {
         frmStudentInterface.getContentPane().setLayout(null);
 
         /*
-        Display current time
-        */
+         Display current time
+         */
         time = user.time;
         time.setFont(new Font("Tahoma", Font.BOLD, 11));
         time.setBounds(21, 238, 146, 21);
@@ -115,9 +115,9 @@ public class StudentUI {
         btnCancelAnExam.setBounds(10, 116, 121, 23);
         frmStudentInterface.getContentPane().add(btnCancelAnExam);
 
-        btnSetAReminder = new JButton("Set a Reminder");
-        btnSetAReminder.setBounds(10, 150, 121, 23);
-        frmStudentInterface.getContentPane().add(btnSetAReminder);
+        btnview = new JButton("View Appointments");
+        btnview.setBounds(10, 150, 121, 23);
+        frmStudentInterface.getContentPane().add(btnview);
 
         btnLogOut = new JButton("Log Out");
         btnLogOut.setBounds(261, 175, 89, 23);
@@ -151,17 +151,107 @@ public class StudentUI {
                 calendar.setVisible(false);
                 btnTakeAnExam.setVisible(false);
                 btnCancelAnExam.setVisible(false);
-                btnSetAReminder.setVisible(false);
+                btnview.setVisible(false);
                 btnLogOut.setVisible(false);
 
                 /*
                  Select a term for an appointment student will take when take 
-                exam button is clicked
+                 exam button is clicked
                  */
                 switchToTermPage(s, "Take");
 
             }
 
+        });
+
+        btnview.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                lblName.setVisible(false);
+                student.setVisible(false);
+                studentname.setVisible(false);
+                lblId.setVisible(false);
+                studentId.setVisible(false);
+                calendar.setVisible(false);
+                btnTakeAnExam.setVisible(false);
+                btnCancelAnExam.setVisible(false);
+                btnview.setVisible(false);
+                btnLogOut.setVisible(false);
+
+                /*
+                 Create an ArrayList of years
+                 */
+                ArrayList<String> y = new ArrayList();
+                String year = "";
+
+                for (int i = 2010; i < 2017; i++) {
+                    year = i + "";
+                    y.add(year);
+                }
+
+                /*
+                 Create an identical array of years to be displayed in the combo box
+                 */
+                String[] years = new String[y.size()];
+
+                for (int i = 0; i < y.size(); i++) {
+                    years[i] = y.get(i);
+                }
+
+                JComboBox season = new JComboBox();
+                season.setModel(new DefaultComboBoxModel(new String[]{"Spring", "Summer", "Fall", "Winter"}));
+                season.setBounds(111, 47, 94, 20);
+                frmStudentInterface.getContentPane().add(season);
+
+                JComboBox yearbox = new JComboBox();
+                yearbox.setModel(new DefaultComboBoxModel(years));
+                yearbox.setBounds(111, 77, 94, 20);
+                frmStudentInterface.getContentPane().add(yearbox);
+
+                JButton lookup = new JButton("View Term Appointments");
+                lookup.setBounds(111, 107, 137, 23);
+                frmStudentInterface.getContentPane().add(lookup);
+
+                lookup.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        season.setVisible(false);
+                        yearbox.setVisible(false);
+                        lookup.setVisible(false);
+
+                        /*
+                         Set term to the selected season and year
+                         */
+                        String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
+
+                        String query = "Select a.checkedin, a.date, a.starttime, a.endtime, e.examname from has h, forexam f,"
+                                + " appointment a, exam e where e.examID = f.examID AND f.appointmentID = a.appointmentID"
+                                + " AND e.term = '" + term + "' AND a.appointmentID = h.appointmentID AND h.studentID = '" + s.getID() + "'";
+                        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+
+                        ArrayList<String> applist = new ArrayList();
+
+                        try {
+                            while (rs.next()) {
+                                applist.add(rs.getString(5) + ": " + rs.getString(2) + "   " + rs.getString(3)
+                                        + "-" + rs.getString(4) + "   Status: " + rs.getString(1));
+
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                        String[] apparray = new String[applist.size()];
+                        for (int i = 0; i < apparray.length; i++) {
+                            apparray[i] = applist.get(i);
+                        }
+
+                        JComboBox apps = new JComboBox();
+                        apps.setModel(new DefaultComboBoxModel(apparray));
+                        apps.setBounds(104, 74, 241, 20);
+                        frmStudentInterface.getContentPane().add(apps);
+
+                    }
+                });
+            }
         });
 
         btnCancelAnExam.addActionListener(new ActionListener() {
@@ -175,12 +265,12 @@ public class StudentUI {
                 calendar.setVisible(false);
                 btnTakeAnExam.setVisible(false);
                 btnCancelAnExam.setVisible(false);
-                btnSetAReminder.setVisible(false);
+                btnview.setVisible(false);
                 btnLogOut.setVisible(false);
 
                 /*
                  Select a term for an appointment Student will cancel when 
-                cancel exam button is clicked
+                 cancel exam button is clicked
                  */
                 switchToTermPage(s, "Cancel");
 
@@ -197,11 +287,11 @@ public class StudentUI {
         calendar.setVisible(true);
         btnTakeAnExam.setVisible(true);
         btnCancelAnExam.setVisible(true);
-        btnSetAReminder.setVisible(true);
+        btnview.setVisible(true);
         btnLogOut.setVisible(true);
     }
 
-    public void switchToAppointmentConfirmationPage(Student s, Exam exam, Date date) {
+    public void switchToAppointmentConfirmationPage(Student s, Exam exam, Date date, Time time) {
         JLabel confirmation = new JLabel("Your Appointment Has Been Confirmed");
         confirmation.setFont(new Font("Tahoma", Font.PLAIN, 15));
         confirmation.setBounds(35, 11, 177, 21);
@@ -210,12 +300,12 @@ public class StudentUI {
         JButton btnbacktohome = new JButton("Back to Home");
         btnbacktohome.setBounds(10, 150, 121, 23);
         frmStudentInterface.getContentPane().add(btnbacktohome);
-        
+
         /*
-        Create a new appointment object with the student id and selected exam id and date
-        */
+         Create a new appointment object with the student id and selected exam id and date
+         */
         Appointment app = new Appointment();
-        app.addappointment(exam.getExamID(), s.getID() + "", date);
+        app.addappointment(exam.getExamID(), s.getID() + "", date, time);
 
         btnbacktohome.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -232,8 +322,8 @@ public class StudentUI {
 
     public void switchToCancellationConfirmationPage(Student s) {
         /*
-        Display confirmation that appointment was cancelled
-        */
+         Display confirmation that appointment was cancelled
+         */
         JLabel confirmation = new JLabel("Your Appointment Has Been Cancelled");
         confirmation.setFont(new Font("Tahoma", Font.PLAIN, 10));
         confirmation.setBounds(35, 11, 77, 21);
@@ -244,8 +334,8 @@ public class StudentUI {
         frmStudentInterface.getContentPane().add(btnbackhome);
 
         /*
-        Return to the Student Splash Screen after back to home button is clicked
-        */
+         Return to the Student Splash Screen after back to home button is clicked
+         */
         btnbackhome.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -275,14 +365,14 @@ public class StudentUI {
         frmStudentInterface.getContentPane().add(lblExam);
 
         /*
-        Create an ArrayList for the exam names
-        */
-        ArrayList <String> examlist = new ArrayList();
+         Create an ArrayList for the exam names
+         */
+        ArrayList<String> examlist = new ArrayList();
 
         /*
-        This query returns the names of all the exams the student has an appointment for in the
-        selected term
-        */
+         This query returns the names of all the exams the student has an appointment for in the
+         selected term
+         */
         String query = "Select e.examname from exam e, forexam f, appointment a, has h where "
                 + "e.examID = f.examID AND f.appointmentID = a.appointmentID AND a.appointmentID"
                 + " = h.appointmentID AND h.studentID = '" + s.getID() + "' AND e.term = '" + term + "'";
@@ -291,21 +381,20 @@ public class StudentUI {
         try {
             while (rs.next()) {
                 examlist.add(rs.getString(1));
-                
+
             }
         } catch (SQLException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        String [] exams = new String[examlist.size()];
-        for(int i = 0; i<exams.length; i++)
-        {
+
+        String[] exams = new String[examlist.size()];
+        for (int i = 0; i < exams.length; i++) {
             exams[i] = examlist.get(i);
         }
 
         /*
-        Display list of exams from a duplicated array from the ArrayList
-        */
+         Display list of exams from a duplicated array from the ArrayList
+         */
         examcomboBox = new JComboBox();
         examcomboBox.setModel(new DefaultComboBoxModel(exams));
         examcomboBox.setBounds(104, 74, 181, 20);
@@ -344,12 +433,11 @@ public class StudentUI {
                 lblExam.setVisible(false);
                 btnCancel.setVisible(false);
                 btnConfirm.setVisible(false);
-                
-                /*
-                If the Confirm button is clicked, this query will return the appointment ID
-                the student wants to cancel
-                */
 
+                /*
+                 If the Confirm button is clicked, this query will return the appointment ID
+                 the student wants to cancel
+                 */
                 String query = "Select a.appointmentID from appointment a, forexam f, exam e, has h where"
                         + " e.examname = '" + examcomboBox.getSelectedItem().toString() + "' AND "
                         + "e.examID = f.examID AND f.appointmentID = a.appointmentID AND a.appointmentID = "
@@ -367,8 +455,8 @@ public class StudentUI {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 /*
-                Check if the appointment is less than 24 hours away
-                */
+                 Check if the appointment is less than 24 hours away
+                 */
                 if (PrintTime.morethanaday(examcomboBox.getSelectedItem().toString(), term)) {
                     Appointment app = new Appointment();
                     app.deleteappointment(id);
@@ -485,7 +573,7 @@ public class StudentUI {
          */
         ArrayList<Course> cl = new ArrayList();
 
-        String query = "Select * from course group by CourseName";
+        String query = "Select * from course where term = '" + term + "'";
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
         int i = 0;
         try {
@@ -582,6 +670,69 @@ public class StudentUI {
 
         });
 
+        TestingCenter t = new TestingCenter();
+        t.setTerm(term);
+        query = "Select Opens, Closes from testingcenter where term = '" + term + "'";
+        rs = DBConnection.ExecQuery(query);
+        Time open = null;
+        Time close = null;
+        try {
+            while (rs.next()) {
+                open = rs.getTime(1);
+                close = rs.getTime(2);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        Time ti = new Time(open.getHours(), open.getMinutes(), 0);
+        close.setHours(close.getHours() - 2);
+
+        ArrayList<Time> times = new ArrayList();
+
+        while (ti.getTime() <= close.getTime()) {
+            String query2 = "Select starttime, endtime from nonsbtimes where term = '" + term + "'";
+            java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
+            Time nonsbstart = null;
+            Time nonsbend = null;
+            int checknonsb = 0;
+            try {
+                while (rs2.next()) {
+                    nonsbstart = rs2.getTime(1);
+                    nonsbstart.setMinutes(nonsbstart.getMinutes() - 30);
+                    nonsbstart.setHours(nonsbstart.getHours() - 1);
+                    nonsbend = rs2.getTime(2);
+                    Time nonsbt = new Time(nonsbstart.getHours(), nonsbstart.getMinutes(), 0);
+
+                    while (nonsbt.getTime() < nonsbend.getTime()) {
+                        if (ti.getTime() == nonsbt.getTime()) {
+                            checknonsb = 1;
+                        }
+                        nonsbt.setMinutes(nonsbt.getMinutes() + 30);
+                    }
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (checknonsb == 0) {
+                Time temp = new Time(ti.getHours(), ti.getMinutes(), 0);
+                times.add(temp);
+            }
+            ti.setMinutes(ti.getMinutes() + 30);
+        }
+
+        String[] timearray = new String[times.size()];
+        for (int j = 0; j < timearray.length; j++) {
+            if (times.get(j).getMinutes() < 10) {
+                timearray[j] = times.get(j).getHours() + ":0" + times.get(j).getMinutes()
+                        + "-" + (times.get(j).getHours() + 2) + ":0" + times.get(j).getMinutes();
+            } else {
+                timearray[j] = times.get(j).getHours() + ":" + times.get(j).getMinutes()
+                        + "-" + (times.get(j).getHours() + 2) + ":" + times.get(j).getMinutes();
+            }
+            //System.out.println(timearray[j]);
+        }
+
         examcomboBox = new JComboBox();
         examcomboBox.setModel(new DefaultComboBoxModel());
         examcomboBox.setBounds(111, 75, 194, 20);
@@ -591,18 +742,18 @@ public class StudentUI {
             public void actionPerformed(ActionEvent e) {
 
                 /*
-                If the exam combo box is selected, clear all the dates in the date ArrayList
+                 If the exam combo box is selected, clear all the dates in the date ArrayList
                  */
                 for (int i = dates.size() - 1; i >= 0; i--) {
                     dates.remove(i);
                 }
 
                 datecomboBox.setModel(new DefaultComboBoxModel());
-                timecomboBox.setModel(new DefaultComboBoxModel());
+                //timecomboBox.setModel(new DefaultComboBoxModel());
 
                 /*
-                The query gets the start and end dates from the selected exam
-                */
+                 The query gets the start and end dates from the selected exam
+                 */
                 String query = "Select startDate, endDate from exam where "
                         + "examname = '" + examcomboBox.getSelectedItem().toString() + "'"
                         + " AND term = '" + term + "'";
@@ -616,18 +767,18 @@ public class StudentUI {
                         int j = 0;
                         Date temp2 = new Date();
                         Calendar cal = Calendar.getInstance();
-                        
+
                         /*
-                        Iterate the dates from the start date leading up to the end date. Convert
-                        the dates into an SQL format to be displayed and add to the date ArrayList.
-                        */
+                         Iterate the dates from the start date leading up to the end date. Convert
+                         the dates into an SQL format to be displayed and add to the date ArrayList.
+                         */
                         while (temp2.getDate() != rs.getDate(2).getDate()) {
 
                             temp2 = new Date();
 
                             /*
-                            Get the current date
-                            */
+                             Get the current date
+                             */
                             temp2.setYear(tempdate.getYear());
                             temp2.setMonth(tempdate.getMonth());
                             temp2.setDate(tempdate.getDate() + j);
@@ -650,42 +801,22 @@ public class StudentUI {
                 }
 
                 /*
-                Convert ArrayList of dates into an array to be displayed
-                */
+                 Convert ArrayList of dates into an array to be displayed
+                 */
                 Date[] datearray = new Date[dates.size()];
                 for (int i = 0; i < datearray.length; i++) {
                     datearray[i] = dates.get(i);
                 }
 
                 /*
-                Create a time for the start time. The query will return the start time of the 
-                selected exam
-                */
-                Time[] times = new Time[1];
-
-                query = "Select StartTime from exam where "
-                        + "examname = '" + examcomboBox.getSelectedItem().toString() + "'"
-                        + " AND term = '" + term + "'";
-
-                rs = DBConnection.ExecQuery(query);
-                int i = 0;
-                try {
-                    while (rs.next()) {
-
-                        times[i] = rs.getTime(1);
-
-                        i++;
-
-                    }
-                } catch (SQLException ex) {
-                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
+                 Create a time for the start time. The query will return the start time of the 
+                 selected exam
+                 */
                 /*
-                Display dates and start time of exam
-                */
+                 Display dates and start time of exam
+                 */
                 datecomboBox.setModel(new DefaultComboBoxModel(datearray));
-                timecomboBox.setModel(new DefaultComboBoxModel(times));
+                //timecomboBox.setModel(new DefaultComboBoxModel(times));
 
             }
 
@@ -701,7 +832,7 @@ public class StudentUI {
         frmStudentInterface.getContentPane().add(lblExam);
 
         timecomboBox = new JComboBox();
-        timecomboBox.setModel(new DefaultComboBoxModel());
+        timecomboBox.setModel(new DefaultComboBoxModel(timearray));
         timecomboBox.setBounds(111, 106, 144, 20);
         frmStudentInterface.getContentPane().add(timecomboBox);
 
@@ -722,8 +853,8 @@ public class StudentUI {
         frmStudentInterface.getContentPane().add(btnSubmit);
 
         /*
-        Go back to home page and don't make appointment
-        */
+         Go back to home page and don't make appointment
+         */
         btnCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -768,8 +899,8 @@ public class StudentUI {
                 }
 
                 /*
-                Create new exam object. The query will return the exam information of the exam selected
-                */
+                 Create new exam object. The query will return the exam information of the exam selected
+                 */
                 Exam exam = new Exam();
                 String query = "Select * from Exam where examname = '" + examcomboBox.getSelectedItem().toString() + "'";
                 java.sql.ResultSet rs = DBConnection.ExecQuery(query);
@@ -793,25 +924,23 @@ public class StudentUI {
                 }
 
                 /*
-                From the selected course of the exam, check if the student is taking the course.
-                If they are not, the appointment cannot be scheduled, and the appropriate message
-                will be displayed.
-                */
-                if (cl.get(i).lookupstudent(s.getID() + "") == false)
+                 From the selected course of the exam, check if the student is taking the course.
+                 If they are not, the appointment cannot be scheduled, and the appropriate message
+                 will be displayed.
+                 */
+                if (cl.get(i).lookupstudent(s.getID() + "") == false) {
                     switchToCannotSchedulePage(s, "You are not currently enrolled in this course");
-                /*
-                From the selected exam, check if the student already has an appointment for the exam
-                */
-                else if (exam.lookupstudent(s.getID() + "") == true)
+                } /*
+                 From the selected exam, check if the student already has an appointment for the exam
+                 */ else if (exam.lookupstudent(s.getID() + "") == true) {
                     switchToCannotSchedulePage(s, "You already have an appointment for this exam");
-                /*
-                Check if there is a seat available
-                */
-                else if (exam.availableseats(exam.getExamID() + "", dates.get(datecomboBox.getSelectedIndex())) == false)
+                } /*
+                 Check if there is a seat available
+                 */ else if (exam.availableseats(exam.getExamID() + "", term, dates.get(datecomboBox.getSelectedIndex()), times.get(timecomboBox.getSelectedIndex())) == false) {
                     switchToCannotSchedulePage(s, "No Available Seats");
-                else {
-
-                    switchToAppointmentConfirmationPage(s, exam, dates.get(datecomboBox.getSelectedIndex()));
+                } else {
+                    System.out.println(dates.get(datecomboBox.getSelectedIndex()));
+                    switchToAppointmentConfirmationPage(s, exam, dates.get(datecomboBox.getSelectedIndex()), times.get(timecomboBox.getSelectedIndex()));
                 }
 
             }
@@ -822,8 +951,8 @@ public class StudentUI {
 
     public void switchToCannotSchedulePage(Student s, String m) {
         /*
-        Display m, the message as the reason the appointment could not be scheduled
-        */
+         Display m, the message as the reason the appointment could not be scheduled
+         */
         JLabel notapproved = new JLabel(m);
         notapproved.setFont(new Font("Tahoma", Font.PLAIN, 15));
         notapproved.setBounds(35, 11, 277, 21);
@@ -834,8 +963,8 @@ public class StudentUI {
         frmStudentInterface.getContentPane().add(btnbacktohome);
 
         /*
-        If the backtohome button is pressed, return to the student splash screen
-        */
+         If the backtohome button is pressed, return to the student splash screen
+         */
         btnbacktohome.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 

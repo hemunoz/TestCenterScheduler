@@ -71,16 +71,32 @@ public class Exam {
         }
     }
 
-    public boolean availableseats(String examID, Date date) {
+    public boolean availableseats(String examID, String term, Date date, Time starttime) {
         
         /*
         This query returns the number of available seats in the testing center for the selected exam
         on the selected date in the individual exams. The individual exams are the same exam id but
         with different dates
         */
-        String query = "Select seatsavailable from individualexam where examid = '" + examID + "'"
-                + " AND date = '" + date + "'";
+        Time endtime = new Time(starttime.getHours() + 2, starttime.getMinutes(), 0);
+        
+        String query = "Select Count(appointmentID) from appointment where date = '" + date
+        + "' AND ((starttime <= '" + endtime + "' AND endtime >= '" + endtime + "') OR "
+        + "(starttime <= '" + starttime + "' AND endtime >= '" + endtime + "') OR (starttime >= '" + starttime + "' AND "
+        + "endtime <= '" + endtime + "') OR (starttime <= '" + starttime + "' AND endtime >= '" + starttime + "'))";
+        
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+        int num = 0;
+        
+        try {
+            while(rs.next())
+                num = rs.getInt(1);
+        } catch (SQLException ex) {
+            Logger.getLogger(Exam.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        query = "Select seats from testingcenter where term = '" + term + "'";
+        rs = DBConnection.ExecQuery(query);
 
         int seats = 0;
 
@@ -95,17 +111,16 @@ public class Exam {
         /*
         If there are no seats available, return false and don't make an appointment
         */
-        if (seats == 0)
+        if (num == seats)
             return false;
         /*
         If there is at least one seat available, decrement the number of seats and set the number of
         seats to this new value where for the selected exam and selected date in the individual exams
         */
         else {
-            seats--;
-            query = "UPDATE `scheduler`.`individualexam` SET `seatsavailable`='" + seats + "' WHERE"
+           /* query = "UPDATE `scheduler`.`individualexam` SET `seatsavailable`='" + seats + "' WHERE"
                     + " examID = '" + examID + "' AND date = '" + date + "'";
-            DBConnection.ExecUpdateQuery(query);
+            DBConnection.ExecUpdateQuery(query);*/
 
             return true;
         }

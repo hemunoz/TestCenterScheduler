@@ -563,7 +563,7 @@ public class AdministratorUI {
         /*
         This query returns the course information from the course table
         */
-        String query = "Select * from course group by CourseName";
+        String query = "Select * from course where term = '" + term + "'";
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
         int i = 0;
         try {
@@ -653,6 +653,74 @@ public class AdministratorUI {
             }
 
         });
+        
+        query = "Select Opens, Closes from testingcenter where term = '" + term + "'";
+        rs = DBConnection.ExecQuery(query);
+        Time open = null;
+        Time close = null;
+        try {
+            while(rs.next())
+            {
+                open = rs.getTime(1);
+                close = rs.getTime(2);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        Time ti = new Time(open.getHours(),open.getMinutes(),0);
+        close.setHours(close.getHours() - 2);
+
+        ArrayList <Time> times = new ArrayList();
+        
+        
+        while(ti.getTime() <= close.getTime())
+        {
+            String query2 = "Select starttime, endtime from nonsbtimes where term = '" + term + "'";
+            java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
+            Time nonsbstart = null;
+            Time nonsbend = null;
+            int checknonsb = 0;
+            try {
+                while(rs2.next())
+                {
+                    nonsbstart = rs2.getTime(1);
+                    nonsbstart.setMinutes(nonsbstart.getMinutes() - 30);
+                    nonsbstart.setHours(nonsbstart.getHours() - 1);
+                    nonsbend = rs2.getTime(2);
+                    Time nonsbt = new Time(nonsbstart.getHours(),nonsbstart.getMinutes(),0);
+                    
+                    while(nonsbt.getTime() < nonsbend.getTime())
+                    {
+                        if(ti.getTime() == nonsbt.getTime())
+                        {
+                            checknonsb = 1;
+                        }
+                        nonsbt.setMinutes(nonsbt.getMinutes() + 30);
+                    }
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if(checknonsb == 0)
+            {
+                Time temp = new Time(ti.getHours(), ti.getMinutes(), 0);
+                times.add(temp);
+            }
+            ti.setMinutes(ti.getMinutes() + 30);
+        }
+        
+        String[]timearray = new String[times.size()];
+        for(int j = 0; j<timearray.length; j++)
+        {
+            if(times.get(j).getMinutes() < 10)
+                timearray[j] = times.get(j).getHours() + ":0" + times.get(j).getMinutes() +
+                    "-" + (times.get(j).getHours() + 2) + ":0" + times.get(j).getMinutes();
+            else
+                timearray[j] = times.get(j).getHours() + ":" + times.get(j).getMinutes() +
+                    "-" + (times.get(j).getHours() + 2) + ":" + times.get(j).getMinutes();
+            //System.out.println(timearray[j]);
+        }
 
         examcomboBox = new JComboBox();
         examcomboBox.setModel(new DefaultComboBoxModel());
@@ -670,7 +738,7 @@ public class AdministratorUI {
                 }
 
                 datecomboBox.setModel(new DefaultComboBoxModel());
-                timecomboBox.setModel(new DefaultComboBoxModel());
+                //timecomboBox.setModel(new DefaultComboBoxModel());
 
                 /*
                 The query gets the start and end dates from the selected exam
@@ -730,31 +798,13 @@ public class AdministratorUI {
                 Create a time for the start time. The query will return the start time of the 
                 selected exam
                 */
-                Time[] times = new Time[1];
-
-                query = "Select StartTime from exam where "
-                        + "examname = '" + examcomboBox.getSelectedItem().toString() + "'"
-                        + " AND term = '" + term + "'";
-
-                rs = DBConnection.ExecQuery(query);
-                int i = 0;
-                try {
-                    while (rs.next()) {
-
-                        times[i] = rs.getTime(1);
-
-                        i++;
-
-                    }
-                } catch (SQLException ex) {
-                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                
 
                 /*
                 Display dates and start time of exam
                 */
                 datecomboBox.setModel(new DefaultComboBoxModel(datearray));
-                timecomboBox.setModel(new DefaultComboBoxModel(times));
+                //timecomboBox.setModel(new DefaultComboBoxModel(times));
 
             }
 
@@ -770,7 +820,7 @@ public class AdministratorUI {
         frmAdministratorInterface.getContentPane().add(lblExam);
 
         timecomboBox = new JComboBox();
-        timecomboBox.setModel(new DefaultComboBoxModel());
+        timecomboBox.setModel(new DefaultComboBoxModel(timearray));
         timecomboBox.setBounds(111, 106, 144, 20);
         frmAdministratorInterface.getContentPane().add(timecomboBox);
 
@@ -879,11 +929,11 @@ public class AdministratorUI {
                 /*
                 Check if there is a seat available
                 */
-                else if (exam.availableseats(exam.getExamID() + "", dates.get(datecomboBox.getSelectedIndex())) == false) {
+                else if (exam.availableseats(exam.getExamID() + "", term, dates.get(datecomboBox.getSelectedIndex()), times.get(timecomboBox.getSelectedIndex())) == false) {
                     switchToCannotSchedulePage(a, "No Available Seats");
                 } else {
 
-                    switchToAppointmentConfirmationPage(a, studentID, exam);
+                    switchToAppointmentConfirmationPage(a, studentID, exam, dates.get(datecomboBox.getSelectedIndex()), times.get(timecomboBox.getSelectedIndex()));
                 }
 
             }
@@ -892,7 +942,7 @@ public class AdministratorUI {
 
     }
 
-    public void switchToAppointmentConfirmationPage(Administrator a, String studentID, Exam exam) {
+    public void switchToAppointmentConfirmationPage(Administrator a, String studentID, Exam exam, Date date, Time time) {
         JLabel confirmation = new JLabel("Your Appointment Has Been Confirmed");
         confirmation.setFont(new Font("Tahoma", Font.PLAIN, 15));
         confirmation.setBounds(35, 11, 177, 21);
@@ -903,7 +953,7 @@ public class AdministratorUI {
         frmAdministratorInterface.getContentPane().add(btnbacktohome);
 
         Appointment app = new Appointment();
-        app.addappointment(exam.getExamID(), studentID, exam.getStartDate());
+        app.addappointment(exam.getExamID(), studentID, date, time);
 
         btnbacktohome.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -1423,7 +1473,7 @@ public class AdministratorUI {
                 frmAdministratorInterface.getContentPane().remove(yearbox);
                 frmAdministratorInterface.getContentPane().remove(lookup);
 
-                String term = season.getSelectedItem().toString() + " " + yearbox.getSelectedItem().toString();
+                String term = season.getSelectedItem().toString() + "_" + yearbox.getSelectedItem().toString();
 
                 /*
                  Get the pending requests for the selected term that are currently pending
@@ -1587,6 +1637,38 @@ public class AdministratorUI {
                                  */
                                 query = "INSERT INTO `scheduler`.`approvedfor` (`requestid`, `examid`) VALUES ('"
                                         + p.getRequestid() + "', '" + id + "')";
+                                DBConnection.ExecUpdateQuery(query);
+                                
+                                query = "Select Count(e.examID) from exam e, pendingrequest p, approvedfor a where term = '" + p.getTerm() + "'"
+                                        + " AND e.examID = a.examID AND p.requestID = a.requestID AND p.course = '" + p.getCourse() + "'"
+                                        + " AND status = 'approved'";
+                                
+                                rs = DBConnection.ExecQuery(query);
+                                int count = 1;
+                                try {
+                                    while(rs.next())
+                                    {
+                                        count = rs.getInt(1);
+                                    }
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                
+                                String exidentifier = p.getCourse() + "_ex" + count;
+                                
+                                query = "Select CourseName from course where courseID = '" + p.getCourse() + "'";
+                                rs = DBConnection.ExecQuery(query);
+                                String name = "";
+                                try {
+                                    while(rs.next())
+                                    {
+                                        name = rs.getString(1);
+                                    }
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                
+                                query = "Insert into courseexam('" + id + "', '" + name + "', '" + exidentifier + "', '" + p.getCourse() + "')";
                                 DBConnection.ExecUpdateQuery(query);
 
                                 /*
@@ -1862,7 +1944,10 @@ public class AdministratorUI {
                     /*
                     Create a new HTML document
                     */
-                    fWriter = new FileWriter("C:/Users/Owner/Desktop/TermReport.xhtml");
+                    
+                    String desktop = System.getProperty("user.home");
+                    
+                    fWriter = new FileWriter(desktop + "/Desktop/TermReport.xhtml");
                     newfile = new BufferedWriter(fWriter);
                     newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
                             + "<title>Term Report</title>\n </head>\n<body>\n");
@@ -2001,7 +2086,9 @@ public class AdministratorUI {
                     /*
                     Create a new HTML document
                     */
-                    fWriter = new FileWriter("C:/Users/Owner/Desktop/TermReport.xhtml");
+                    String desktop = System.getProperty("user.home");
+                    
+                    fWriter = new FileWriter(desktop + "/Desktop/TermReport.xhtml");
                     newfile = new BufferedWriter(fWriter);
                     newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
                             + "<title>Term Report</title>\n </head>\n<body>\n");
@@ -2229,7 +2316,10 @@ public class AdministratorUI {
                 FileWriter fWriter;
                 BufferedWriter newfile;
                 try {
-                    fWriter = new FileWriter("C:/Users/Owner/Desktop/TermReport.xhtml");
+                    String desktop = System.getProperty("user.home");
+                    
+                    fWriter = new FileWriter(desktop + "/Desktop/TermReport.xhtml");
+                    
                     newfile = new BufferedWriter(fWriter);
                     newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
                             + "<title>Term Report</title>\n </head>\n<body>\n");
@@ -2331,7 +2421,9 @@ public class AdministratorUI {
                 FileWriter fWriter;
                 BufferedWriter newfile;
                 try {
-                    fWriter = new FileWriter("C:/Users/Owner/Desktop/TermReport.xhtml");
+                    String desktop = System.getProperty("user.home");
+                    
+                    fWriter = new FileWriter(desktop + "/Desktop/TermReport.xhtml");
                     newfile = new BufferedWriter(fWriter);
                     newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
                             + "<title>Term Report</title>\n </head>\n<body>\n");
@@ -2416,7 +2508,7 @@ public class AdministratorUI {
                 yearbox.setVisible(false);
                 lookup.setVisible(false);
 
-                String term = season.getSelectedItem() + " " + yearbox.getSelectedItem();
+                String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
 
                 /*
                  This query gets the testing center information from the testingcenter
@@ -3189,6 +3281,9 @@ public class AdministratorUI {
 
         dateinfo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                TestingCenter t = new TestingCenter();
+                
+                
                 /*
                 Check if the date is before or after the current date
                 */
@@ -3196,13 +3291,13 @@ public class AdministratorUI {
                         || utilcalendar.getDate().getYear() == cal.getTime().getYear() && utilcalendar.getDate().getMonth() < cal.getTime().getMonth()
                         || utilcalendar.getDate().getYear() == cal.getTime().getYear() && utilcalendar.getDate().getMonth() == cal.getTime().getMonth()
                         && utilcalendar.getDate().getDate() <= cal.getTime().getDate()) {
-                    TestingCenter t = new TestingCenter();
+                    
                     /*
                     If the date is before the current date, calculate past utilization
                     */
                     utilization.setText(t.pastutilization(utilcalendar.getDate()));
                 } else {
-                    TestingCenter t = new TestingCenter();
+                    
                     /*
                     If the date is after the current date, calculate future utilization
                     */
