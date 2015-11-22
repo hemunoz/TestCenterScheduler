@@ -8,10 +8,14 @@ import cse.pkg308.ui.UserUI;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -285,9 +289,79 @@ public class AdministratorUI {
             }
         });
 
+        btnImportData.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                lblName.setVisible(false);
+                textFieldID.setVisible(false);
+                lblAdministrator.setVisible(false);
+                lblName2.setVisible(false);
+                calendar.setVisible(false);
+                btnLogOut.setVisible(false);
+                lblName2.setVisible(false);
+                btnImportData.setVisible(false);
+                btnUtilization.setVisible(false);
+                btnSchedulingRequests.setVisible(false);
+                btnMakeAnAppointment.setVisible(false);
+                btnCheckInStudent.setVisible(false);
+                lblStudentId.setVisible(false);
+                btnGenerateReport.setVisible(false);
+                btnAppointments.setVisible(false);
+                btnedittestingcenter.setVisible(false);
+
+                ArrayList<String> y = new ArrayList();
+                String year = "";
+
+                for (int i = 2010; i < 2017; i++) {
+                    year = i + "";
+                    y.add(year);
+                }
+
+                String[] years = new String[y.size()];
+
+                for (int i = 0; i < y.size(); i++) {
+                    years[i] = y.get(i);
+                }
+
+                JComboBox season = new JComboBox();
+                season.setModel(new DefaultComboBoxModel(new String[]{"Spring", "Summer", "Fall", "Winter"}));
+                season.setBounds(111, 47, 94, 20);
+                frmAdministratorInterface.getContentPane().add(season);
+
+                JComboBox yearbox = new JComboBox();
+                yearbox.setModel(new DefaultComboBoxModel(years));
+                yearbox.setBounds(111, 77, 94, 20);
+                frmAdministratorInterface.getContentPane().add(yearbox);
+
+                JButton lookup = new JButton("View Term Appointments");
+                lookup.setBounds(111, 107, 137, 23);
+                frmAdministratorInterface.getContentPane().add(lookup);
+
+                lookup.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        season.setVisible(false);
+                        yearbox.setVisible(false);
+                        lookup.setVisible(false);
+
+                        String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
+
+                        try {
+                            /*
+                            Make an appointment for a student for selected term
+                            */
+                            switchToImport(a, term);
+                        } catch (IOException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+
+            }
+        });
+
         /*
-        Make an appointment for a student
-        */
+         Make an appointment for a student
+         */
         btnMakeAnAppointment.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -345,8 +419,8 @@ public class AdministratorUI {
                         String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
 
                         /*
-                        Make an appointment for a student for selected term
-                        */
+                         Make an appointment for a student for selected term
+                         */
                         switchToMakeStudentAppointment(a, term);
                     }
                 });
@@ -383,8 +457,8 @@ public class AdministratorUI {
         frmAdministratorInterface.getContentPane().add(btnname);
 
         /*
-        Search Student by last name
-        */
+         Search Student by last name
+         */
         btnname.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 StudentID.setVisible(false);
@@ -399,8 +473,8 @@ public class AdministratorUI {
                 ArrayList<JLabel> lblapp = new ArrayList();
 
                 /*
-                This query returns the Students with the last name entered
-                */
+                 This query returns the Students with the last name entered
+                 */
                 String query = "SELECT u.name from user u, student s where u.lastname = '" + nametext.getText() + "'"
                         + "AND s.studentid = u.userid";
 
@@ -408,8 +482,8 @@ public class AdministratorUI {
 
                 try {
                     /*
-                    Create a new button for the student name returned
-                    */
+                     Create a new button for the student name returned
+                     */
                     while (rs.next()) {
                         i++;
                         JButton testbutton = new JButton(rs.getString(1));
@@ -427,8 +501,8 @@ public class AdministratorUI {
                 int j = 0;
 
                 /*
-                Set bounds for the buttons of student names with actionlisteners
-                */
+                 Set bounds for the buttons of student names with actionlisteners
+                 */
                 for (j = 0; j < i; j++) {
                     lblapp.get(j).setBounds(10, 50 + (j * 35), 137, 23);
                     frmAdministratorInterface.getContentPane().add(lblapp.get(j));
@@ -437,13 +511,13 @@ public class AdministratorUI {
                     frmAdministratorInterface.getContentPane().add(btnapp.get(j));
 
                     /*
-                    Make appointment for selected student
-                    */
+                     Make appointment for selected student
+                     */
                     btnapp.get(j).addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             /*
-                            This query returns the userID of selected student and switches to appointment page
-                            */
+                             This query returns the userID of selected student and switches to appointment page
+                             */
                             String query = "Select userid from user where name = '" + e.getActionCommand() + "'";
                             String id = "";
                             java.sql.ResultSet rs = DBConnection.ExecQuery(query);
@@ -471,8 +545,8 @@ public class AdministratorUI {
         });
 
         /*
-        Lookup student by ID
-        */
+         Lookup student by ID
+         */
         btnID.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 StudentID.setVisible(false);
@@ -487,8 +561,8 @@ public class AdministratorUI {
                 ArrayList<JLabel> lblapp = new ArrayList();
 
                 /*
-                This query returns the student with the entered user ID
-                */
+                 This query returns the student with the entered user ID
+                 */
                 String query = "SELECT u.name from user u where u.userid = '" + IDtext.getText() + "'"
                         + "AND s.studentid = u.userid";
 
@@ -496,8 +570,8 @@ public class AdministratorUI {
 
                 try {
                     /*
-                    Create a new button for each student returned
-                    */
+                     Create a new button for each student returned
+                     */
                     while (rs.next()) {
                         i++;
                         JButton testbutton = new JButton(rs.getString(1));
@@ -515,8 +589,8 @@ public class AdministratorUI {
                 int j = 0;
 
                 /*
-                Set bounds and actionlistener for each new student button
-                */
+                 Set bounds and actionlistener for each new student button
+                 */
                 for (j = 0; j < i; j++) {
                     lblapp.get(j).setBounds(10, 50 + (j * 35), 137, 23);
                     frmAdministratorInterface.getContentPane().add(lblapp.get(j));
@@ -525,8 +599,8 @@ public class AdministratorUI {
                     frmAdministratorInterface.getContentPane().add(btnapp.get(j));
 
                     /*
-                    Select student to make appointment
-                    */
+                     Select student to make appointment
+                     */
                     btnapp.get(j).addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
 
@@ -545,9 +619,9 @@ public class AdministratorUI {
     }
 
     /*
-    Makes the student's appointment. Works the same as when the student makes their
-    own appointment
-    */
+     Makes the student's appointment. Works the same as when the student makes their
+     own appointment
+     */
     public void switchToSelectExamPage(Administrator a, String studentID, String term) {
         JLabel lblTakeAnExam = new JLabel("Take an Exam");
         lblTakeAnExam.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -561,8 +635,8 @@ public class AdministratorUI {
         ArrayList<Course> cl = new ArrayList();
 
         /*
-        This query returns the course information from the course table
-        */
+         This query returns the course information from the course table
+         */
         String query = "Select * from course where term = '" + term + "'";
         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
         int i = 0;
@@ -586,8 +660,8 @@ public class AdministratorUI {
         String[] courselist = new String[cl.size()];
 
         /*
-        Duplicate course ArrayList for array to be displayed in combo box
-        */
+         Duplicate course ArrayList for array to be displayed in combo box
+         */
         for (i = 0; i < cl.size(); i++) {
             courselist[i] = cl.get(i).getCoursename();
         }
@@ -647,20 +721,19 @@ public class AdministratorUI {
                 }
 
                 /*
-                Display exams in course
-                */
+                 Display exams in course
+                 */
                 examcomboBox.setModel(new DefaultComboBoxModel(examlist));
             }
 
         });
-        
+
         query = "Select Opens, Closes from testingcenter where term = '" + term + "'";
         rs = DBConnection.ExecQuery(query);
         Time open = null;
         Time close = null;
         try {
-            while(rs.next())
-            {
+            while (rs.next()) {
                 open = rs.getTime(1);
                 close = rs.getTime(2);
             }
@@ -668,32 +741,27 @@ public class AdministratorUI {
             Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Time ti = new Time(open.getHours(),open.getMinutes(),0);
+        Time ti = new Time(open.getHours(), open.getMinutes(), 0);
         close.setHours(close.getHours() - 2);
 
-        ArrayList <Time> times = new ArrayList();
-        
-        
-        while(ti.getTime() <= close.getTime())
-        {
+        ArrayList<Time> times = new ArrayList();
+
+        while (ti.getTime() <= close.getTime()) {
             String query2 = "Select starttime, endtime from nonsbtimes where term = '" + term + "'";
             java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
             Time nonsbstart = null;
             Time nonsbend = null;
             int checknonsb = 0;
             try {
-                while(rs2.next())
-                {
+                while (rs2.next()) {
                     nonsbstart = rs2.getTime(1);
                     nonsbstart.setMinutes(nonsbstart.getMinutes() - 30);
                     nonsbstart.setHours(nonsbstart.getHours() - 1);
                     nonsbend = rs2.getTime(2);
-                    Time nonsbt = new Time(nonsbstart.getHours(),nonsbstart.getMinutes(),0);
-                    
-                    while(nonsbt.getTime() < nonsbend.getTime())
-                    {
-                        if(ti.getTime() == nonsbt.getTime())
-                        {
+                    Time nonsbt = new Time(nonsbstart.getHours(), nonsbstart.getMinutes(), 0);
+
+                    while (nonsbt.getTime() < nonsbend.getTime()) {
+                        if (ti.getTime() == nonsbt.getTime()) {
                             checknonsb = 1;
                         }
                         nonsbt.setMinutes(nonsbt.getMinutes() + 30);
@@ -702,23 +770,22 @@ public class AdministratorUI {
             } catch (SQLException ex) {
                 Logger.getLogger(StudentUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if(checknonsb == 0)
-            {
+            if (checknonsb == 0) {
                 Time temp = new Time(ti.getHours(), ti.getMinutes(), 0);
                 times.add(temp);
             }
             ti.setMinutes(ti.getMinutes() + 30);
         }
-        
-        String[]timearray = new String[times.size()];
-        for(int j = 0; j<timearray.length; j++)
-        {
-            if(times.get(j).getMinutes() < 10)
-                timearray[j] = times.get(j).getHours() + ":0" + times.get(j).getMinutes() +
-                    "-" + (times.get(j).getHours() + 2) + ":0" + times.get(j).getMinutes();
-            else
-                timearray[j] = times.get(j).getHours() + ":" + times.get(j).getMinutes() +
-                    "-" + (times.get(j).getHours() + 2) + ":" + times.get(j).getMinutes();
+
+        String[] timearray = new String[times.size()];
+        for (int j = 0; j < timearray.length; j++) {
+            if (times.get(j).getMinutes() < 10) {
+                timearray[j] = times.get(j).getHours() + ":0" + times.get(j).getMinutes()
+                        + "-" + (times.get(j).getHours() + 2) + ":0" + times.get(j).getMinutes();
+            } else {
+                timearray[j] = times.get(j).getHours() + ":" + times.get(j).getMinutes()
+                        + "-" + (times.get(j).getHours() + 2) + ":" + times.get(j).getMinutes();
+            }
             //System.out.println(timearray[j]);
         }
 
@@ -731,7 +798,7 @@ public class AdministratorUI {
             public void actionPerformed(ActionEvent e) {
 
                 /*
-                If the exam combo box is selected, clear all the dates in the date ArrayList
+                 If the exam combo box is selected, clear all the dates in the date ArrayList
                  */
                 for (int i = dates.size() - 1; i >= 0; i--) {
                     dates.remove(i);
@@ -741,8 +808,8 @@ public class AdministratorUI {
                 //timecomboBox.setModel(new DefaultComboBoxModel());
 
                 /*
-                The query gets the start and end dates from the selected exam
-                */
+                 The query gets the start and end dates from the selected exam
+                 */
                 String query = "Select startDate, endDate from exam where "
                         + "examname = '" + examcomboBox.getSelectedItem().toString() + "'"
                         + " AND term = '" + term + "'";
@@ -758,9 +825,9 @@ public class AdministratorUI {
                         Calendar cal = Calendar.getInstance();
 
                         /*
-                        Iterate the dates from the start date leading up to the end date. Convert
-                        the dates into an SQL format to be displayed and add to the date ArrayList.
-                        */
+                         Iterate the dates from the start date leading up to the end date. Convert
+                         the dates into an SQL format to be displayed and add to the date ArrayList.
+                         */
                         while (temp2.getDate() != rs.getDate(2).getDate()) {
 
                             temp2 = new Date();
@@ -787,22 +854,20 @@ public class AdministratorUI {
                 }
 
                 /*
-                Convert ArrayList of dates into an array to be displayed
-                */
+                 Convert ArrayList of dates into an array to be displayed
+                 */
                 Date[] datearray = new Date[dates.size()];
                 for (int i = 0; i < datearray.length; i++) {
                     datearray[i] = dates.get(i);
                 }
 
                 /*
-                Create a time for the start time. The query will return the start time of the 
-                selected exam
-                */
-                
-
+                 Create a time for the start time. The query will return the start time of the 
+                 selected exam
+                 */
                 /*
-                Display dates and start time of exam
-                */
+                 Display dates and start time of exam
+                 */
                 datecomboBox.setModel(new DefaultComboBoxModel(datearray));
                 //timecomboBox.setModel(new DefaultComboBoxModel(times));
 
@@ -841,8 +906,8 @@ public class AdministratorUI {
         frmAdministratorInterface.getContentPane().add(btnSubmit);
 
         /*
-        Go back to home page and don't make appointment
-        */
+         Go back to home page and don't make appointment
+         */
         btnCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -887,8 +952,8 @@ public class AdministratorUI {
                 }
 
                 /*
-                Create new exam object. The query will return the exam information of the exam selected
-                */
+                 Create new exam object. The query will return the exam information of the exam selected
+                 */
                 Exam exam = new Exam();
                 String query = "Select * from Exam where examname = '" + examcomboBox.getSelectedItem().toString() + "'";
                 java.sql.ResultSet rs = DBConnection.ExecQuery(query);
@@ -913,23 +978,19 @@ public class AdministratorUI {
                 }
 
                 /*
-                From the selected course of the exam, check if the student is taking the course.
-                If they are not, the appointment cannot be scheduled, and the appropriate message
-                will be displayed.
-                */
+                 From the selected course of the exam, check if the student is taking the course.
+                 If they are not, the appointment cannot be scheduled, and the appropriate message
+                 will be displayed.
+                 */
                 if (cl.get(i).lookupstudent(studentID) == false) {
                     switchToCannotSchedulePage(a, "You are not currently enrolled in this course");
-                }
-                /*
-                From the selected exam, check if the student already has an appointment for the exam
-                */
-                else if (exam.lookupstudent(studentID) == true) {
+                } /*
+                 From the selected exam, check if the student already has an appointment for the exam
+                 */ else if (exam.lookupstudent(studentID) == true) {
                     switchToCannotSchedulePage(a, "You already have an appointment for this exam");
-                }
-                /*
-                Check if there is a seat available
-                */
-                else if (exam.availableseats(exam.getExamID() + "", term, dates.get(datecomboBox.getSelectedIndex()), times.get(timecomboBox.getSelectedIndex())) == false) {
+                } /*
+                 Check if there is a seat available
+                 */ else if (exam.availableseats(exam.getExamID() + "", term, dates.get(datecomboBox.getSelectedIndex()), times.get(timecomboBox.getSelectedIndex())) == false) {
                     switchToCannotSchedulePage(a, "No Available Seats");
                 } else {
 
@@ -990,8 +1051,8 @@ public class AdministratorUI {
 
     public void switchToCannotSchedulePage(Administrator a, String m) {
         /*
-        Display m, the message as the reason the appointment could not be scheduled
-        */
+         Display m, the message as the reason the appointment could not be scheduled
+         */
         JLabel notapproved = new JLabel(m);
         notapproved.setFont(new Font("Tahoma", Font.PLAIN, 15));
         notapproved.setBounds(35, 11, 277, 21);
@@ -1002,8 +1063,8 @@ public class AdministratorUI {
         frmAdministratorInterface.getContentPane().add(btnbacktohome);
 
         /*
-        If the backtohome button is pressed, return to the student splash screen
-        */
+         If the backtohome button is pressed, return to the student splash screen
+         */
         btnbacktohome.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -1019,8 +1080,8 @@ public class AdministratorUI {
 
     public void switchToViewAppointments(Administrator a) {
         /*
-        Select a term based on the season and year
-        */
+         Select a term based on the season and year
+         */
         ArrayList<String> y = new ArrayList();
         String year = "";
 
@@ -1058,8 +1119,8 @@ public class AdministratorUI {
                 String term = season.getSelectedItem().toString() + "_" + yearbox.getSelectedItem().toString();
 
                 /*
-                This query returns all of the appointments made in the selected term
-                */
+                 This query returns all of the appointments made in the selected term
+                 */
                 String query = "Select u.name, e.examname, a.date, a.checkedin, e.examID, "
                         + "a.appointmentID, s.studentID from appointment a, "
                         + "exam e, student s, user u, has h, forexam f where e.examID = f.examID AND "
@@ -1074,13 +1135,13 @@ public class AdministratorUI {
                 try {
                     while (rs.next()) {
                         /*
-                        Display Student name, appointment exam name, and appointment date
-                        */
+                         Display Student name, appointment exam name, and appointment date
+                         */
                         appstrings.add(rs.getString(1) + ": " + rs.getString(2) + "-" + rs.getString(3));
-                        
+
                         /*
-                        Create appointment 
-                        */
+                         Create appointment 
+                         */
                         Appointment a = new Appointment();
                         a.setAppointmentid(rs.getString(6));
                         a.setCheckedin(rs.getString(4));
@@ -1097,8 +1158,8 @@ public class AdministratorUI {
                 }
 
                 /*
-                Display appointment information
-                */
+                 Display appointment information
+                 */
                 String[] apparray = new String[appstrings.size()];
                 for (int i = 0; i < apparray.length; i++) {
                     apparray[i] = appstrings.get(i);
@@ -1123,8 +1184,8 @@ public class AdministratorUI {
                 });
 
                 /*
-                The appointment has been selected
-                */
+                 The appointment has been selected
+                 */
                 termappointments.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         backtohome.setVisible(false);
@@ -1162,8 +1223,8 @@ public class AdministratorUI {
                         frmAdministratorInterface.getContentPane().add(modify);
 
                         /*
-                        Modify the appointment
-                        */
+                         Modify the appointment
+                         */
                         modify.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 Appointment ap = appointments.get(termappointments.getSelectedIndex());
@@ -1178,16 +1239,16 @@ public class AdministratorUI {
                                 modify.setVisible(false);
 
                                 /*
-                                Display appointment date
-                                */
+                                 Display appointment date
+                                 */
                                 JLabel date = new JLabel("Date: " + ap.getDate());
                                 date.setFont(new Font("Tahoma", Font.PLAIN, 15));
                                 date.setBounds(50, 151, 207, 21);
                                 frmAdministratorInterface.getContentPane().add(date);
 
                                 /*
-                                Calendar of dates to select
-                                */
+                                 Calendar of dates to select
+                                 */
                                 JCalendar appcalendar = new JCalendar();
                                 appcalendar.setBounds(226, 41, 198, 153);
                                 frmAdministratorInterface.getContentPane().add(appcalendar);
@@ -1197,15 +1258,15 @@ public class AdministratorUI {
                                 frmAdministratorInterface.getContentPane().add(setdate);
 
                                 /*
-                                Enter the selected date
-                                */
+                                 Enter the selected date
+                                 */
                                 setdate.addActionListener(new ActionListener() {
                                     public void actionPerformed(ActionEvent e) {
                                         Calendar cal = Calendar.getInstance();
 
                                         /*
-                                        Change selected date to SQL format
-                                        */
+                                         Change selected date to SQL format
+                                         */
                                         cal.set(Calendar.YEAR, appcalendar.getDate().getYear());
                                         cal.set(Calendar.MONTH, appcalendar.getDate().getMonth());
                                         cal.set(Calendar.DAY_OF_MONTH, appcalendar.getDate().getDate());
@@ -1214,8 +1275,8 @@ public class AdministratorUI {
                                         newdate.setYear(newdate.getYear() + 1900);
 
                                         /*
-                                        Set the appointment date to the selected date
-                                        */
+                                         Set the appointment date to the selected date
+                                         */
                                         ap.setDate(newdate);
                                         String query = "UPDATE `scheduler`.`appointment` SET `date`= '" + newdate + "' WHERE `appointmentID`='" + ap.getAppointmentid() + "'";
                                         DBConnection.ExecUpdateQuery(query);
@@ -1229,8 +1290,8 @@ public class AdministratorUI {
                         });
 
                         /*
-                        Cancel selected appointment
-                        */
+                         Cancel selected appointment
+                         */
                         cancel.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 Appointment ap = appointments.get(termappointments.getSelectedIndex());
@@ -1263,13 +1324,13 @@ public class AdministratorUI {
                         });
 
                         /*
-                        Check in student that attended appointment
-                        */
+                         Check in student that attended appointment
+                         */
                         CheckedIn.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 /*
-                                Set the status of the selected appointment to "Checked In"
-                                */
+                                 Set the status of the selected appointment to "Checked In"
+                                 */
                                 String query = "UPDATE `scheduler`.`appointment` SET `checkedin`='checked in' "
                                         + "WHERE `appointmentID`= '" + appid + "'";
 
@@ -1278,8 +1339,8 @@ public class AdministratorUI {
                                 appointments.get(termappointments.getSelectedIndex()).setCheckedin("checked in");
 
                                 /*
-                                Display student is checked in
-                                */
+                                 Display student is checked in
+                                 */
                                 studentcheckedin.setText(name + " is checked in");
 
                             }
@@ -1289,8 +1350,8 @@ public class AdministratorUI {
                         Pending.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 /*
-                                Set the status of the selected appointment to "Pending"
-                                */
+                                 Set the status of the selected appointment to "Pending"
+                                 */
                                 String query = "UPDATE `scheduler`.`appointment` SET `checkedin`='checked in' "
                                         + "WHERE `appointmentID`= '" + appid + "'";
 
@@ -1299,8 +1360,8 @@ public class AdministratorUI {
                                 appointments.get(termappointments.getSelectedIndex()).setCheckedin("pending");
 
                                 /*
-                                Display student is pending
-                                */
+                                 Display student is pending
+                                 */
                                 studentcheckedin.setText(name + " is pending");
 
                             }
@@ -1310,8 +1371,8 @@ public class AdministratorUI {
                         NotCheckedIn.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
                                 /*
-                                Set the status of the selected appointment to "Not Checked In"
-                                */
+                                 Set the status of the selected appointment to "Not Checked In"
+                                 */
                                 String query = "UPDATE `scheduler`.`appointment` SET `checkedin`='checked in' "
                                         + "WHERE `appointmentID`= '" + appid + "'";
 
@@ -1320,8 +1381,8 @@ public class AdministratorUI {
                                 appointments.get(termappointments.getSelectedIndex()).setCheckedin("not checked in");
 
                                 /*
-                                Display student is Not Checked In
-                                */
+                                 Display student is Not Checked In
+                                 */
                                 studentcheckedin.setText(name + " is not checked in");
 
                             }
@@ -1335,8 +1396,8 @@ public class AdministratorUI {
     }
 
     /*
-    View all pending requests for a selected term
-    */
+     View all pending requests for a selected term
+     */
     public void switchToViewRequests(Administrator a) {
         ArrayList<String> y = new ArrayList();
         String year = "";
@@ -1396,6 +1457,16 @@ public class AdministratorUI {
         courselabel.setBounds(100, 200, 100, 20);
         frmAdministratorInterface.getContentPane().add(courselabel);
 
+        JLabel seatslabel = new JLabel("Seats:");
+        seatslabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        seatslabel.setBounds(100, 220, 100, 20);
+        frmAdministratorInterface.getContentPane().add(seatslabel);
+
+        JLabel studentslabel = new JLabel("Students:");
+        studentslabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        studentslabel.setBounds(100, 240, 100, 20);
+        frmAdministratorInterface.getContentPane().add(studentslabel);
+
         JLabel instr = new JLabel();
         instr.setFont(new Font("Tahoma", Font.PLAIN, 15));
         instr.setBounds(200, 100, 200, 20);
@@ -1426,6 +1497,16 @@ public class AdministratorUI {
         course.setBounds(200, 200, 200, 20);
         frmAdministratorInterface.getContentPane().add(course);
 
+        JLabel seats = new JLabel();
+        seats.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        seats.setBounds(200, 220, 200, 20);
+        frmAdministratorInterface.getContentPane().add(seats);
+
+        JLabel students = new JLabel();
+        students.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        students.setBounds(200, 240, 200, 20);
+        frmAdministratorInterface.getContentPane().add(students);
+
         JLabel approvelabel = new JLabel();
         approvelabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
         approvelabel.setBounds(200, 180, 200, 20);
@@ -1450,12 +1531,16 @@ public class AdministratorUI {
         starttimelabel.setVisible(false);
         endtimelabel.setVisible(false);
         courselabel.setVisible(false);
+        seatslabel.setVisible(false);
+        studentslabel.setVisible(false);
         instr.setVisible(false);
         startdate.setVisible(false);
         enddate.setVisible(false);
         starttime.setVisible(false);
         endtime.setVisible(false);
         course.setVisible(false);
+        seats.setVisible(false);
+        students.setVisible(false);
         approve.setVisible(false);
         deny.setVisible(false);
         approvelabel.setVisible(false);
@@ -1515,6 +1600,8 @@ public class AdministratorUI {
                 starttimelabel.setVisible(true);
                 endtimelabel.setVisible(true);
                 courselabel.setVisible(true);
+                seatslabel.setVisible(true);
+                studentslabel.setVisible(true);
 
                 /*
                  If a request is selected, display information
@@ -1563,6 +1650,8 @@ public class AdministratorUI {
                                 starttime.setVisible(true);
                                 endtime.setVisible(true);
                                 course.setVisible(true);
+                                seats.setVisible(true);
+                                students.setVisible(true);
 
                                 instr.setText(rs.getString(1));
                                 startdate.setText(rs.getString(2));
@@ -1570,6 +1659,20 @@ public class AdministratorUI {
                                 starttime.setText(rs.getString(4));
                                 endtime.setText(rs.getString(5));
                                 course.setText(rs.getString(7));
+
+                                String query2 = "Select seats from testingcenter where term = '" + term + "'";
+                                java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
+
+                                while (rs2.next()) {
+                                    seats.setText(rs2.getString(1));
+                                }
+
+                                query2 = "Select students from course where courseID = '" + rs.getString(7) + "'";
+                                rs2 = DBConnection.ExecQuery(query2);
+
+                                while (rs2.next()) {
+                                    students.setText(rs2.getString(1));
+                                }
 
                                 /*
                                  With a request selected, the approve and deny buttons are
@@ -1590,12 +1693,16 @@ public class AdministratorUI {
                                 starttimelabel.setVisible(false);
                                 endtimelabel.setVisible(false);
                                 courselabel.setVisible(false);
+                                seatslabel.setVisible(false);
+                                studentslabel.setVisible(false);
                                 instr.setVisible(false);
                                 startdate.setVisible(false);
                                 enddate.setVisible(false);
                                 starttime.setVisible(false);
                                 endtime.setVisible(false);
                                 course.setVisible(false);
+                                seats.setVisible(false);
+                                students.setVisible(false);
                                 approve.setVisible(false);
                                 deny.setVisible(false);
                                 exams.setVisible(false);
@@ -1638,37 +1745,36 @@ public class AdministratorUI {
                                 query = "INSERT INTO `scheduler`.`approvedfor` (`requestid`, `examid`) VALUES ('"
                                         + p.getRequestid() + "', '" + id + "')";
                                 DBConnection.ExecUpdateQuery(query);
-                                
-                                query = "Select Count(e.examID) from exam e, pendingrequest p, approvedfor a where term = '" + p.getTerm() + "'"
+
+                                query = "Select Count(e.examID) from exam e, pendingrequest p, approvedfor a where e.term = '" + p.getTerm() + "'"
                                         + " AND e.examID = a.examID AND p.requestID = a.requestID AND p.course = '" + p.getCourse() + "'"
-                                        + " AND status = 'approved'";
-                                
+                                        + " AND p.status = 'approved'";
+
                                 rs = DBConnection.ExecQuery(query);
                                 int count = 1;
                                 try {
-                                    while(rs.next())
-                                    {
+                                    while (rs.next()) {
                                         count = rs.getInt(1);
                                     }
                                 } catch (SQLException ex) {
                                     Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                                
+
                                 String exidentifier = p.getCourse() + "_ex" + count;
-                                
+
                                 query = "Select CourseName from course where courseID = '" + p.getCourse() + "'";
                                 rs = DBConnection.ExecQuery(query);
                                 String name = "";
                                 try {
-                                    while(rs.next())
-                                    {
+                                    while (rs.next()) {
                                         name = rs.getString(1);
                                     }
                                 } catch (SQLException ex) {
                                     Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                                
-                                query = "Insert into courseexam('" + id + "', '" + name + "', '" + exidentifier + "', '" + p.getCourse() + "')";
+                                System.out.println(id + " " + name + " " + exidentifier + " " + p.getCourse());
+
+                                query = "Insert into courseexam Values('" + id + "', '" + name + "', '" + exidentifier + "', '" + p.getCourse() + "')";
                                 DBConnection.ExecUpdateQuery(query);
 
                                 /*
@@ -1707,12 +1813,12 @@ public class AdministratorUI {
 
                                     /*
                                      This query returns the minimum number of seats that will be available in the timeslot.
-                                    The seats returned will be based on whether the start and end times overlap with an existing
-                                    exam's time. The query will consider an overlapping exam to be one that starts before the
-                                    end time of another exam and ends after the exam, one that starts before the start time and
-                                    ends after the start time of the exam, one that starts and ends between the start and end
-                                    times of an exam, or one that starts before the start time of an exam and ends after the
-                                    end time of an exam
+                                     The seats returned will be based on whether the start and end times overlap with an existing
+                                     exam's time. The query will consider an overlapping exam to be one that starts before the
+                                     end time of another exam and ends after the exam, one that starts before the start time and
+                                     ends after the start time of the exam, one that starts and ends between the start and end
+                                     times of an exam, or one that starts before the start time of an exam and ends after the
+                                     end time of an exam
                                      */
                                     String query2 = "Select Min(seatsavailable) from individualexam where date = '" + curs
                                             + "' AND ((starttime <= '" + p.getEndTime() + "' AND endtime >= '" + p.getEndTime() + "') OR "
@@ -1729,18 +1835,18 @@ public class AdministratorUI {
                                     }
 
                                     /*
-                                    Insert new individual exam into individualexam table with the given date in the range
-                                    and seats
-                                    */
+                                     Insert new individual exam into individualexam table with the given date in the range
+                                     and seats
+                                     */
                                     String query3 = "INSERT INTO `scheduler`.`individualexam` (`individualid`, `examid`, `date`, "
                                             + "`starttime`, `endtime`, `seatsavailable`) VALUES ('" + rangeid + "', '" + id
                                             + "', '" + curs + "', '" + p.getStartTime() + "', '" + p.getEndTime() + "', '" + seats + "')";
                                     DBConnection.ExecUpdateQuery(query3);
 
                                     /*
-                                    Since the new individual exam has the new minimum seats available, all other overlapping
-                                    individual exams must have the updated seat value
-                                    */
+                                     Since the new individual exam has the new minimum seats available, all other overlapping
+                                     individual exams must have the updated seat value
+                                     */
                                     query3 = "UPDATE `scheduler`.`individualexam` SET `seatsavailable`='" + seats + "' where date = '" + curs
                                             + "' AND ((starttime <= '" + p.getEndTime() + "' AND endtime >= '" + p.getEndTime() + "') OR "
                                             + "(starttime <= '" + p.getStartTime() + "' AND endtime >= '" + p.getEndTime() + "') OR (starttime >= '" + p.getStartTime() + "' AND "
@@ -1752,8 +1858,8 @@ public class AdministratorUI {
                                 }
 
                                 /*
-                                Display approved message for selected exam
-                                */
+                                 Display approved message for selected exam
+                                 */
                                 switchToApproveDenyConfirmation(a, exams.getSelectedItem().toString(),
                                         "Request for " + exams.getSelectedItem().toString() + " has been approved");
                             }
@@ -1777,9 +1883,12 @@ public class AdministratorUI {
                                 deny.setVisible(false);
                                 exams.setVisible(false);
 
+                                String query = "UPDATE `scheduler`.`pendingrequest` SET `status`='denied' WHERE `requestID`='" + p.getRequestid() + "'";
+                                DBConnection.ExecUpdateQuery(query);
+
                                 /*
-                                Display deny message
-                                */
+                                 Display deny message
+                                 */
                                 switchToApproveDenyConfirmation(a, exams.getSelectedItem().toString(),
                                         "Request for " + exams.getSelectedItem().toString() + " has been denied");
                             }
@@ -1836,8 +1945,8 @@ public class AdministratorUI {
         frmAdministratorInterface.getContentPane().add(btnappterm);
 
         /*
-        Generate reports by day if btnday button is clicked
-        */
+         Generate reports by day if btnday button is clicked
+         */
         btnday.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Select.setVisible(false);
@@ -1851,8 +1960,8 @@ public class AdministratorUI {
         });
 
         /*
-        Generate reports by week if btnweek button is clicked
-        */
+         Generate reports by week if btnweek button is clicked
+         */
         btnweek.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Select.setVisible(false);
@@ -1866,8 +1975,8 @@ public class AdministratorUI {
         });
 
         /*
-        Generate reports by course for term if btncourseterm button is clicked
-        */
+         Generate reports by course for term if btncourseterm button is clicked
+         */
         btncourseterm.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Select.setVisible(false);
@@ -1881,8 +1990,8 @@ public class AdministratorUI {
         });
 
         /*
-        Generate reports by term if btnappterm button is clicked
-        */
+         Generate reports by term if btnappterm button is clicked
+         */
         btnappterm.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Select.setVisible(false);
@@ -1899,9 +2008,9 @@ public class AdministratorUI {
 
     public void switchToAppointmentsByDayPage(Administrator a) {
         /*
-        Select a term
-        */
-        
+         Select a term
+         */
+
         ArrayList<String> y = new ArrayList();
         String year = "";
 
@@ -1933,7 +2042,7 @@ public class AdministratorUI {
         lookup.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
-                
+
                 Date startdate = new Date();//Start date for the term
                 Date enddate = new Date();//End date for the term
                 int year = Integer.parseInt(yearbox.getSelectedItem().toString());
@@ -1942,11 +2051,11 @@ public class AdministratorUI {
                 BufferedWriter newfile;
                 try {
                     /*
-                    Create a new HTML document
-                    */
-                    
+                     Create a new HTML document
+                     */
+
                     String desktop = System.getProperty("user.home");
-                    
+
                     fWriter = new FileWriter(desktop + "/Desktop/TermReport.xhtml");
                     newfile = new BufferedWriter(fWriter);
                     newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
@@ -1956,8 +2065,8 @@ public class AdministratorUI {
                             + " " + yearbox.getSelectedItem() + "<br></br><br></br>");
 
                     /*
-                    Get date range for specific season
-                    */
+                     Get date range for specific season
+                     */
                     if (season.getSelectedItem().equals("Fall")) {
                         startdate.setYear(year);
                         startdate.setMonth(7);
@@ -2002,21 +2111,21 @@ public class AdministratorUI {
                     java.sql.Date newdate = new java.sql.Date(cal.getTimeInMillis());
 
                     /*
-                    Start at start date and iterate through dates up to the end date
-                    */
+                     Start at start date and iterate through dates up to the end date
+                     */
                     while (currentdate.getYear() != enddate.getYear() || currentdate.getMonth() != enddate.getMonth() || currentdate.getDate() != enddate.getDate()) {
 
                         /*
-                        This query returns the number of appointments made on the current date in the loop
-                        */
+                         This query returns the number of appointments made on the current date in the loop
+                         */
                         String query = "Select count(a.appointmentID) from appointment a where"
                                 + " a.date = '" + newdate + "'";
 
                         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
 
                         /*
-                        Enter the date and number of appointments into the document
-                        */
+                         Enter the date and number of appointments into the document
+                         */
                         while (rs.next()) {
                             newfile.write(currentdate.getMonth() + 1 + "/" + currentdate.getDate() + "/"
                                     + currentdate.getYear() + ": " + rs.getString(1) + "<br></br>");
@@ -2030,8 +2139,8 @@ public class AdministratorUI {
                     }
 
                     /*
-                    Close the document
-                    */
+                     Close the document
+                     */
                     newfile.write("\n</body>\n </html>");
 
                     newfile.close();
@@ -2084,10 +2193,10 @@ public class AdministratorUI {
                 BufferedWriter newfile = null;
                 try {
                     /*
-                    Create a new HTML document
-                    */
+                     Create a new HTML document
+                     */
                     String desktop = System.getProperty("user.home");
-                    
+
                     fWriter = new FileWriter(desktop + "/Desktop/TermReport.xhtml");
                     newfile = new BufferedWriter(fWriter);
                     newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
@@ -2097,8 +2206,8 @@ public class AdministratorUI {
                             + " " + yearbox.getSelectedItem() + "<br></br><br></br>");
 
                     /*
-                    Set date ranges for each season
-                    */
+                     Set date ranges for each season
+                     */
                     if (season.getSelectedItem().equals("Fall")) {
                         startdate.setYear(year);
                         startdate.setMonth(7);
@@ -2152,13 +2261,12 @@ public class AdministratorUI {
 
                     ArrayList<String> courses = new ArrayList();
 
-                    
                     while (currentdate.getYear() != enddate.getYear() || currentdate.getMonth() != enddate.getMonth() || currentdate.getDate() != enddate.getDate()) {
                         endweek = startweek;
 
                         /*
-                        This query returns the number of appointments made on the current week in the loop
-                        */
+                         This query returns the number of appointments made on the current week in the loop
+                         */
                         String query = "Select count(a.appointmentID) from appointment a where"
                                 + " a.date = '" + newdate + "'";
 
@@ -2170,9 +2278,9 @@ public class AdministratorUI {
                         }
 
                         /*
-                        This query returns the course identifier for the course that the appointment
-                        is for
-                        */
+                         This query returns the course identifier for the course that the appointment
+                         is for
+                         */
                         query = "Select ce.courseidentifier from exam e, courseexam ce, appointment a, forexam f"
                                 + " where a.date = '" + newdate + "' AND a.appointmentID = f.appointmentID"
                                 + " AND f.examID = e.examID AND e.examID = ce.examID";
@@ -2182,8 +2290,8 @@ public class AdministratorUI {
                         while (rs.next()) {
                             int check = 0;
                             /*
-                            Check that there are no duplicate courses for the exam
-                            */
+                             Check that there are no duplicate courses for the exam
+                             */
                             for (int i = 0; i < courses.size(); i++) {
                                 if (rs.getString(1).equals(courses.get(i))) {
                                     check = 1;
@@ -2200,10 +2308,10 @@ public class AdministratorUI {
                         cal.set(Calendar.MONTH, currentdate.getMonth());
                         cal.set(Calendar.DAY_OF_MONTH, currentdate.getDate());
                         newdate = new java.sql.Date(cal.getTimeInMillis());
-                        
+
                         /*
-                        Check for if the next day is in the same week as the current day
-                        */
+                         Check for if the next day is in the same week as the current day
+                         */
                         endweek = currentdate;
 
                         if (cal.get(Calendar.WEEK_OF_YEAR) != week) {
@@ -2211,9 +2319,9 @@ public class AdministratorUI {
                             week = cal.get(Calendar.WEEK_OF_YEAR);
 
                             /*
-                            With the end of the week, write start of week, end of week, courses, and 
-                            number of appointments to the HTML document
-                            */
+                             With the end of the week, write start of week, end of week, courses, and 
+                             number of appointments to the HTML document
+                             */
                             newfile.write((startweek.getMonth() + 1) + "/" + startweek.getDate() + "/"
                                     + startweek.getYear() + " - " + (endweek.getMonth() + 1) + "/" + endweek.getDate() + "/"
                                     + endweek.getYear() + ": " + num + "   ");
@@ -2226,8 +2334,8 @@ public class AdministratorUI {
                             int j = courses.size();
 
                             /*
-                            Empty course ArrayList
-                            */
+                             Empty course ArrayList
+                             */
                             for (int i = j - 1; i >= 0; i--) {
                                 courses.remove(i);
                             }
@@ -2235,8 +2343,8 @@ public class AdministratorUI {
                             num = 0;
 
                             /*
-                            Start of the week is now the current date
-                            */
+                             Start of the week is now the current date
+                             */
                             startweek.setYear(currentdate.getYear());
                             startweek.setMonth(currentdate.getMonth());
                             startweek.setDate(currentdate.getDate());
@@ -2245,8 +2353,8 @@ public class AdministratorUI {
 
                     }
                     /*
-                    Write week information for the end of the loop. Empty course list at end of loop
-                    */
+                     Write week information for the end of the loop. Empty course list at end of loop
+                     */
                     newfile.write((startweek.getMonth() + 1) + "/" + startweek.getDate() + "/"
                             + startweek.getYear() + " - " + (endweek.getMonth() + 1) + "/" + endweek.getDate() + "/"
                             + endweek.getYear() + ": " + num + "  ");
@@ -2263,8 +2371,8 @@ public class AdministratorUI {
                     }
 
                     /*
-                    Close document
-                    */
+                     Close document
+                     */
                     newfile.write("\n</body>\n </html>");
 
                     newfile.close();
@@ -2311,15 +2419,15 @@ public class AdministratorUI {
                 String term = season.getSelectedItem() + "_" + yearbox.getSelectedItem();
 
                 /*
-                Open new HTML document
-                */
+                 Open new HTML document
+                 */
                 FileWriter fWriter;
                 BufferedWriter newfile;
                 try {
                     String desktop = System.getProperty("user.home");
-                    
+
                     fWriter = new FileWriter(desktop + "/Desktop/TermReport.xhtml");
-                    
+
                     newfile = new BufferedWriter(fWriter);
                     newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
                             + "<title>Term Report</title>\n </head>\n<body>\n");
@@ -2328,9 +2436,9 @@ public class AdministratorUI {
                             + " " + yearbox.getSelectedItem() + "<br></br><br></br>");
 
                     /*
-                    This query returns the courses that have exams in the current term while
-                    not returning any duplicate courses
-                    */
+                     This query returns the courses that have exams in the current term while
+                     not returning any duplicate courses
+                     */
                     String query = "Select c.course from courseexam c, exam e where"
                             + " e.Term = '" + term + "' AND e.examID = c.examID Group By course";
 
@@ -2341,8 +2449,8 @@ public class AdministratorUI {
                     }
 
                     /*
-                    Close the document
-                    */
+                     Close the document
+                     */
                     newfile.write("\n</body>\n </html>");
 
                     newfile.close();
@@ -2390,8 +2498,8 @@ public class AdministratorUI {
         ArrayList<String> terms = new ArrayList();
 
         /*
-        Add a new term to the term range
-        */
+         Add a new term to the term range
+         */
         addterm.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (season.getSelectedItem() != null && yearbox.getSelectedItem() != null) {
@@ -2402,8 +2510,8 @@ public class AdministratorUI {
                     }
 
                     /*
-                    Display range of terms
-                    */
+                     Display range of terms
+                     */
                     termbox.setModel(new DefaultComboBoxModel(termarray));
                 }
             }
@@ -2416,13 +2524,13 @@ public class AdministratorUI {
         lookup.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 /*
-                Create new HTML documents
-                */
+                 Create new HTML documents
+                 */
                 FileWriter fWriter;
                 BufferedWriter newfile;
                 try {
                     String desktop = System.getProperty("user.home");
-                    
+
                     fWriter = new FileWriter(desktop + "/Desktop/TermReport.xhtml");
                     newfile = new BufferedWriter(fWriter);
                     newfile.write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n <head>\n"
@@ -2431,14 +2539,14 @@ public class AdministratorUI {
                     newfile.write("Number of Appointments During <br></br><br></br>");
 
                     /*
-                    Iterate through the term range
-                    */
+                     Iterate through the term range
+                     */
                     for (int i = 0; i < terms.size(); i++) {
                         newfile.write(termbox.getItemAt(i).toString() + ": ");
 
                         /*
-                        This query returns the number of appointments made in the term in the array
-                        */
+                         This query returns the number of appointments made in the term in the array
+                         */
                         String query = "Select count(a.appointmentID) from appointment a, exam e, forexam f where"
                                 + " a.appointmentID = f.appointmentID AND f.examID = e.examID AND"
                                 + " e.Term = '" + termbox.getItemAt(i) + "'";
@@ -2446,8 +2554,8 @@ public class AdministratorUI {
                         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
 
                         /*
-                        Write the number of appointments to the document
-                        */
+                         Write the number of appointments to the document
+                         */
                         while (rs.next()) {
                             newfile.write(rs.getString(1) + "<br></br>");
                         }
@@ -2456,8 +2564,8 @@ public class AdministratorUI {
                     }
 
                     /*
-                    Close the document
-                    */
+                     Close the document
+                     */
                     newfile.write("\n</body>\n </html>");
 
                     newfile.close();
@@ -3263,8 +3371,8 @@ public class AdministratorUI {
 
     public void switchToDisplayUtilization(Administrator a) {
         /*
-        Calendar of dates to select
-        */
+         Calendar of dates to select
+         */
         JCalendar utilcalendar = new JCalendar();
         utilcalendar.setBounds(226, 41, 198, 153);
         frmAdministratorInterface.getContentPane().add(utilcalendar);
@@ -3282,29 +3390,174 @@ public class AdministratorUI {
         dateinfo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 TestingCenter t = new TestingCenter();
-                
-                
+
                 /*
-                Check if the date is before or after the current date
-                */
+                 Check if the date is before or after the current date
+                 */
                 if (utilcalendar.getDate().getYear() < cal.getTime().getYear()
                         || utilcalendar.getDate().getYear() == cal.getTime().getYear() && utilcalendar.getDate().getMonth() < cal.getTime().getMonth()
                         || utilcalendar.getDate().getYear() == cal.getTime().getYear() && utilcalendar.getDate().getMonth() == cal.getTime().getMonth()
                         && utilcalendar.getDate().getDate() <= cal.getTime().getDate()) {
-                    
+
                     /*
-                    If the date is before the current date, calculate past utilization
-                    */
+                     If the date is before the current date, calculate past utilization
+                     */
                     utilization.setText(t.pastutilization(utilcalendar.getDate()));
                 } else {
-                    
+
                     /*
-                    If the date is after the current date, calculate future utilization
-                    */
+                     If the date is after the current date, calculate future utilization
+                     */
                     utilization.setText(t.futureutilization(utilcalendar.getDate()));
                 }
             }
         });
+    }
+
+    public void switchToImport(Administrator a, String term) throws IOException{
+        JLabel select = new JLabel("Select a file to open");
+        select.setBounds(50, 80, 150, 60);
+        frmAdministratorInterface.getContentPane().add(select);
+
+        JButton btnroster = new JButton("roster.csv");
+        btnroster.setBounds(50, 150, 100, 23);
+        frmAdministratorInterface.getContentPane().add(btnroster);
+
+        JButton btnuser = new JButton("user.csv");
+        btnuser.setBounds(50, 200, 100, 23);
+        frmAdministratorInterface.getContentPane().add(btnuser);
+
+        JButton btnclass = new JButton("class.csv");
+        btnclass.setBounds(50, 250, 100, 23);
+        frmAdministratorInterface.getContentPane().add(btnclass);
+
+        btnroster.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    File fileName = new File("C://Users/Owner/Desktop/roster.csv");
+                    
+                    FileInputStream fis = new FileInputStream(fileName);
+
+                    BufferedReader b = new BufferedReader(new InputStreamReader(fis));
+                    String line = "";
+                    line = b.readLine();
+                    ArrayList<String> netids = new ArrayList();
+                    ArrayList<String> courses = new ArrayList();
+                    
+                    while ((line = b.readLine()) != null) {
+                        String[] roster = line.split(", ");
+                        netids.add(roster[0]);
+                        courses.add(roster[1]);
+                        
+                    }
+                    
+                    for(int i = 0; i < netids.size(); i++)
+                    {
+                        String query = "Select studentID from student where netid = '" + netids.get(i) + "'";
+                        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+                        String id = "";
+                        try {
+                            while(rs.next())
+                            {
+                                id = rs.getString(1);
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                        query = "Select count(StudentID) from takes where studentID = '" + id + "'"
+                                + " AND courseID = '" + courses.get(i) + "'";
+                        rs = DBConnection.ExecQuery(query);
+                        int count = 1;
+                        try {
+                            while(rs.next())
+                            {
+                                count = rs.getInt(1);
+                                
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                        query = "Select term from course where courseID = '" + courses.get(i) + "'";
+                        rs = DBConnection.ExecQuery(query);
+                        String term2 = "";
+                        try {
+                            while(rs.next())
+                            {
+                                term2 = rs.getString(1);
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                        if(count == 0 && term.equals(term2))
+                        {
+                            query = "Insert into takes values ('" + id + "', '" + courses.get(i) + "')";
+                            DBConnection.ExecUpdateQuery(query);
+                        }
+                    }
+                    
+                    String query = "Select * from takes t, course c where t.courseID = c.courseID AND "
+                            + "c.term = '" + term + "'";
+                    java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+                    try {
+                        while(rs.next())
+                        {
+                            String query2 = "Select netID from student where studentID = '" + rs.getString(1) + "'";
+                        java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
+                        String netid = "";
+                        try {
+                            while(rs2.next())
+                            {
+                                netid = rs2.getString(1);
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                            int found = 0;
+                            //System.out.println(netid);
+                            
+                            for(int i = 0; i < courses.size(); i++)
+                            {
+                                if(netid.equals(netids.get(i)) && rs.getString(2).equals(courses.get(i)))
+                                {
+                                    found = 1;
+                                }
+                            }
+                            
+                            if(found == 0)
+                            {
+                                System.out.println(rs.getString(1) + " " + rs.getString(2));
+                               String query3 = "Delete from takes where studentID = '" + rs.getString(1) + "'"
+                                       + "AND courseID = '" + rs.getString(2) + "'";
+                               //DBConnection.ExecUpdateQuery(query3);
+                               
+                               query3 = "Select a.appointmentID from has h, appointment a, forexam f, courseexam c where "
+                                       + "h.studentID = '" + rs.getString(1) + "' AND h.appointmentID = a.appointmentID AND "
+                                       + "a.appointmentID = f.appointmentID AND f.examID = c.examID "
+                                       + "AND c.courseidentifier = '" + rs.getString(2) + "'";
+                               java.sql.ResultSet rs3 = DBConnection.ExecQuery(query3);
+                               while(rs3.next())
+                               {
+                                   String query4 = "UPDATE appointment SET checkedin ='superfluous' WHERE appointmentID = '" + rs3.getString(1) + "'";
+                                   DBConnection.ExecUpdateQuery(query4);
+                               }
+                            }
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
+                    
+                    b.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            }
+        });
+
     }
 
 }
