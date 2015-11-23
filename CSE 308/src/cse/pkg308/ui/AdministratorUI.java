@@ -347,8 +347,8 @@ public class AdministratorUI {
 
                         try {
                             /*
-                            Make an appointment for a student for selected term
-                            */
+                             Make an appointment for a student for selected term
+                             */
                             switchToImport(a, term);
                         } catch (IOException ex) {
                             Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -3414,7 +3414,7 @@ public class AdministratorUI {
         });
     }
 
-    public void switchToImport(Administrator a, String term) throws IOException{
+    public void switchToImport(Administrator a, String term) throws IOException {
         JLabel select = new JLabel("Select a file to open");
         select.setBounds(50, 80, 150, 60);
         frmAdministratorInterface.getContentPane().add(select);
@@ -3431,11 +3431,305 @@ public class AdministratorUI {
         btnclass.setBounds(50, 250, 100, 23);
         frmAdministratorInterface.getContentPane().add(btnclass);
 
+        btnuser.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    File fileName = new File("C://Users/Owner/Desktop/user.csv");
+
+                    FileInputStream fis = new FileInputStream(fileName);
+
+                    BufferedReader b = new BufferedReader(new InputStreamReader(fis));
+                    String line = "";
+                    line = b.readLine();
+                    ArrayList<String> netids = new ArrayList();
+                    ArrayList<String> first = new ArrayList();
+                    ArrayList<String> last = new ArrayList();
+                    ArrayList<String> email = new ArrayList();
+                    ArrayList<String> usertype = new ArrayList();
+
+                    while ((line = b.readLine()) != null) {
+                        String[] user = line.split(", ");
+                        netids.add(user[2]);
+                        first.add(user[0]);
+                        last.add(user[1]);
+                        email.add(user[3]);
+                        usertype.add(user[4]);
+
+                    }
+
+                    for (int i = 0; i < netids.size(); i++) {
+                        String query = "Select userID from user where netid = '" + netids.get(i) + "'";
+                        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+                        String id = "";
+                        try {
+                            while (rs.next()) {
+                                id = rs.getString(1);
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                        query = "Select count(userID) from user where userID = '" + id + "'";
+                        rs = DBConnection.ExecQuery(query);
+                        int count = 1;
+                        try {
+                            while (rs.next()) {
+                                count = rs.getInt(1);
+
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                        if (count == 0) {
+                            query = "Select (Max(userid) + 1) from user";
+                            rs = DBConnection.ExecQuery(query);
+
+                            try {
+                                while (rs.next()) {
+                                    id = rs.getString(1);
+                                    String query2 = "Insert into user (userid, name, email, firstname, lastname, netid) values "
+                                            + "('" + rs.getString(1) + "', '" + first.get(i) + " " + last.get(i) + "', '"
+                                            + email.get(i) + "', '" + first.get(i) + "', '" + last.get(i) + "', '"
+                                            + netids.get(i) + "')";
+                                    DBConnection.ExecUpdateQuery(query2);
+
+                                    query2 = "Insert into isa values ('" + rs.getString(1) + "', '" + usertype.get(i) + "')";
+                                    DBConnection.ExecUpdateQuery(query2);
+
+                                    if (usertype.get(i).equals("student")) {
+                                        query2 = "Insert into student (studentid, netid) values ('" + rs.getString(1) + "', '" + netids.get(i) + "')";
+                                        DBConnection.ExecUpdateQuery(query2);
+                                    } else if (usertype.get(i).equals("instr")) {
+                                        query2 = "Insert into instructor (instructorid, netid) values ('" + rs.getString(1) + "', '" + netids.get(i) + "')";
+                                        DBConnection.ExecUpdateQuery(query2);
+                                    } else if (usertype.get(i).equals("admin")) {
+                                        query2 = "Insert into administrator (administratorid, netid) values ('" + rs.getString(1) + "', '" + netids.get(i) + "')";
+                                        DBConnection.ExecUpdateQuery(query2);
+                                    }
+                                }
+                            } catch (SQLException ex) {
+                                Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+
+                        }
+                    }
+
+                    String query = "Select * from user";
+                    java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+                    try {
+                        while (rs.next()) {
+                            String query2 = "Select netID from user where userID = '" + rs.getString(1) + "'";
+                            java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
+                            String netid = "";
+                            try {
+                                while (rs2.next()) {
+                                    netid = rs2.getString(1);
+                                }
+                            } catch (SQLException ex) {
+                                Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            int found = 0;
+
+                            for (int i = 0; i < netids.size(); i++) {
+                                if (netid.equals(netids.get(i))) {
+                                    found = 1;
+                                }
+                            }
+
+                            if (found == 0) {
+                                String query5 = "Select appointmentid from has where studentid = '" + rs.getString(1) + "'";
+                                java.sql.ResultSet rs5 = DBConnection.ExecQuery(query5);
+                                while (rs5.next()) {
+
+                                    String query6 = "Delete from has where appointmentid = '" + rs5.getString(1) + "'";
+                                    DBConnection.ExecUpdateQuery(query6);
+
+                                    query6 = "Delete from forexam where appointmentid = '" + rs5.getString(1) + "'";
+                                    DBConnection.ExecUpdateQuery(query6);
+
+                                    query6 = "Delete from appointment where appointmentid = '" + rs5.getString(1) + "'";
+                                    DBConnection.ExecUpdateQuery(query6);
+
+                                }
+
+                                String query7 = "Delete from isa where userid = '" + rs.getString(1) + "'";
+                                DBConnection.ExecUpdateQuery(query7);
+
+                                query7 = "Delete from user where userid = '" + rs.getString(1) + "'";
+                                DBConnection.ExecUpdateQuery(query7);
+                            }
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    b.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+        });
+        btnclass.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    File fileName = new File("C://Users/Owner/Desktop/class.csv");
+
+                    FileInputStream fis = new FileInputStream(fileName);
+
+                    BufferedReader b = new BufferedReader(new InputStreamReader(fis));
+                    String line = "";
+                    line = b.readLine();
+                    ArrayList<String> courses = new ArrayList();
+                    ArrayList<String> departments = new ArrayList();
+                    ArrayList<String> subjects = new ArrayList();
+                    ArrayList<String> numbers = new ArrayList();
+                    ArrayList<String> descriptions = new ArrayList();
+                    ArrayList<String> sections = new ArrayList();
+                    ArrayList<String> students = new ArrayList();
+                    ArrayList<String> instructors = new ArrayList();
+
+                    while ((line = b.readLine()) != null) {
+                        String[] course = line.split(", ");
+                        courses.add(course[0]);
+                        departments.add(course[1]);
+                        subjects.add(course[2]);
+                        numbers.add(course[3]);
+                        descriptions.add(course[4]);
+                        sections.add(course[5]);
+                        students.add(course[6]);
+                        instructors.add(course[7]);
+
+                    }
+
+                    for (int i = 0; i < courses.size(); i++) {
+
+                        String query = "Select count(courseID) from teaches where courseID = '" + courses.get(i) + "'"
+                                + " AND instructorID = '" + instructors.get(i) + "'";
+                        java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+                        int count = 1;
+                        try {
+                            while (rs.next()) {
+                                count = rs.getInt(1);
+
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                        int term2 = 0;
+                        query = "Select count(courseID) from course where courseID = '" + courses.get(i) + "'"
+                                + " AND term = '" + term + "'";
+                        rs = DBConnection.ExecQuery(query);
+
+                        try {
+                            while (rs.next()) {
+                                term2 = rs.getInt(1);
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                        int samecourse = 0;
+                        query = "Select count(courseID) from course where coursename = '" + subjects.get(i) + " " + numbers.get(i) + "'"
+                                + " AND section = '" + sections.get(i) + "' AND term = '" + term + "'";
+                        rs = DBConnection.ExecQuery(query);
+
+                        try {
+                            while (rs.next()) {
+                                samecourse = rs.getInt(1);
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                        System.out.println(count + " " + term2 + " " + samecourse);
+
+                        if (count == 0 && term2 == 0 && samecourse == 0) {
+                            query = "Insert into course values ('" + courses.get(i) + "', '" + departments.get(i) + "', '"
+                                    + subjects.get(i) + " " + numbers.get(i) + "', '" + descriptions.get(i) + "', '"
+                                    + sections.get(i) + "', '" + term + "', '" + students.get(i) + "')";
+                            DBConnection.ExecUpdateQuery(query);
+
+                            query = "Insert into teaches values ('" + instructors.get(i) + "', '" + courses.get(i) + "')";
+                            DBConnection.ExecUpdateQuery(query);
+                        }
+                    }
+
+                    String query = "Select t.instructorid, t.courseid from teaches t, course c where t.courseID = c.courseID AND "
+                            + "c.term = '" + term + "'";
+                    java.sql.ResultSet rs = DBConnection.ExecQuery(query);
+                    try {
+                        while (rs.next()) {
+                            int found = 0;
+
+                            for (int i = 0; i < courses.size(); i++) {
+                                if (rs.getString(1).equals(instructors.get(i)) && rs.getString(2).equals(courses.get(i))) {
+                                    found = 1;
+
+                                }
+                            }
+
+                            if (found == 0) {
+                                String query2 = "Delete from teaches where instructorid = '" + rs.getString(1) + "'"
+                                        + " And courseid = '" + rs.getString(2) + "'";
+                                DBConnection.ExecUpdateQuery(query2);
+
+                                query2 = "Delete from course where courseid = '" + rs.getString(2) + "'";
+                                DBConnection.ExecUpdateQuery(query2);
+
+                                query2 = "Delete from takes where courseid = '" + rs.getString(2) + "'";
+                                DBConnection.ExecUpdateQuery(query2);
+
+                                query2 = "Select examID from courseexam where courseidentifier = '" + rs.getString(2) + "'";
+                                java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
+
+                                while (rs2.next()) {
+                                    String query3 = "Select appointmentid from forexam where examid = '" + rs2.getString(1) + "'";
+                                    java.sql.ResultSet rs3 = DBConnection.ExecQuery(query3);
+                                    while (rs3.next()) {
+                                        String query4 = "Delete from has where appointmentID = '" + rs3.getString(1) + "'";
+                                        DBConnection.ExecUpdateQuery(query4);
+
+                                        query4 = "Delete from forexam where appointmentID = '" + rs3.getString(1) + "'";
+                                        DBConnection.ExecUpdateQuery(query4);
+
+                                        query4 = "Delete from appointment where appointmentID = '" + rs3.getString(1) + "'";
+                                        DBConnection.ExecUpdateQuery(query4);
+                                    }
+
+                                    query3 = "Delete from courseexam where examID = '" + rs2.getString(1) + "'";
+                                    DBConnection.ExecUpdateQuery(query3);
+
+                                    query3 = "Delete from approvedfor where examID = '" + rs2.getString(1) + "'";
+                                    DBConnection.ExecUpdateQuery(query3);
+
+                                    query3 = "Delete from exam where examID = '" + rs2.getString(1) + "'";
+                                    DBConnection.ExecUpdateQuery(query3);
+
+                                }
+
+                            }
+
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    b.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+        });
+
         btnroster.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
                     File fileName = new File("C://Users/Owner/Desktop/roster.csv");
-                    
+
                     FileInputStream fis = new FileInputStream(fileName);
 
                     BufferedReader b = new BufferedReader(new InputStreamReader(fis));
@@ -3443,118 +3737,106 @@ public class AdministratorUI {
                     line = b.readLine();
                     ArrayList<String> netids = new ArrayList();
                     ArrayList<String> courses = new ArrayList();
-                    
+
                     while ((line = b.readLine()) != null) {
                         String[] roster = line.split(", ");
                         netids.add(roster[0]);
                         courses.add(roster[1]);
-                        
+
                     }
-                    
-                    for(int i = 0; i < netids.size(); i++)
-                    {
+
+                    for (int i = 0; i < netids.size(); i++) {
                         String query = "Select studentID from student where netid = '" + netids.get(i) + "'";
                         java.sql.ResultSet rs = DBConnection.ExecQuery(query);
                         String id = "";
                         try {
-                            while(rs.next())
-                            {
+                            while (rs.next()) {
                                 id = rs.getString(1);
                             }
                         } catch (SQLException ex) {
                             Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        
+
                         query = "Select count(StudentID) from takes where studentID = '" + id + "'"
                                 + " AND courseID = '" + courses.get(i) + "'";
                         rs = DBConnection.ExecQuery(query);
                         int count = 1;
                         try {
-                            while(rs.next())
-                            {
+                            while (rs.next()) {
                                 count = rs.getInt(1);
-                                
+
                             }
                         } catch (SQLException ex) {
                             Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        
+
                         query = "Select term from course where courseID = '" + courses.get(i) + "'";
                         rs = DBConnection.ExecQuery(query);
                         String term2 = "";
                         try {
-                            while(rs.next())
-                            {
+                            while (rs.next()) {
                                 term2 = rs.getString(1);
                             }
                         } catch (SQLException ex) {
                             Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        
-                        if(count == 0 && term.equals(term2))
-                        {
+
+                        if (count == 0 && term.equals(term2)) {
                             query = "Insert into takes values ('" + id + "', '" + courses.get(i) + "')";
                             DBConnection.ExecUpdateQuery(query);
                         }
                     }
-                    
+
                     String query = "Select * from takes t, course c where t.courseID = c.courseID AND "
                             + "c.term = '" + term + "'";
                     java.sql.ResultSet rs = DBConnection.ExecQuery(query);
                     try {
-                        while(rs.next())
-                        {
+                        while (rs.next()) {
                             String query2 = "Select netID from student where studentID = '" + rs.getString(1) + "'";
-                        java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
-                        String netid = "";
-                        try {
-                            while(rs2.next())
-                            {
-                                netid = rs2.getString(1);
+                            java.sql.ResultSet rs2 = DBConnection.ExecQuery(query2);
+                            String netid = "";
+                            try {
+                                while (rs2.next()) {
+                                    netid = rs2.getString(1);
+                                }
+                            } catch (SQLException ex) {
+                                Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } catch (SQLException ex) {
-                            Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
-                        }
                             int found = 0;
                             //System.out.println(netid);
-                            
-                            for(int i = 0; i < courses.size(); i++)
-                            {
-                                if(netid.equals(netids.get(i)) && rs.getString(2).equals(courses.get(i)))
-                                {
+
+                            for (int i = 0; i < courses.size(); i++) {
+                                if (netid.equals(netids.get(i)) && rs.getString(2).equals(courses.get(i))) {
                                     found = 1;
                                 }
                             }
-                            
-                            if(found == 0)
-                            {
+
+                            if (found == 0) {
                                 System.out.println(rs.getString(1) + " " + rs.getString(2));
-                               String query3 = "Delete from takes where studentID = '" + rs.getString(1) + "'"
-                                       + "AND courseID = '" + rs.getString(2) + "'";
-                               //DBConnection.ExecUpdateQuery(query3);
-                               
-                               query3 = "Select a.appointmentID from has h, appointment a, forexam f, courseexam c where "
-                                       + "h.studentID = '" + rs.getString(1) + "' AND h.appointmentID = a.appointmentID AND "
-                                       + "a.appointmentID = f.appointmentID AND f.examID = c.examID "
-                                       + "AND c.courseidentifier = '" + rs.getString(2) + "'";
-                               java.sql.ResultSet rs3 = DBConnection.ExecQuery(query3);
-                               while(rs3.next())
-                               {
-                                   String query4 = "UPDATE appointment SET checkedin ='superfluous' WHERE appointmentID = '" + rs3.getString(1) + "'";
-                                   DBConnection.ExecUpdateQuery(query4);
-                               }
+                                String query3 = "Delete from takes where studentID = '" + rs.getString(1) + "'"
+                                        + "AND courseID = '" + rs.getString(2) + "'";
+                                //DBConnection.ExecUpdateQuery(query3);
+
+                                query3 = "Select a.appointmentID from has h, appointment a, forexam f, courseexam c where "
+                                        + "h.studentID = '" + rs.getString(1) + "' AND h.appointmentID = a.appointmentID AND "
+                                        + "a.appointmentID = f.appointmentID AND f.examID = c.examID "
+                                        + "AND c.courseidentifier = '" + rs.getString(2) + "'";
+                                java.sql.ResultSet rs3 = DBConnection.ExecQuery(query3);
+                                while (rs3.next()) {
+                                    String query4 = "UPDATE appointment SET checkedin ='superfluous' WHERE appointmentID = '" + rs3.getString(1) + "'";
+                                    DBConnection.ExecUpdateQuery(query4);
+                                }
                             }
                         }
                     } catch (SQLException ex) {
                         Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    
-                    
+
                     b.close();
                 } catch (IOException ex) {
                     Logger.getLogger(AdministratorUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             }
         });
 

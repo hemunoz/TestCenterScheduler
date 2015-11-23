@@ -632,7 +632,7 @@ public class StudentUI {
 
                     examcomboBox.setModel(new DefaultComboBoxModel());
                     datecomboBox.setModel(new DefaultComboBoxModel());
-                    timecomboBox.setModel(new DefaultComboBoxModel());
+                    //timecomboBox.setModel(new DefaultComboBoxModel());
                 }
 
                 /*
@@ -902,7 +902,7 @@ public class StudentUI {
                  Create new exam object. The query will return the exam information of the exam selected
                  */
                 Exam exam = new Exam();
-                String query = "Select * from Exam where examname = '" + examcomboBox.getSelectedItem().toString() + "'";
+                String query = "Select * from Exam where examname = '" + examcomboBox.getSelectedItem().toString() + "' AND term = '" + term + "'";
                 java.sql.ResultSet rs = DBConnection.ExecQuery(query);
 
                 try {
@@ -939,7 +939,7 @@ public class StudentUI {
                  */ else if (exam.availableseats(exam.getExamID() + "", term, dates.get(datecomboBox.getSelectedIndex()), times.get(timecomboBox.getSelectedIndex())) == false) {
                     switchToCannotSchedulePage(s, "No Available Seats");
                 } else {
-                    System.out.println(dates.get(datecomboBox.getSelectedIndex()));
+                    //System.out.println(dates.get(datecomboBox.getSelectedIndex()));
                     switchToAppointmentConfirmationPage(s, exam, dates.get(datecomboBox.getSelectedIndex()), times.get(timecomboBox.getSelectedIndex()));
                 }
 
